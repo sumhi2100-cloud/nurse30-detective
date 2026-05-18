@@ -1,0 +1,1848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NURSE 30: The Detective</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --ink:#080d18;--ink2:#0e1520;--ink3:#141e2e;
+  --teal:#00c9a0;--teal-bg:rgba(0,201,160,.1);
+  --amber:#e8a84a;--amber-bg:rgba(232,168,74,.1);
+  --alarm:#ff4444;--red:#d94040;
+  --wire:rgba(255,255,255,.07);--wire2:rgba(255,255,255,.12);
+  --text:#e8eaf0;--muted:#5a6478;--muted2:#8a95a8;
+  --mono:"DM Mono";--body:"DM Sans";--serif:"Syne";
+}
+html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--body);font-weight:300;overflow:hidden;}
+#app{position:relative;width:100%;max-width:414px;height:100%;margin:0 auto;overflow:hidden;}
+.scr{position:absolute;inset:0;display:none;flex-direction:column;overflow:hidden;}
+.scr.on{display:flex;}
+#wipe{position:fixed;inset:0;background:var(--ink);z-index:999;opacity:0;pointer-events:none;transition:opacity .32s;}
+#wipe.in{opacity:1;pointer-events:all;}
+#wrong-flash{position:absolute;inset:0;background:rgba(217,64,64,.08);opacity:0;pointer-events:none;transition:opacity .3s;z-index:100;}
+#wrong-flash.show{opacity:1;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+@keyframes scan{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes phonering{0%{box-shadow:0 0 0 0 rgba(232,168,74,.4);}100%{box-shadow:0 0 0 10px rgba(232,168,74,0);}}
+/* TITLE */
+#scr-title{background:var(--ink);justify-content:center;}
+.tgrid{position:absolute;inset:0;background-image:linear-gradient(var(--wire) 1px,transparent 1px),linear-gradient(90deg,var(--wire) 1px,transparent 1px);background-size:28px 28px;opacity:.4;}
+.tscan{position:absolute;inset:0;background:linear-gradient(180deg,transparent 0%,rgba(0,201,160,.03) 50%,transparent 100%);animation:scan 4s linear infinite;}
+.tbody{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:20px;padding:24px;}
+.tcanvas{width:140px;height:140px;}
+.thero{text-align:center;}
+.teyebrow{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;justify-content:center;gap:6px;}
+.tdotbig{width:5px;height:5px;border-radius:50%;background:var(--teal);display:inline-block;}
+.tlogo{font-family:var(--serif);font-size:52px;font-weight:800;line-height:1;letter-spacing:-2px;color:#fff;}
+.tlogo span{color:var(--teal);}
+.tsub{font-family:var(--mono);font-size:10px;color:var(--muted2);letter-spacing:.28em;text-transform:uppercase;margin-top:4px;}
+.tpills{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:12px;}
+.tpill{font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:.1em;border:1px solid var(--wire2);padding:3px 8px;}
+.tcta{margin-top:8px;width:100%;}
+.btnp{width:100%;padding:14px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;border:none;cursor:pointer;}
+.tsnd{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.08em;margin-top:6px;cursor:pointer;}
+/* CALENDAR */
+#scr-calendar{background:var(--ink);}
+.cal-hdr{padding:12px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.cal-title{font-family:var(--serif);font-size:20px;font-weight:800;color:#fff;}
+.cal-title span{color:var(--amber);}
+.cal-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.08em;margin-top:2px;}
+.cal-stats{display:flex;gap:14px;margin-top:7px;}
+.cal-stat-val{font-family:var(--serif);font-size:16px;font-weight:700;color:var(--teal);}
+.cal-stat-lbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;}
+.cal-levels{display:flex;overflow-x:auto;scrollbar-width:none;flex-shrink:0;border-bottom:1px solid var(--wire);}
+.cal-levels::-webkit-scrollbar{display:none;}
+.cal-level-tab{padding:7px 12px;font-family:var(--mono);font-size:7px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;white-space:nowrap;color:var(--muted);border-bottom:2px solid transparent;background:transparent;border-top:none;border-left:none;border-right:none;}
+.cal-level-tab.active{color:var(--amber);border-bottom-color:var(--amber);}
+.cal-body{flex:1;overflow-y:auto;padding:10px 14px;scrollbar-width:none;}
+.cal-body::-webkit-scrollbar{display:none;}
+.cal-section{margin-bottom:14px;}
+.cal-section-hdr{display:flex;align-items:center;gap:6px;margin-bottom:7px;flex-wrap:wrap;}
+.cal-section-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.cal-section-name{font-family:var(--mono);font-size:8px;letter-spacing:.12em;text-transform:uppercase;}
+.cal-section-theme{font-family:var(--body);font-size:10px;color:var(--muted2);font-style:italic;font-weight:300;}
+.cal-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;}
+.cal-day{border-radius:3px;border:1px solid var(--wire2);cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;padding:6px 3px;position:relative;min-height:66px;justify-content:space-between;}
+.cal-day:active{transform:scale(.95);}
+.cal-day.done{border-color:rgba(74,143,212,.5);background:rgba(74,143,212,.08);}
+.cal-day.current{border-color:rgba(0,201,160,.7);background:rgba(0,201,160,.1);}
+.cal-day.unlocked{border-color:rgba(232,168,74,.5);background:rgba(232,168,74,.06);}
+.cal-day.locked{border-color:var(--wire);opacity:.35;cursor:default;}
+.cal-day-num{font-family:var(--mono);font-size:10px;font-weight:700;}
+.cal-day.done .cal-day-num{color:rgba(74,143,212,.9);}
+.cal-day.current .cal-day-num{color:var(--teal);}
+.cal-day.unlocked .cal-day-num{color:var(--amber);}
+.cal-day.locked .cal-day-num{color:var(--muted);}
+.cal-day-icon{font-size:15px;line-height:1;}
+.cal-day-dept{font-family:var(--mono);font-size:5px;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;text-align:center;}
+.cal-day-name{font-family:var(--body);font-size:7px;color:rgba(140,180,220,.8);line-height:1.2;text-align:center;font-weight:300;display:none;}
+.cal-day.done .cal-day-name{display:block;}
+.cal-done-tick{position:absolute;top:2px;right:3px;font-size:7px;color:rgba(74,143,212,.8);}
+.cal-outcome{position:absolute;bottom:2px;left:50%;transform:translateX(-50%);width:5px;height:5px;border-radius:50%;}
+.cal-outcome.good{background:var(--teal);}.cal-outcome.bad{background:var(--amber);}
+.cal-legend{display:flex;gap:8px;flex-wrap:wrap;padding:7px 14px;border-top:1px solid var(--wire);flex-shrink:0;}
+.cal-leg-item{display:flex;align-items:center;gap:3px;font-family:var(--mono);font-size:7px;color:var(--muted);}
+.cal-leg-dot{width:7px;height:7px;border-radius:2px;}
+/* HANDOFF */
+#scr-handoff{background:var(--ink);}
+.hohdr{padding:10px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.holbl{font-family:var(--mono);font-size:8px;color:var(--teal);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;}
+.hotitle{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;}
+.hosub{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:1px;}
+.hochat{flex:1;overflow-y:auto;padding:10px 16px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none;}
+.hochat::-webkit-scrollbar{display:none;}
+.hochat-msg{display:flex;flex-direction:column;gap:2px;}
+.hochat-msg.you{align-items:flex-end;}
+.hochat-from{font-family:var(--mono);font-size:8px;color:var(--muted);}
+.hochat-bubble{max-width:88%;padding:8px 12px;font-family:var(--body);font-size:13px;font-weight:300;line-height:1.65;background:var(--ink2);border:1px solid var(--wire);}
+.hochat-msg.you .hochat-bubble{background:var(--teal-bg);border-color:rgba(0,201,160,.3);color:var(--teal);}
+.alert-bar{margin:4px 16px;padding:7px 12px;background:rgba(217,64,64,.08);border-left:2px solid var(--red);font-family:var(--mono);font-size:9px;color:var(--alarm);display:none;}
+.vccard{margin:6px 16px;border:1px solid var(--wire2);background:var(--ink2);padding:8px 12px;}
+.vclbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+.vcgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;}
+.vcl{font-family:var(--mono);font-size:7px;color:var(--muted2);}
+.vcv{font-family:var(--mono);font-size:12px;font-weight:500;margin-top:1px;}
+.vcv.ok{color:var(--teal);}.vcv.warn{color:var(--amber);}.vcv.crit{color:var(--alarm);}
+.hofooter{padding:10px 16px 20px;flex-shrink:0;border-top:1px solid var(--wire);}
+#ho-enter-btn{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;}
+/* INVESTIGATE */
+#scr-investigate{background:var(--ink);}
+.invhud{position:absolute;top:0;left:0;right:0;height:42px;background:rgba(8,13,24,.92);border-bottom:1px solid var(--wire);z-index:30;display:flex;align-items:center;justify-content:space-between;padding:0 10px;gap:6px;}
+.hudl{display:flex;flex-direction:column;gap:1px;}
+.hudday{font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.08em;}
+.hudtouches{font-family:var(--mono);font-size:7px;color:var(--muted);}
+.hudpt{font-family:var(--mono);font-size:8px;color:var(--muted2);}
+.hudr{display:flex;align-items:center;gap:5px;}
+.alarmbadge{font-family:var(--mono);font-size:8px;color:var(--alarm);letter-spacing:.08em;display:none;animation:blink .8s infinite;}
+.alarmbadge.show{display:block;}
+.piprow{display:flex;gap:3px;}
+.pip{width:8px;height:8px;border-radius:50%;border:1px solid var(--wire2);}
+.pip.used{background:var(--teal);border-color:var(--teal);}
+.pip.gone{background:var(--alarm);border-color:var(--alarm);}
+.hud-menu-btn{background:rgba(255,255,255,.06);border:1px solid var(--wire2);color:var(--muted2);font-size:13px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:2px;}
+.hud-menu{position:fixed;top:48px;right:8px;background:var(--ink2);border:1px solid var(--wire2);z-index:200;min-width:170px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+.hud-menu-title{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;padding:8px 14px 5px;border-bottom:1px solid var(--wire);}
+.hud-menu-item{width:100%;display:flex;align-items:center;gap:10px;padding:10px 14px;background:transparent;border:none;border-bottom:1px solid var(--wire);color:var(--text);font-family:var(--body);font-size:13px;font-weight:300;cursor:pointer;text-align:left;}
+.hud-menu-item:last-child{border-bottom:none;color:var(--muted2);font-size:12px;justify-content:center;}
+.hud-menu-icon{font-size:15px;width:20px;flex-shrink:0;}
+.timer{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--teal);}
+.timer.urgent{color:var(--amber);animation:blink .8s infinite;}
+.timer.critical{color:var(--alarm);}
+.scene-wrap{position:absolute;top:42px;left:0;right:0;bottom:60px;}
+#scene-canvas{display:block;width:100%;height:100%;}
+#tap-zones{position:absolute;inset:0;z-index:30;}
+.tz{position:absolute;transform:translate(-50%,-50%);width:68px;height:68px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.tzring{width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.tz:active .tzring{transform:scale(.9);background:rgba(255,255,255,.08);}
+.tzlbl{position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:7px;color:var(--muted2);letter-spacing:.06em;white-space:nowrap;background:rgba(8,13,24,.8);padding:1px 4px;}
+.scene-panels{position:absolute;top:8px;left:8px;right:8px;display:flex;gap:5px;z-index:20;pointer-events:none;}
+.monov{flex:1;background:rgba(10,14,20,.92);border:1px solid var(--wire2);padding:5px 7px;}
+.montitle{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.monrow-grid,.monrow-grid-d2{display:grid;grid-template-columns:repeat(2,1fr);gap:3px;}
+.monitem{display:flex;flex-direction:column;padding:2px 4px;background:rgba(255,255,255,.03);border-radius:2px;}
+.monlbl{font-family:var(--mono);font-size:6px;color:var(--muted2);letter-spacing:.04em;margin-bottom:1px;}
+.monval{font-family:var(--mono);font-size:11px;font-weight:500;line-height:1.2;}
+.monval.ok{color:var(--teal);}.monval.warn{color:var(--amber);}.monval.crit{color:var(--alarm);animation:blink .8s infinite;}
+.side-panel{width:42%;display:flex;flex-direction:column;gap:4px;}
+.iv-panel,.labs-panel{background:rgba(10,14,20,.92);border:1px solid var(--wire2);padding:5px 7px;}
+.iv-panel-title,.labs-panel-title{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.labs-panel{display:none;}.labs-panel.show{display:block;}
+.iv-row{display:flex;flex-direction:column;gap:1px;margin-bottom:4px;padding-bottom:4px;border-bottom:1px solid var(--wire);}
+.iv-row:last-of-type{border:none;margin-bottom:0;padding-bottom:0;}
+.iv-name{font-family:var(--mono);font-size:7px;color:var(--text);font-weight:500;}
+.iv-detail{font-family:var(--mono);font-size:6px;color:var(--muted2);}
+.iv-rate-badge{display:inline-flex;align-items:center;gap:2px;margin-top:2px;padding:1px 4px;font-family:var(--mono);font-size:7px;font-weight:700;}
+.iv-rate-badge.ok{background:rgba(0,201,160,.18);color:var(--teal);}
+.iv-rate-badge.warn{background:rgba(232,168,74,.18);color:var(--amber);}
+.iv-rate-badge.crit{background:rgba(217,64,64,.18);color:var(--alarm);}
+.iv-alert{font-family:var(--mono);font-size:6px;color:var(--alarm);margin-top:1px;}
+.iv-drip{animation:blink .5s infinite;}
+.lab-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px;}
+.lab-name{font-family:var(--mono);font-size:7px;color:var(--muted2);}
+.lab-val{font-family:var(--mono);font-size:8px;font-weight:700;}
+.lab-val.ok{color:var(--teal);}.lab-val.warn{color:var(--amber);}.lab-val.crit{color:var(--alarm);}
+.lab-new{font-size:6px;color:var(--alarm);animation:blink .6s infinite;margin-left:2px;}
+#act-bar{position:absolute;bottom:0;left:0;right:0;height:60px;background:rgba(8,13,24,.95);border-top:1px solid var(--wire);z-index:35;overflow:hidden;display:none;}
+.actscroll{display:flex;gap:5px;padding:10px;height:100%;overflow-x:auto;scrollbar-width:none;align-items:center;}
+.actscroll::-webkit-scrollbar{display:none;}
+.actbtn{flex-shrink:0;padding:6px 10px;background:var(--ink2);border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:8px;cursor:pointer;white-space:nowrap;height:40px;display:flex;align-items:center;}
+.actbtn.p1{border-color:rgba(217,64,64,.5);color:var(--alarm);}
+#clue-drawer{position:absolute;bottom:60px;left:0;right:0;background:var(--ink2);border-top:1px solid var(--wire2);z-index:40;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);max-height:62vh;display:flex;flex-direction:column;}
+#clue-drawer.open{transform:translateY(0);}
+#cd-hdr{padding:8px 14px 6px;border-bottom:1px solid var(--wire);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;}
+#cd-title{font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;}
+#cd-close{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
+#cd-body{overflow-y:auto;scrollbar-width:none;flex:1;}
+#cd-body::-webkit-scrollbar{display:none;}
+.cdfind{display:flex;gap:8px;padding:6px 14px;border-bottom:1px solid var(--wire);}
+.cfpip{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.cfpip.pc{background:var(--alarm);}.cfpip.pw{background:var(--amber);}.cfpip.po{background:var(--teal);}
+.cftxt{font-family:var(--body);font-size:12px;color:var(--muted2);line-height:1.6;font-weight:300;}
+.cftxt strong{color:var(--text);font-weight:500;}.cftxt em{color:var(--amber);font-style:normal;font-weight:500;}
+.cdinsight{padding:8px 14px;background:rgba(0,201,160,.05);border-top:1px solid rgba(0,201,160,.15);}
+.cditxt{font-family:var(--body);font-size:11px;color:rgba(0,201,160,.8);line-height:1.6;font-weight:300;font-style:italic;}
+#pp-panel{position:absolute;bottom:60px;left:0;right:0;background:var(--ink2);border-top:1px solid var(--amber);z-index:50;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);max-height:78vh;display:flex;flex-direction:column;}
+#pp-panel.open{transform:translateY(0);}
+.pphdr{padding:8px 14px 6px;border-bottom:1px solid var(--wire);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;}
+.pphtitle{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.12em;text-transform:uppercase;}
+.pphsub{font-family:var(--body);font-size:10px;color:var(--muted2);font-weight:300;margin-top:1px;}
+#pp-close{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
+.ppbody{overflow-y:auto;flex:1;scrollbar-width:none;}
+.ppbody::-webkit-scrollbar{display:none;}
+.ppsec{margin-bottom:2px;}
+.ppshdr{padding:5px 14px;font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;border-bottom:1px solid var(--wire);}
+.tp1{color:var(--alarm);}.tp2{color:var(--amber);}.tp3{color:var(--muted2);}
+.ppbtn{width:100%;padding:10px 14px;background:transparent;border:none;border-bottom:1px solid var(--wire);text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:2px;}
+.ppbtn.done{opacity:.3;}
+.ppbtn-lbl{font-family:var(--body);font-size:13px;color:var(--text);font-weight:300;}
+.ppbtn.done .ppbtn-lbl{text-decoration:line-through;color:var(--muted);}
+.ppbtn-desc{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;line-height:1.5;}
+.charttxt{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--wire2);color:var(--text);font-family:var(--mono);font-size:10px;padding:8px 10px;line-height:1.6;resize:vertical;}
+.chartbtn{width:100%;margin-top:6px;padding:10px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.14em;border:none;cursor:pointer;text-transform:uppercase;}
+.chartnotetxt{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;line-height:1.6;}
+/* SBAR */
+#scr-sbar{background:var(--ink);}
+.sbar-hdr{padding:12px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.sbar-lbl{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;}
+.sbar-title{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;}
+.sbar-sub{font-size:11px;color:var(--muted2);font-family:var(--body);font-weight:300;margin-top:2px;}
+.phone-wrap{padding:12px 16px 8px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.phone-icon{width:48px;height:48px;border-radius:50%;background:var(--ink2);border:2px solid var(--amber);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;animation:phonering .6s ease-in-out infinite alternate;}
+.phone-name{font-family:var(--mono);font-size:11px;color:var(--text);margin-bottom:2px;}
+.phone-role{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+.phone-status{font-family:var(--mono);font-size:8px;color:var(--amber);animation:blink .8s infinite;}
+.sbar-body{flex:1;overflow-y:auto;padding:0 14px 8px;scrollbar-width:none;}
+.sbar-body::-webkit-scrollbar{display:none;}
+.sbar-card{padding:8px 10px;background:var(--ink2);border:1px solid var(--wire2);cursor:grab;user-select:none;margin-bottom:5px;border-radius:2px;}
+.sbar-card.placed{opacity:.2;pointer-events:none;border-style:dashed;}
+.sbar-card-text{font-family:var(--body);font-size:12px;color:var(--text);line-height:1.5;font-weight:300;}
+.sbar-zone{border:1.5px dashed var(--wire2);min-height:48px;padding:5px 10px;transition:all .2s;display:flex;align-items:center;gap:8px;border-radius:2px;margin-bottom:4px;}
+.sbar-zone.drag-over{border-color:var(--amber);background:rgba(232,168,74,.06);}
+.sbar-zone.correct{border-color:var(--teal);border-style:solid;background:rgba(0,201,160,.06);}
+.sbar-zone.wrong{border-color:var(--red);border-style:solid;animation:shake .3s ease;}
+.zone-letter{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;flex-shrink:0;border:1.5px solid var(--wire2);}
+.zone-letter.s-letter{border-color:rgba(74,143,212,.6);color:rgba(74,143,212,.9);}
+.zone-letter.b-letter{border-color:rgba(232,168,74,.6);color:rgba(232,168,74,.9);}
+.zone-letter.a-letter{border-color:rgba(217,64,64,.6);color:rgba(217,64,64,.9);}
+.zone-letter.r-letter{border-color:rgba(0,201,160,.6);color:rgba(0,201,160,.9);}
+.zone-letter.filled{background:var(--teal);border-color:var(--teal);color:var(--ink);}
+.zone-hint{font-family:var(--mono);font-size:8px;color:var(--muted);flex:1;}
+.zone-content{font-family:var(--body);font-size:12px;color:var(--text);line-height:1.5;font-weight:300;flex:1;}
+.sbar-progress{padding:5px 14px;display:flex;gap:5px;align-items:center;flex-shrink:0;}
+.sbar-pip{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--wire2);transition:all .3s;}
+.sbar-pip.done{background:var(--teal);border-color:var(--teal);}
+.sbar-section{margin-bottom:8px;border:1px solid var(--wire);background:var(--ink2);}
+.sbar-sec-hdr{padding:6px 12px;border-bottom:1px solid var(--wire);display:flex;align-items:center;gap:8px;}
+.sbar-letter{width:22px;height:22px;border-radius:50%;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.sbar-sec-title{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.1em;text-transform:uppercase;}
+.sbar-sec-body{padding:8px 12px;}
+.sbar-field{font-family:var(--body);font-size:13px;color:var(--muted2);line-height:1.7;font-weight:300;}
+.sbar-field strong{color:var(--text);font-weight:500;}.sbar-field em{color:var(--amber);font-style:normal;font-weight:500;}
+.md-response{margin:8px 0;padding:10px 12px;background:rgba(0,201,160,.06);border-left:3px solid var(--teal);}
+.md-name{font-family:var(--mono);font-size:8px;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.md-text{font-family:var(--body);font-size:12px;color:var(--text);line-height:1.65;font-weight:300;font-style:italic;}
+.sbar-actions{padding:8px 16px 20px;flex-shrink:0;display:flex;flex-direction:column;gap:6px;}
+.btn-sbar-call{width:100%;padding:13px;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;border:none;cursor:pointer;text-transform:uppercase;}
+.btn-sbar-edit{width:100%;padding:10px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;text-transform:uppercase;}
+/* ACTION */
+#scr-action{background:var(--ink);}
+.acthdr{padding:12px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.acthdrl{font-family:var(--mono);font-size:8px;color:var(--amber);letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px;}
+.acthdrt{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;}
+.cluetags{padding:8px 16px 6px;flex-shrink:0;border-bottom:1px solid var(--wire);}
+.ctlbl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;}
+.ctrow{display:flex;flex-wrap:wrap;gap:4px;}
+.cttag{font-family:var(--mono);font-size:8px;color:var(--teal);background:rgba(0,201,160,.1);border:1px solid rgba(0,201,160,.3);padding:2px 7px;}
+.cttag.off{color:var(--muted);background:transparent;border-color:var(--wire);text-decoration:line-through;}
+.actq{padding:10px 16px 8px;flex-shrink:0;}
+.aqtxt{font-family:var(--body);font-size:14px;color:var(--text);line-height:1.6;font-weight:300;}
+.aqsub{font-family:var(--mono);font-size:9px;color:var(--muted2);margin-top:4px;}
+#choice-exp{padding:0 16px;}
+.choices-wrap{flex:1;overflow-y:auto;padding:6px 16px 16px;scrollbar-width:none;display:flex;flex-direction:column;gap:6px;}
+.choices-wrap::-webkit-scrollbar{display:none;}
+.choicebtn{width:100%;padding:11px 14px;background:var(--ink2);border:1px solid var(--wire2);text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px;}
+.choicebtn.cor{border-color:var(--teal);background:rgba(0,201,160,.08);}
+.choicebtn.wrng{border-color:var(--alarm);background:rgba(217,64,64,.08);}
+.choicebtn.rev{border-color:rgba(0,201,160,.4);opacity:.7;}
+.ckey{font-family:var(--mono);font-size:9px;color:var(--muted);}
+.cor .ckey{color:var(--teal);}.wrng .ckey{color:var(--alarm);}
+.clbl{font-family:var(--body);font-size:13px;color:var(--text);font-weight:400;line-height:1.5;}
+.cdesc{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;line-height:1.5;}
+/* HANDOFF 2 */
+#scr-handoff2{background:var(--ink);}
+.ho2hdr{padding:12px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.ho2lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;}
+.ho2title{font-family:var(--serif);font-size:17px;font-weight:700;color:#fff;}
+.ho2sub{font-family:var(--body);font-size:12px;color:var(--muted2);font-weight:300;line-height:1.6;padding:8px 16px;flex-shrink:0;border-bottom:1px solid var(--wire);}
+.ho2items{flex:1;overflow-y:auto;padding:8px 16px;scrollbar-width:none;}
+.ho2items::-webkit-scrollbar{display:none;}
+.ho2item{padding:8px 0;border-bottom:1px solid var(--wire);display:flex;align-items:flex-start;gap:10px;cursor:pointer;}
+.ho2check{width:18px;height:18px;border:1.5px solid var(--wire2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+.ho2check.on{background:var(--teal);border-color:var(--teal);color:var(--ink);}
+.ho2txt{font-family:var(--body);font-size:13px;color:var(--text);font-weight:300;line-height:1.55;}
+.ho2txt.on{color:var(--muted);text-decoration:line-through;}
+.ho2feedback{padding:8px 16px;flex-shrink:0;border-top:1px solid var(--wire);}
+.ho2fb{font-family:var(--mono);font-size:9px;letter-spacing:.06em;padding:5px 0;}
+.ho2fb.good{color:var(--teal);}.ho2fb.warn{color:var(--amber);}.ho2fb.bad{color:var(--alarm);}
+.ho2footer{padding:10px 16px 20px;flex-shrink:0;}
+.ho2btn{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;}
+/* END SHIFT */
+#scr-endshift{background:var(--ink);}
+.end-scene-wrap{position:relative;width:100%;height:200px;background:linear-gradient(180deg,#0a0e1a 0%,#1a2440 100%);overflow:hidden;flex-shrink:0;}
+#end-canvas{display:block;width:100%;height:100%;}
+.end-scene-msg{position:absolute;bottom:0;left:0;right:0;padding:10px 16px 14px;background:linear-gradient(0deg,rgba(10,14,26,.98) 0%,rgba(10,14,26,0) 100%);}
+.end-msg-text{font-family:var(--body);font-size:13px;color:rgba(220,235,255,.92);line-height:1.75;font-weight:300;text-align:center;opacity:0;transition:opacity 1.2s ease;}
+.end-msg-text.show{opacity:1;}
+.end-msg-sub{font-family:var(--mono);font-size:8px;color:var(--teal);letter-spacing:.12em;text-transform:uppercase;text-align:center;margin-top:4px;opacity:0;transition:opacity 1s ease .6s;}
+.end-msg-sub.show{opacity:1;}
+.eshdr{padding:10px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.eslbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-bottom:3px;}
+.estitle{font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;}
+.esbody{flex:1;overflow-y:auto;padding:8px 16px;scrollbar-width:none;}
+.esbody::-webkit-scrollbar{display:none;}
+.esslbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.essbar{display:flex;align-items:center;gap:8px;margin-bottom:5px;}
+.essname{font-family:var(--mono);font-size:9px;color:var(--muted2);width:110px;flex-shrink:0;}
+.essbarbg{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.essfill{height:100%;border-radius:2px;transition:width 1s ease;background:var(--teal);}
+.essval{font-family:var(--mono);font-size:9px;color:var(--muted2);width:30px;text-align:right;flex-shrink:0;}
+.xpbox{margin:10px 0;padding:10px 12px;background:var(--ink2);border:1px solid var(--wire2);}
+.xpscore{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--amber);}
+.xpbd{font-family:var(--mono);font-size:8px;color:var(--muted);margin:2px 0 6px;}
+.xpbarbg{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;margin-bottom:3px;}
+.xpbarfill{height:100%;border-radius:2px;background:var(--amber);transition:width 1.2s ease;}
+.xplvl{display:flex;justify-content:space-between;}
+.xplvl span{font-family:var(--mono);font-size:8px;color:var(--muted2);}
+.estip{margin:8px 0;padding:10px 12px;background:rgba(0,201,160,.05);border-left:2px solid rgba(0,201,160,.3);}
+.estiplbl{font-family:var(--mono);font-size:7px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;}
+.estipmain{font-family:var(--body);font-size:13px;color:var(--text);line-height:1.7;font-weight:300;margin-bottom:4px;}
+.estipsrc{font-family:var(--mono);font-size:7px;color:var(--muted);margin-top:4px;}
+.esfooter{padding:10px 16px 24px;flex-shrink:0;}
+.btnnext{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;}
+.btnretry{width:100%;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;}
+</style>
+</head>
+<body>
+<div id="app">
+<div id="wipe"></div>
+<div id="wrong-flash"></div>
+
+<!-- TITLE -->
+<div id="scr-title" class="scr on">
+  <div class="tgrid"></div><div class="tscan"></div>
+  <div class="tbody">
+    <div class="tcanvas"><canvas id="title-canvas" width="200" height="200" style="display:block;"></canvas></div>
+    <div class="thero">
+      <div class="teyebrow"><span class="tdotbig"></span>30-day clinical simulation</div>
+      <div class="tlogo">NURSE<br><span>30</span></div>
+      <div class="tsub">THE DETECTIVE</div>
+      <div class="tpills"><div class="tpill">Find clues</div><div class="tpill">Reason clinically</div><div class="tpill">Act decisively</div></div>
+    </div>
+    <div class="tcta">
+      <button class="btnp" onclick="gotoCalendar()">Begin shift &rarr;</button>
+      <div class="tsnd" onclick="SFX.toggle()" id="snd-lbl">&#128266; <span id="snd-txt">Sound on</span></div>
+    </div>
+  </div>
+</div>
+<!-- CALENDAR -->
+<div id="scr-calendar" class="scr">
+  <div class="cal-hdr">
+    <div class="cal-title">NURSE <span>30</span></div>
+    <div class="cal-sub" id="cal-sub">Select your shift</div>
+    <div class="cal-stats">
+      <div class="cal-stat"><div class="cal-stat-val" id="cal-days-done">0</div><div class="cal-stat-lbl">Completed</div></div>
+      <div class="cal-stat"><div class="cal-stat-val" style="color:var(--amber)" id="cal-xp">0</div><div class="cal-stat-lbl">XP</div></div>
+    </div>
+  </div>
+  <div class="cal-levels" id="cal-level-tabs"></div>
+  <div class="cal-body" id="cal-body"></div>
+  <div class="cal-legend">
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:rgba(74,143,212,.5);border:1px solid rgba(74,143,212,.7);"></div>Done</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:rgba(0,201,160,.2);border:1px solid var(--teal);"></div>Now</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:rgba(232,168,74,.1);border:1px solid rgba(232,168,74,.5);"></div>Next</div>
+    <div class="cal-leg-item"><div class="cal-leg-dot" style="background:transparent;border:1px solid var(--wire);opacity:.4;"></div>Locked</div>
+  </div>
+</div>
+<!-- HANDOFF -->
+<div id="scr-handoff" class="scr">
+  <div class="hohdr">
+    <div class="holbl">Incoming handoff</div>
+    <div class="hotitle">Start of shift</div>
+    <div class="hosub" id="ho-sub">Day 1 &middot; Bay 4 &middot; 23:42</div>
+  </div>
+  <div class="hochat" id="ho-chat"></div>
+  <div class="alert-bar" id="handoff-alert"></div>
+  <div class="vccard" id="ho-vitals" style="display:none;">
+    <div class="vclbl" id="ho-vitals-lbl">Last recorded vitals</div>
+    <div class="vcgrid" id="ho-vitals-grid"></div>
+  </div>
+  <div class="hofooter" style="min-height:60px;">
+    <button class="btnp" id="ho-enter-btn" style="display:none;" onclick="gotoInvestigate()">Enter the room &rarr;</button>
+  </div>
+</div>
+<!-- SBAR -->
+<div id="scr-sbar" class="scr">
+  <div class="sbar-hdr">
+    <div class="sbar-lbl">Physician call</div>
+    <div class="sbar-title" id="sbar-title">SBAR Report</div>
+    <div class="sbar-sub" id="sbar-sub">Deliver your report.</div>
+  </div>
+  <div class="phone-wrap">
+    <div class="phone-icon">&#128222;</div>
+    <div class="phone-info">
+      <div class="phone-name" id="phone-name">Dr. Okonkwo</div>
+      <div class="phone-role" id="phone-role">Responsible Medical Officer</div>
+      <div class="phone-status">&#9679; Calling...</div>
+    </div>
+  </div>
+  <div class="sbar-body" id="sbar-body"></div>
+  <div class="sbar-progress" id="sbar-pip-row">
+    <div class="sbar-pip" id="pip-s"></div><div class="sbar-pip" id="pip-b"></div>
+    <div class="sbar-pip" id="pip-a"></div><div class="sbar-pip" id="pip-r"></div>
+    <span style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-left:5px;" id="pip-status">0 / 4 matched</span>
+  </div>
+  <div class="sbar-actions" id="sbar-actions">
+    <button class="btn-sbar-call" id="btn-sbar-deliver" onclick="deliverSBAR()" disabled style="opacity:.35;font-size:9px;">Deliver SBAR &rarr; (match all 4 first)</button>
+    <button class="btn-sbar-edit" onclick="goBackToInvestigate()">&larr; Back to assessment</button>
+  </div>
+</div>
+<!-- INVESTIGATE -->
+<div id="scr-investigate" class="scr">
+  <div class="invhud">
+    <div class="hudl">
+      <div class="hudday" id="hud-day">Day 1 &middot; Bay 4</div>
+      <div class="hudtouches" id="hud-touches"></div>
+      <div class="hudpt" id="hud-pt">Mrs. Delgado, 58F</div>
+    </div>
+    <div class="timer" id="timer">10:00</div>
+    <div class="hudr">
+      <div class="alarmbadge" id="alarm-badge">&#9679; ALARM</div>
+      <div class="piprow" id="pip-row"></div>
+      <button class="hud-menu-btn" onclick="toggleHudMenu()">&#9776;</button>
+    </div>
+  </div>
+  <div class="hud-menu" id="hud-menu" style="display:none;">
+    <div class="hud-menu-title">Shift options</div>
+    <button class="hud-menu-item" onclick="hudMenuAction('calendar')"><span class="hud-menu-icon">&#128197;</span><span>Back to calendar</span></button>
+    <button class="hud-menu-item" onclick="hudMenuAction('restart')"><span class="hud-menu-icon">&#8629;</span><span>Restart this day</span></button>
+    <button class="hud-menu-item" onclick="toggleHudMenu()">Cancel</button>
+  </div>
+  <div class="scene-wrap" id="scene-wrap">
+    <canvas id="scene-canvas"></canvas>
+    <div id="tap-zones"></div>
+    <div class="scene-panels">
+      <div class="monov" id="monov-panel">
+        <div class="montitle" id="mon-title">Monitor</div>
+        <div class="monrow-grid" id="mon-grid-d1">
+          <div class="monitem"><div class="monlbl">SpO2</div><div class="monval crit" id="mo-spo2">--</div></div>
+          <div class="monitem"><div class="monlbl">HR</div><div class="monval warn" id="mo-hr">--</div></div>
+          <div class="monitem"><div class="monlbl">BP</div><div class="monval warn" id="mo-bp">--</div></div>
+          <div class="monitem"><div class="monlbl">RR</div><div class="monval warn" id="mo-rr">--</div></div>
+          <div class="monitem"><div class="monlbl">Temp</div><div class="monval ok" id="mo-temp-d1">--</div></div>
+          <div class="monitem"><div class="monlbl">GCS</div><div class="monval warn" id="mo-gcs-d1">--</div></div>
+        </div>
+        <div class="monrow-grid-d2" id="mon-grid-d2" style="display:none;">
+          <div class="monitem"><div class="monlbl">BP</div><div class="monval crit" id="mo-bp-d2">--</div></div>
+          <div class="monitem"><div class="monlbl">MAP</div><div class="monval crit" id="mo-map">--</div></div>
+          <div class="monitem"><div class="monlbl">HR</div><div class="monval warn" id="mo-hr-d2">--</div></div>
+          <div class="monitem"><div class="monlbl">RR</div><div class="monval warn" id="mo-rr-d2">--</div></div>
+          <div class="monitem"><div class="monlbl">SpO2</div><div class="monval warn" id="mo-spo2-d2">--</div></div>
+          <div class="monitem"><div class="monlbl">Temp</div><div class="monval crit" id="mo-temp">--</div></div>
+          <div class="monitem"><div class="monlbl">GCS</div><div class="monval crit" id="mo-gcs">--</div></div>
+          <div class="monitem"><div class="monlbl">UO/hr</div><div class="monval crit" id="mo-uo">--</div></div>
+        </div>
+        <canvas id="ecg-canvas" width="100" height="12" style="margin-top:4px;display:block;width:100%;opacity:.6;"></canvas>
+      </div>
+      <div class="side-panel">
+        <div class="iv-panel">
+          <div class="iv-panel-title">IV / Medications</div>
+          <div id="iv-rows"><div class="iv-detail" style="color:var(--muted);font-size:7px;">No active IV</div></div>
+        </div>
+        <div class="labs-panel" id="labs-panel">
+          <div class="labs-panel-title">Lab Results</div>
+          <div id="lab-rows"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="act-bar"><div class="actscroll" id="act-scroll"></div></div>
+  <div id="clue-drawer">
+    <div id="cd-hdr"><div id="cd-title">Finding</div><button id="cd-close" onclick="closeDrawer()">&#10005;</button></div>
+    <div id="cd-body"></div>
+  </div>
+  <div id="pp-panel">
+    <div class="pphdr">
+      <div><div class="pphtitle">Clinical decision point</div><div class="pphsub">What do you do &mdash; and in what order?</div></div>
+      <button id="pp-close" onclick="closePP()">&#10005;</button>
+    </div>
+    <div class="ppbody" id="pp-body"></div>
+  </div>
+</div>
+<!-- ACTION -->
+<div id="scr-action" class="scr">
+  <div class="acthdr"><div class="acthdrl">Make your decision</div><div class="acthdrt">What do you do first?</div></div>
+  <div class="cluetags"><div class="ctlbl">Clues collected</div><div class="ctrow" id="ct-row"></div></div>
+  <div class="actq"><div class="aqtxt" id="aq-text"></div><div class="aqsub" id="aq-sub"></div></div>
+  <div id="choice-exp"></div>
+  <div class="choices-wrap" id="choices-wrap"></div>
+</div>
+<!-- HANDOFF 2 -->
+<div id="scr-handoff2" class="scr">
+  <div class="ho2hdr"><div class="ho2lbl">End of shift</div><div class="ho2title">Hand over to night</div></div>
+  <div class="ho2sub">Select what you include in your handoff. Quality matters.</div>
+  <div class="ho2items" id="ho2-items"></div>
+  <div class="ho2feedback"><div id="ho2-fb" class="ho2fb"></div></div>
+  <div class="ho2footer"><button class="ho2btn" onclick="confirmHandoff()">Confirm handoff &rarr;</button></div>
+</div>
+<!-- END SHIFT -->
+<div id="scr-endshift" class="scr">
+  <div class="end-scene-wrap" id="end-scene-wrap">
+    <canvas id="end-canvas" width="390" height="200"></canvas>
+    <div class="end-scene-msg">
+      <div class="end-msg-text" id="end-msg-text"></div>
+      <div class="end-msg-sub" id="end-msg-sub"></div>
+    </div>
+  </div>
+  <div class="eshdr"><div class="eslbl">Shift complete</div><div class="estitle" id="es-title">Day 1 done.</div></div>
+  <div class="esbody">
+    <div><div class="esslbl">Your growth this shift</div><div id="es-stats"></div></div>
+    <div class="xpbox"><div class="xpscore" id="xp-score">+0</div><div class="xpbd" id="xp-bd"></div><div class="xpbarbg"><div class="xpbarfill" id="xp-fill" style="width:0%"></div></div><div class="xplvl"><span id="xp-lvl-lbl">Level 1</span><span id="xp-lbl">0 XP</span></div></div>
+    <div class="estip" id="es-tip"></div>
+  </div>
+  <div class="esfooter">
+    <button class="btnnext" onclick="wipeGo(gotoCalendar)">Next day &rarr;</button>
+    <button class="btnretry" onclick="wipeGo(gotoHandoff)">Try again</button>
+  </div>
+</div>
+</div><!-- #app -->
+<script>
+'use strict';
+
+// === GAME STATE ===
+const G={
+  clues:[],touchesLeft:6,timerSec:600,outcome:null,
+  o2Device:null,actionsTaken:[],handoffSel:[],priorityShown:false,
+  xp:0,level:1,badges:[],currentDay:1,
+  highestDay:1,dayResults:{},
+  fluidRunning:false,fluidMl:0,fluidRate:'KVO',fluidName:'0.9% NaCl 1L',
+  abxRunning:false,abxProgress:0,abxName:'',codeBluePending:false,
+  labsDrawn:false,
+  patientState:'deteriorating',o2Saturation:91,skinFlush:0,
+  diaphoresis:0.3,mottle:0,confusion:false,ecgChaos:0.15,
+  timerIv:null,animFrame:null,ecgT:0,
+  _sbarPlaced:{s:null,b:null,a:null,r:null},_sbarDone:false,
+  _phoneRing:null,_endAnimId:null,
+  stats:{judgment:42,confidence:38,communication:40,resilience:45,fatigue:28},
+};
+
+const VS={
+  spo2:{val:'91%',state:'crit'},hr:{val:'104',state:'warn'},
+  rr:{val:'24',state:'warn'},bp:{val:'138/90',state:'warn'},
+  map:{val:'106',state:'ok'},iv_rate:{val:'--',state:'ok'},
+};
+
+function calcMAP(bp){
+  const m=bp.match(/(\d+)\/(\d+)/);if(!m)return 65;
+  return Math.round((parseInt(m[1])+2*parseInt(m[2]))/3);
+}
+
+// === DAY META ===
+const DAY_META=[null,
+  {day:1,dept:'ER',icon:'&#129753;',name:'PE -- Mrs. Delgado',level:1},
+  {day:2,dept:'ICU',icon:'&#128308;',name:'Septic Shock -- Mr. Chen',level:1},
+  {day:3,dept:'Med-Surg',icon:'&#129656;',name:'Pain vs Bleeding',level:1},
+  {day:4,dept:'ER',icon:'&#9889;',name:'Anaphylaxis',level:1},
+  {day:5,dept:'Medicine',icon:'&#128137;',name:'Hypoglycemia vs DKA',level:1},
+  {day:6,dept:'Med-Surg',icon:'&#128106;',name:'Angry Family',level:2},
+  {day:7,dept:'ER',icon:'&#128138;',name:'Wrong Order',level:2},
+  {day:8,dept:'ICU',icon:'&#128101;',name:'Two Patients Crashing',level:2},
+  {day:9,dept:'Medicine',icon:'&#127769;',name:'Night Shift Delirium',level:2},
+  {day:10,dept:'ER Trauma',icon:'&#129514;',name:'Massive Bleeding',level:2},
+  {day:11,dept:'ER',icon:'&#129504;',name:'Stroke Alert',level:3},
+  {day:12,dept:'ER',icon:'&#10084;',name:'Chest Pain Collapse',level:3},
+  {day:13,dept:'ER',icon:'&#128118;',name:'Pediatric Distress',level:3},
+  {day:14,dept:'ER',icon:'&#128223;',name:'Code Blue Confusion',level:3},
+  {day:15,dept:'ER',icon:'&#128657;',name:'Multi-Casualty',level:3},
+  {day:16,dept:'ICU',icon:'&#129760;',name:'Ventilator Alarm',level:4},
+  {day:17,dept:'ICU',icon:'&#128300;',name:'Sudden Neuro Change',level:4},
+  {day:18,dept:'ICU',icon:'&#129422;',name:'Silent Sepsis',level:4},
+  {day:19,dept:'ICU',icon:'&#128138;',name:'Vasopressor Patient',level:4},
+  {day:20,dept:'ICU',icon:'&#128330;',name:'End-of-Life Care',level:4},
+  {day:21,dept:'Med-Surg',icon:'&#128544;',name:'Aggressive Family',level:5},
+  {day:22,dept:'Any',icon:'&#128680;',name:'Code White',level:5},
+  {day:23,dept:'ER',icon:'&#128226;',name:'Doctor Dismisses You',level:5},
+  {day:24,dept:'Med-Surg',icon:'&#129309;',name:'Mentor a New Grad',level:5},
+  {day:25,dept:'Any',icon:'&#128203;',name:'Medication Error',level:5},
+  {day:26,dept:'Medicine',icon:'&#129656;',name:'Transfusion Refusal',level:6},
+  {day:27,dept:'Any',icon:'&#129718;',name:'Indigenous Patient',level:6},
+  {day:28,dept:'Any',icon:'&#127760;',name:'Language Barrier',level:6},
+  {day:29,dept:'Medicine',icon:'&#127769;',name:'Ramadan + Diabetes',level:6},
+  {day:30,dept:'Any',icon:'&#128373;',name:'The Final Shift',level:6},
+];
+const LEVEL_NAMES=['','Foundation','Complex Cases','ER Cases','ICU Cases','Communication','Cultural Care'];
+const LEVEL_COLORS=['','#00c9a0','#e8a84a','#f57c4a','#d94040','#4a8fd4','#9b59b6'];
+
+// === SCENARIOS ===
+const SCENARIOS={};
+SCENARIOS[1]={
+  handoff:[
+    {delay:500,from:'Charge Nurse Kim',txt:'Bay 4 -- Mrs. Delgado, 58F. Post-op day 2 after a right hip replacement. She has been saying she cannot catch her breath. Started about 30 minutes ago.'},
+    {delay:1600,from:'Charge Kim',txt:'SpO2 just dropped to 91% on room air. HR 104. She looks anxious. She has a history of DVT 4 years ago and her enoxaparin was missed this morning.'},
+    {delay:2600,from:'You',txt:'On my way.',you:true},
+    {delay:3300,alert:true,txt:'Patient status change -- Bay 4 -- SpO2 91% -- HR 104 -- Sudden SOB'},
+  ],
+  taps:[
+    {id:'face',lbl:'Observe',x:'38%',y:'30%',
+     finds:[
+       {p:'c',t:'She looks frightened. Accessory muscle use visible. Diaphoretic.'},
+       {p:'c',t:'She says: "I feel like I cannot breathe. It came out of nowhere." Lips slightly pale.'},
+       {p:'w',t:'RR visually 24/min. Shallow. GCS 14 -- anxious, slightly confused.'},
+     ],
+     insight:'Sudden onset SOB in a post-op patient. Not gradual -- sudden. PE until proven otherwise.',
+     clue:'Sudden SOB + accessory muscle use + diaphoresis'},
+    {id:'chest',lbl:'Auscultate',x:'38%',y:'46%',
+     finds:[
+       {p:'c',t:'Right base: breath sounds reduced. Left side clear. Unilateral finding.'},
+       {p:'c',t:'She grimaces on deep breath: "It hurts when I breathe deep -- right side, sharp." Pleuritic pain.'},
+       {p:'w',t:'No wheeze. No crackles. SpO2 91% and trending down.'},
+     ],
+     insight:'Right-sided pleuritic pain + reduced breath sounds + SpO2 trending. Classic PE triad.',
+     clue:'Pleuritic pain + reduced R breath sounds + SpO2 trending'},
+    {id:'iv',lbl:'IV &amp; Meds',x:'82%',y:'24%',
+     finds:[
+       {p:'c',t:'IV infusion running at 150 mL/hr -- prescribed rate is 80 mL/hr. Nearly double.'},
+       {p:'c',t:'Medication record: Enoxaparin 40mg SC -- missed today. This is her DVT prophylaxis.'},
+       {p:'c',t:'Past history flagged: DVT 4 years ago. This patient has a clotting history.'},
+     ],
+     insight:'Missed anticoagulation + history of DVT + immobility post-op. Highest risk profile for PE.',
+     clue:'Missed enoxaparin + DVT history + IV rate error (150 vs 80)'},
+    {id:'legs',lbl:'Assess legs',x:'38%',y:'60%',
+     finds:[
+       {p:'c',t:'Right calf: swollen, warm, and tender on palpation. Asymmetric. Left calf normal.'},
+       {p:'c',t:'She winces: "Yes, it has been sore there since yesterday." She thought it was surgery.'},
+       {p:'w',t:'Wells DVT score: high probability. This calf finding alone warrants action.'},
+     ],
+     insight:'Swollen tender calf + post-op + missed anticoag = DVT almost certainly present.',
+     clue:'R calf swollen + warm + tender -- DVT source'},
+    {id:'chart',lbl:'Chart',x:'68%',y:'58%',
+     finds:[
+       {p:'w',t:'Post-op day 2 -- right total hip replacement.'},
+       {p:'c',t:'DVT prophylaxis: Enoxaparin 40mg SC daily -- missed today. No reason documented.'},
+       {p:'c',t:'Past history: DVT 4 years ago. Family history of clotting disorder. HIGH risk.'},
+       {p:'w',t:'Physio note: patient refused mobilisation this AM. "Too tired and sore."'},
+     ],
+     insight:'Wells score 4 + missed anticoag + refusal to mobilise. Every risk factor present.',
+     clue:'Wells score 4 -- missed anticoag -- refused physio'},
+    {id:'monitor',lbl:'Monitor',x:'80%',y:'38%',
+     finds:[
+       {p:'c',t:'SpO2: 91% and dropping. Trend: 97 to 94 to 91 over 30 minutes.'},
+       {p:'c',t:'HR: 104 bpm -- sinus tachycardia. Compensatory.'},
+       {p:'c',t:'ECG: S1Q3T3 pattern -- classic right heart strain. Consistent with PE.'},
+       {p:'w',t:'BP: 138/90. Still maintaining pressure -- but can drop fast in massive PE.'},
+     ],
+     insight:'S1Q3T3 + SpO2 trending + tachycardia = right heart strain. PE until proven otherwise.',
+     clue:'SpO2 trending down -- HR 104 -- S1Q3T3 pattern'},
+    {id:'feet',x:'28%',y:'72%',wrong:true,wrongTxt:'Peripheral oedema -- not your priority. Your patient is hypoxic. Stay focused on ABCs.'},
+    {id:'pillow',x:'20%',y:'42%',wrong:true,wrongTxt:'Nothing clinically relevant here. In an emergency, every touch costs time.'},
+    {id:'window',x:'11%',y:'18%',wrong:true,wrongTxt:'The window tells you nothing. Keep your eyes on the patient and the monitor.'},
+  ],
+  question:'Mrs. Delgado: post-op day 2, SpO2 91% trending, pleuritic chest pain, swollen right calf, missed anticoagulation, Wells score 4, S1Q3T3 on ECG.',
+  sub:'What is the single most important first action right now?',
+  choices:[
+    {key:'A',lbl:'Apply O2, sit her up, call physician with SBAR -- simultaneously',desc:'Treat the hypoxia while escalating. Do not wait for one before the other.',correct:true,
+     exp:'Correct. O2 immediately. Positioning improves V/Q ratio. The physician call delivers the full picture and gets CT-PA and anticoagulation ordered. These three happen together, not in sequence.'},
+    {key:'B',lbl:'Give the missed enoxaparin dose immediately',desc:'The anticoagulation was missed -- replace it now.',correct:false,
+     exp:'Anticoagulation requires a physician order after PE is confirmed. Giving the missed prophylactic dose without assessment is unsafe practice. Treat the hypoxia and call first.'},
+    {key:'C',lbl:'Increase the IV rate to replace the missed fluids',desc:'She may be dehydrated from the surgery.',correct:false,
+     exp:'The IV was running too fast at 150 mL/hr already. In suspected PE, excess fluid increases right heart strain and worsens oxygenation. The IV rate needs correcting to 80 mL/hr, not increasing.'},
+    {key:'D',lbl:'Wait for the morning team -- assess at handover',desc:'She is stable enough to wait for the next shift.',correct:false,
+     exp:'SpO2 91% trending down is not stable. PE can progress to massive PE and cardiovascular collapse in minutes. Waiting is not a clinical option when a patient is actively deteriorating.'},
+  ],
+  outcomeGood:{statDeltas:{judgment:12,confidence:10,communication:8,resilience:6,fatigue:8},
+    headline:'She is stable. You did that.',
+    story:'The O2 brought her SpO2 to 94%. Dr. Okonkwo was at bedside in 8 minutes. CT-PA confirmed bilateral PE. Heparin started. She is going to be okay because you caught it early and called correctly.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-4,communication:3,resilience:4,fatigue:12},
+    headline:'A hard shift. One step further than yesterday.',
+    story:'The pattern was all there. Post-op, swollen calf, sudden SOB, missed anticoag. Next time that picture will look different to you -- because today happened.'},
+  patient:{name:'Mrs. Delgado',age:'58F',dx:'Post-op Day 2 -- Right hip replacement',room:'Bay 4 -- ER'},
+  vitals:{spo2:{val:'91%',state:'crit'},hr:{val:'104',state:'warn'},rr:{val:'24',state:'warn'},bp:{val:'138/90',state:'warn'},temp:{val:'37.2C',state:'ok'},gcs:{val:'14',state:'warn'},uo:null,lac:null},
+  iv:{main:{name:'0.9% NaCl',vol:'1L',rate:'150 mL/hr',state:'crit',note:'Prescribed 80 mL/hr -- running too fast'},abx:null},
+};
+
+SCENARIOS[2]={
+  handoff:[
+    {delay:500,from:'Charge Nurse Park',txt:'Bed 3 -- Mr. Chen, 67M. Post-op Day 1 after bowel resection for perforated diverticulitis. He was stable at midnight but the night nurse flagged he was looking off. Temp has been climbing since 02:00.'},
+    {delay:1700,from:'Charge Park',txt:'Last vitals 30 minutes ago: Temp 39.1C, BP 88/52, HR 118, RR 22, SpO2 95% on 2L NC. New confusion -- he was GCS 15 on admission. Lactate elevated an hour ago. UO last hour was 18 mL.'},
+    {delay:2800,from:'You',txt:'Going in now.',you:true},
+    {delay:3600,alert:true,txt:'Patient status change -- Bed 3 -- BP down -- MAP 62 -- Temp up -- New confusion'},
+  ],
+  taps:[
+    {id:'face',lbl:'Observe',x:'38%',y:'30%',
+     finds:[
+       {p:'c',t:'Flushed face. Skin warm and diaphoretic. Mottling visible at knees.'},
+       {p:'c',t:'He looks at you: "Where am I? Is this the hotel?" -- new confusion. GCS 13 (was 15).'},
+       {p:'w',t:'Breathing rapidly. Lips dry. Restless. Cap refill 3.5 seconds.'},
+     ],
+     insight:'New confusion + GCS drop + fever + mottling = sepsis affecting the brain. Organ dysfunction.',
+     clue:'Confusion + GCS 15 to 13 + mottling'},
+    {id:'chest',lbl:'Auscultate',x:'38%',y:'46%',
+     finds:[
+       {p:'w',t:'Coarse bilateral breath sounds, worse at bases. RR 22/min. SpO2 95% on 2L NC.'},
+       {p:'w',t:'He says: "I feel hot. My belly hurts." Short sentences only.'},
+     ],
+     insight:'SpO2 95% is inadequate in ICU. RR 22 in febrile post-op patient means increased metabolic demand.',
+     clue:'SpO2 95% marginal -- RR 22 -- increasing work of breathing'},
+    {id:'abdomen',lbl:'Wound/Abdomen',x:'42%',y:'56%',
+     finds:[
+       {p:'c',t:'Surgical wound: erythema extending 2cm beyond wound edge. Warm to touch.'},
+       {p:'c',t:'Drain output: 30 mL cloudy, brownish fluid since midnight. Was clear yesterday.'},
+       {p:'c',t:'Abdomen: distended, guarding on palpation. Diffuse tenderness. Bowel sounds absent.'},
+     ],
+     insight:'Surgical source identified. Wound infection + cloudy drain + guarding = engine of the sepsis.',
+     clue:'Surgical source: wound infection + cloudy drain + ileus'},
+    {id:'iv',lbl:'IV &amp; Meds',x:'82%',y:'24%',
+     finds:[
+       {p:'c',t:'IV running KVO only. No fluid running -- MAP is 62 and no resuscitation in progress.'},
+       {p:'c',t:'Antibiotic: Piperacillin-Tazobactam 3.375g IV q6h. Last dose 6 hours ago -- OVERDUE.'},
+       {p:'c',t:'Blood cultures: NOT drawn yet. Order is there from admission but marked pending.'},
+     ],
+     insight:'Three critical gaps: no active resuscitation, overdue antibiotics, blood cultures not drawn.',
+     clue:'No fluids -- Overdue Abx -- Cultures not drawn -- UO 18mL/hr'},
+    {id:'chart',lbl:'Chart',x:'68%',y:'58%',
+     finds:[
+       {p:'w',t:'Post-op Day 1. Bowel resection for perforated diverticulitis.'},
+       {p:'c',t:'Pre-op WBC: 18.4 x10^9/L. Pre-op CRP: 142. High-risk infection patient.'},
+       {p:'c',t:'BP trend: 112/70 (admission) to 104/66 (02:00) to 96/62 (04:00) to 88/52 (now).'},
+     ],
+     insight:'BP declining 4 hours + pre-op infection markers + surgical source = septic shock developing.',
+     clue:'BP declining 4h -- WBC 18.4 -- pre-op infection markers'},
+    {id:'monitor',lbl:'Monitor',x:'80%',y:'38%',
+     finds:[
+       {p:'c',t:'BP: 86/50 mmHg -- MAP 62 (target at least 65). Continuous hypotension.'},
+       {p:'c',t:'HR: 118 bpm sinus tachycardia. Compensatory response to low perfusion.'},
+       {p:'c',t:'qSOFA score: 3/3 -- RR at least 22 (+1), altered mentation (+1), SBP 100 or less (+1). Maximum.'},
+     ],
+     insight:'qSOFA 3/3 + MAP 62 = septic shock by Sepsis-3 definition. The 1-hour bundle is indicated.',
+     clue:'MAP 62 -- qSOFA 3/3 -- HR 118'},
+    {id:'feet',x:'28%',y:'70%',wrong:true,wrongTxt:'Peripheral oedema noted but not your priority. Your patient is in shock.'},
+    {id:'pillow',x:'20%',y:'42%',wrong:true,wrongTxt:'Nothing clinically relevant. Stay focused -- your patient needs you now.'},
+    {id:'window',x:'11%',y:'16%',wrong:true,wrongTxt:'The window is not a clinical cue. Return to your patient.'},
+  ],
+  question:'Mr. Chen has septic shock -- MAP 62, qSOFA 3/3, new confusion, surgical source. The 1-hour bundle has not been started.',
+  sub:'What is the single most important first action right now?',
+  choices:[
+    {key:'A',lbl:'Simultaneously: start fluid bolus + draw blood cultures + call physician',desc:'Initiate the sepsis bundle in parallel. Not one at a time -- all at once.',correct:true,
+     exp:'Correct. The 1-hour bundle runs simultaneously, not sequentially. Fluid bolus for MAP below 65. Blood cultures before antibiotics -- takes 2 minutes, never skip. Physician call for vasopressor and antibiotic orders.'},
+    {key:'B',lbl:'Give the overdue antibiotic dose immediately',desc:'Pip-Tazo is 6 hours overdue. Give it now.',correct:false,
+     exp:'Antibiotics are critical -- but blood cultures must come first. Drawing cultures takes 2 minutes. Giving antibiotics before cultures sterilises the blood and may prevent identifying the organism.'},
+    {key:'C',lbl:'Wait for the physician to arrive before initiating anything',desc:'The physician needs to assess and give orders first.',correct:false,
+     exp:'You have standing orders and nursing protocols. In septic shock, every minute without resuscitation worsens outcomes. Start O2, begin fluid bolus, draw cultures -- these are within your scope. Waiting wastes irreversible time.'},
+    {key:'D',lbl:'Reposition flat and increase monitoring frequency',desc:'Improve venous return and observe more closely.',correct:false,
+     exp:'Repositioning provides marginal benefit. With MAP 62, this patient needs active resuscitation immediately, not closer watching. Observation does not treat shock.'},
+  ],
+  outcomeGood:{statDeltas:{judgment:13,confidence:11,communication:9,resilience:7,fatigue:9},
+    headline:'MAP recovering. He is going to make it.',
+    story:'The fluid bolus brought his MAP to 68. Blood cultures are in the lab. Dr. Yuen is on the phone. His confusion is lifting slightly as perfusion improves. You caught it early enough.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-5,communication:4,resilience:5,fatigue:14},
+    headline:'A difficult shift. And you are still here.',
+    story:'His MAP dropped to 54. The intensivist was called urgently. The bundle was started late. Next time -- you recognise it faster. You act sooner.'},
+  patient:{name:'Mr. Chen',age:'67M',dx:'Post-op Day 1 -- Bowel resection',room:'ICU Bed 3'},
+  vitals:{spo2:{val:'95%',state:'warn'},hr:{val:'118',state:'warn'},rr:{val:'22',state:'warn'},bp:{val:'86/50',state:'crit'},temp:{val:'39.1C',state:'crit'},gcs:{val:'13',state:'crit'},uo:{val:'18 mL/hr',state:'crit'},lac:null},
+  iv:{main:{name:'0.9% NaCl',vol:'1L',rate:'KVO',state:'warn',note:'No active resuscitation running'},abx:{name:'Pip-Tazo',dose:'3.375g',vol:'100mL NS',rate:'30 min',state:'crit',note:'6 hours overdue'}},
+};
+
+// === SBAR DATA ===
+SCENARIOS[3]={
+  handoff:[
+    {delay:500,from:'Charge Nurse Ramos',txt:'Room 214 -- Tyler, 45M. Post-op Day 1 after laparoscopic cholecystectomy for acute cholecystitis. Surgery went smoothly. He has been on the call bell twice in the last hour saying he is in pain.'},
+    {delay:1700,from:'Charge Ramos',txt:'Night nurse gave him morphine 2mg IV at 02:00 and again at 04:00. Pain score was 7 and 6. He is asking for more. PRN order is there.'},
+    {delay:2800,from:'You',txt:'Got it. Going in.',you:true},
+    {delay:3500,from:'Charge Ramos',txt:'One more thing -- he seems a bit restless. Night nurse thought it was just anxiety. Just keep an eye.'},
+    {delay:4400,alert:true,txt:'Patient request -- Room 214 -- Pain -- Tyler, 45M -- Post-op Day 1 Cholecystectomy'},
+  ],
+  taps:[
+    {id:'face',lbl:'Observe',x:'38%',y:'30%',
+     finds:[
+       {p:'c',t:'Tyler looks pale. More pale than expected for Day 1 post-op. Lips slightly dry.'},
+       {p:'c',t:'He is restless -- shifting in bed, cannot get comfortable. Not the typical post-op discomfort.'},
+       {p:'w',t:'He says: "It hurts everywhere in my belly. And my right shoulder is killing me too. Can I get something for the pain?"'},
+       {p:'w',t:'GCS 15. Alert but increasingly anxious. Skin cool and slightly clammy.'},
+     ],
+     insight:'Shoulder tip pain + pallor + restlessness in a post-cholecystectomy patient. Blood in the peritoneum irritates the diaphragm -- that is referred shoulder pain. This is not normal post-op pain.',
+     clue:'Pallor + restlessness + right shoulder tip pain'},
+    {id:'abdomen',lbl:'Abdomen',x:'38%',y:'55%',
+     finds:[
+       {p:'c',t:'Abdomen: distended. More than expected for Day 1 laparoscopic. Firm on palpation -- not soft.'},
+       {p:'c',t:'He winces significantly on light palpation of the right upper quadrant. Guarding present.'},
+       {p:'c',t:'Laparoscopic port sites look intact. No visible external bleeding. The distension is internal.'},
+       {p:'w',t:'Bowel sounds: reduced. Abdomen was flat on the admission photo. This is new distension.'},
+     ],
+     insight:'New abdominal distension + guarding + RUQ tenderness after cholecystectomy = blood in the peritoneal cavity until proven otherwise. This is the hidden clue.',
+     clue:'New abdominal distension + guarding + RUQ tenderness'},
+    {id:'drain',lbl:'Drain',x:'62%',y:'58%',
+     finds:[
+       {p:'c',t:'Jackson-Pratt drain in situ. Output last 4 hours: 35 mL -- dark reddish-brown.'},
+       {p:'c',t:'Previous 4 hours: 12 mL -- serosanguineous. Output has tripled and darkened.'},
+       {p:'w',t:'Normal post-cholecystectomy drain output is typically minimal and serosanguineous. Dark output increasing = concern.'},
+       {p:'w',t:'The drain only captures what reaches it. Most of the blood may be pooling elsewhere in the abdomen.'},
+     ],
+     insight:'Tripled drain output + colour change to dark red = active bleeding into the abdominal cavity. The drain is showing you the tip of the iceberg.',
+     clue:'JP drain output tripled -- dark reddish-brown'},
+    {id:'iv',lbl:'IV and Meds',x:'82%',y:'24%',
+     finds:[
+       {p:'c',t:'IV: 0.9% NaCl 75 mL/hr running. Patent.'},
+       {p:'c',t:'Medication chart: Morphine 2mg IV q4h PRN -- last given 04:00. Due again.'},
+       {p:'c',t:'Ketorolac 15mg IV q6h PRN -- NOT given tonight. NSAIDs contraindicated with suspected bleeding.'},
+       {p:'w',t:'Morphine is ordered and available. But opioids in a haemodynamically unstable patient mask symptoms and cause vasodilation. This is not a simple pain decision.'},
+     ],
+     insight:'Morphine is ordered -- but giving it now would mask the deterioration and cause vasodilation in a patient who may be bleeding. Assessment must come before medication.',
+     clue:'Morphine PRN available -- but haemodynamic instability changes the calculus'},
+    {id:'chart',lbl:'Chart',x:'68%',y:'40%',
+     finds:[
+       {p:'w',t:'Admission: Tyler, 45M. Acute cholecystitis x3 days. Lap chole performed 18:30 yesterday. Surgeon: Dr. Martinez.'},
+       {p:'c',t:'Vitals trend -- last 6 hours: HR 88 (midnight), 92 (02:00), 98 (now). BP 128/84 (midnight), 122/80 (02:00), 118/76 (now).'},
+       {p:'c',t:'HR trending UP. BP trending DOWN. Both within normal range -- but the direction matters. This is a compensating patient.'},
+       {p:'w',t:'Blood type: A positive. Type and screen done pre-op. No active crossmatch on file.'},
+     ],
+     insight:'Trending vitals are more important than a single value. HR 88 to 98 over 6 hours + BP 128 to 118 over 6 hours = haemodynamic compensation. The body is working hard to maintain a normal BP.',
+     clue:'HR trending up 88 to 98 -- BP trending down 128 to 118 over 6 hours'},
+    {id:'monitor',lbl:'Monitor',x:'80%',y:'38%',
+     finds:[
+       {p:'c',t:'HR: 98 bpm. Sinus tachycardia. Up from 88 at midnight.'},
+       {p:'c',t:'BP: 118/76. Down from 128/84 at midnight. MAP 90 -- currently adequate, but trending.'},
+       {p:'w',t:'SpO2: 97% on room air. RR: 18. Temperature: 36.8C.'},
+       {p:'w',t:'The numbers look normal in isolation. The trend is the signal. And the trend is going the wrong way.'},
+     ],
+     insight:'HR rising + BP falling over 6 hours in a post-op patient = early haemorrhagic shock. Class I: HR up, BP compensating. Class II begins when BP starts falling faster. He is between those right now.',
+     clue:'HR 98 trending up -- BP 118/76 trending down -- MAP compensating'},
+    {id:'food',x:'18%',y:'48%',wrong:true,wrongTxt:'Food tray is untouched -- expected post-op. Not a clinical finding that changes your management.'},
+    {id:'pillow',x:'20%',y:'36%',wrong:true,wrongTxt:'Nothing clinically relevant. Stay focused on your assessment.'},
+    {id:'window',x:'10%',y:'18%',wrong:true,wrongTxt:'The window tells you nothing. Your patient is deteriorating. Every touch counts.'},
+  ],
+  question:'Tyler: post-op Day 1 cholecystectomy, HR trending up 88 to 98, BP trending down 128 to 118 over 6 hours, new abdominal distension, guarding, shoulder tip pain, drain output tripled and dark. He is asking for morphine.',
+  sub:'What is the most important first action right now?',
+  choices:[
+    {key:'A',lbl:'Complete full assessment, hold morphine, call Dr. Martinez urgently',desc:'Finish the picture before giving anything. The surgeon needs to know now.',correct:true,
+     exp:'Correct. Assessment first, always. Morphine would mask the pain that is telling you something is wrong, and cause vasodilation in a patient who cannot afford it. Dr. Martinez needs the full picture: trending vitals, distension, drain output, shoulder tip pain. This is a surgical emergency that has been developing for 6 hours.'},
+    {key:'B',lbl:'Give morphine 2mg IV as ordered -- he is clearly in pain',desc:'The PRN order exists. His pain score is high. Relieve his suffering.',correct:false,
+     exp:'The morphine order exists, but orders are not automatic authorisation. A nurse assesses before medicating. Morphine masks abdominal pain -- the primary symptom of internal bleeding. It also causes vasodilation, reducing preload in a patient whose BP is already trending down. Giving it now could cause haemodynamic collapse and delay recognition of a surgical emergency.'},
+    {key:'C',lbl:'Reassure him, increase monitoring to q30min, wait for the next set of vitals',desc:'He is within normal range. Observe for now.',correct:false,
+     exp:'Individual vitals are normal -- but trend is not. Six-hour trends showing HR rising and BP falling are haemodynamic compensation. Waiting for the next set of vitals while a patient compensates for internal bleeding is how a Class I haemorrhage becomes a Class III. The time to act is during compensation, not after.'},
+    {key:'D',lbl:'Call MET immediately without doing the physical assessment first',desc:'Something is clearly wrong -- escalate now.',correct:false,
+     exp:'Your instinct to escalate is right. But calling MET without an assessment means the team arrives to an incomplete picture. Physical assessment takes 60 seconds and gives MET the information they need to act. Assess, then escalate with data. The surgeon also needs to be your first call -- this is their patient and their complication to manage.'},
+  ],
+  outcomeGood:{statDeltas:{judgment:13,confidence:11,communication:9,resilience:7,fatigue:9},
+    headline:'You caught the bleed. That took real skill.',
+    story:'Dr. Martinez was at bedside in 8 minutes. Ultrasound showed free fluid in Morrison\'s pouch. Tyler went back to theatre for a bleeding cystic artery clip. He recovered well. You held the morphine, called early, and gave the surgeon a complete picture. That is the difference between a close call and a crisis.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-5,communication:4,resilience:5,fatigue:14},
+    headline:'The trend was there. Now you know how to read it.',
+    story:'Post-op haemorrhage hides in plain sight. Normal vitals, but the direction is everything. HR 88 to 98. BP 128 to 118. Shoulder tip pain. Distension. Drain output tripling. Each clue alone is explainable. Together they tell a story. Come back -- you will hear that story next time.'},
+  patient:{name:'Tyler',age:'45M',dx:'Post-op Day 1 -- Laparoscopic cholecystectomy',room:'Room 214 -- Med-Surg'},
+  vitals:{spo2:{val:'97%',state:'ok'},hr:{val:'98',state:'warn'},rr:{val:'18',state:'ok'},bp:{val:'118/76',state:'ok'},temp:{val:'36.8C',state:'ok'},gcs:{val:'15',state:'ok'},uo:{val:'42 mL/hr',state:'ok'},lac:null},
+  iv:{main:{name:'0.9% NaCl',vol:'75 mL/hr',rate:'75 mL/hr',state:'ok',note:'Maintenance rate'},abx:null},
+};
+
+const SBAR_DATA={
+  1:{doctor:'Dr. Okonkwo',role:'Responsible Medical Officer',phone:'ext. 4421',
+    cards:[
+      {id:'s1',zone:'s',text:'I am calling about Mrs. Delgado in Bay 4. I am concerned she may be having a pulmonary embolism.'},
+      {id:'b1',zone:'b',text:'Post-op Day 2 hip replacement. DVT history 4 years ago. Enoxaparin missed today. Refused physio this morning.'},
+      {id:'a1',zone:'a',text:'SpO2 91% trending down. HR 104, RR 24. Pleuritic chest pain. Right calf swollen and tender. Breath sounds reduced right base.'},
+      {id:'r1',zone:'r',text:'O2 applied, repositioned. I need CT pulmonary angiography, anticoagulation orders, and your presence at bedside urgently.'},
+    ],
+    s:{title:'Situation',hint:'What is happening right now?'},
+    b:{title:'Background',hint:'Why is this patient at risk?'},
+    a:{title:'Assessment',hint:'What do the numbers tell you?'},
+    r:{title:'Recommendation',hint:'What do you need the doctor to do?'},
+    md_response:{delay:2000,
+      text:'"Good call. Keep her on O2, target above 94%. I will order CT-PA and start heparin. Be there in 5 minutes."',
+      followup:'Orders received. CT-PA ordered. Heparin infusion being prepared. You made the right call.'},
+  },
+  2:{doctor:'Dr. Yuen',role:'General Surgeon / ICU Physician',phone:'ext. 6102',
+    cards:[
+      {id:'s2',zone:'s',text:'I am calling about Mr. Chen in ICU Bed 3. I am concerned he is in septic shock.'},
+      {id:'b2',zone:'b',text:'Post-op Day 1 bowel resection for perforated diverticulitis. BP trending down 4 hours. Antibiotic 6 hours overdue. Lactate elevated one hour ago.'},
+      {id:'a2',zone:'a',text:'BP 86/50 -- MAP 62. HR 118. Temp 39.1. New confusion -- GCS 13. UO 18 mL last hour. qSOFA 3 out of 3. Wound erythema with cloudy drain.'},
+      {id:'r2',zone:'r',text:'Fluid bolus started. O2 escalated. Blood cultures drawn. Antibiotics given. I need vasopressor orders if MAP stays below 65, and your presence now.'},
+    ],
+    s:{title:'Situation',hint:'What is happening right now?'},
+    b:{title:'Background',hint:'Why is this patient at risk?'},
+    a:{title:'Assessment',hint:'What do the numbers say?'},
+    r:{title:'Recommendation',hint:'What do you need ordered?'},
+    md_response:{delay:1800,
+      text:'"Good -- you started the bundle. Order norepinephrine 0.1 mcg/kg/min if MAP stays below 65 after the first litre. Repeat lactate at 2 hours. Be there in 3 minutes."',
+      followup:'Orders received. Vasopressor on standby. ICU intensivist notified. You initiated the right interventions.'},
+  },
+  3:{doctor:'Dr. Martinez',role:'General Surgery Resident',phone:'ext. 3318',
+    cards:[
+      {id:'s3',zone:'s',text:'I am calling about Tyler in Room 214. I am concerned he may have a post-operative haemorrhage after his lap cholecystectomy.'},
+      {id:'b3',zone:'b',text:'Post-op Day 1 lap chole. HR has trended from 88 to 98 over 6 hours. BP has trended from 128/84 to 118/76. Morphine given twice overnight.'},
+      {id:'a3',zone:'a',text:'New abdominal distension with guarding. Right shoulder tip pain. Drain output tripled in last 4 hours -- dark red. Skin pale and clammy.'},
+      {id:'r3',zone:'r',text:'Morphine held. IV running. I need you at bedside urgently -- possible active bleed.'},
+    ],
+    s:{title:'Situation',hint:'What are you worried about?'},
+    b:{title:'Background',hint:'What has been happening over the last few hours?'},
+    a:{title:'Assessment',hint:'What do the findings tell you?'},
+    r:{title:'Recommendation',hint:'What do you need the surgeon to do?'},
+    md_response:{delay:1800,
+      text:'"Hold the morphine. Stat abdominal ultrasound. IV wide open. I am on my way -- 8 minutes. Good call."',
+      followup:'Dr. Martinez on the way. Stat ultrasound ordered. You caught it early.'},
+  },
+};
+
+// === ACTIONS DAY 1 ===
+const ACTS=[
+  {key:'o2',pri:1,sec:'Immediate -- Airway & Breathing',
+   getL:()=>G.o2Device?'O2 escalated ('+G.o2Device+')':'Apply O2 -- SpO2 91% is critical',
+   desc:'SpO2 91% requires immediate oxygen. Target SpO2 >94%.',
+   done:()=>!!G.o2Device,unlock:1,need:null},
+  {key:'position',pri:1,sec:'Immediate -- Airway & Breathing',
+   getL:()=>G.actionsTaken.includes('position')?'HOB elevated 45 degrees':'Elevate HOB 45 degrees -- optimise breathing',
+   desc:'Upright position improves ventilation-perfusion ratio in PE.',
+   done:()=>G.actionsTaken.includes('position'),unlock:1,need:null},
+  {key:'iv_rate',pri:2,sec:'Urgent -- Medication Safety',
+   getL:()=>G.actionsTaken.includes('iv_rate')?'IV rate corrected 150 to 80':'Correct IV rate (150 to 80 mL/hr)',
+   desc:'IV running at 150 mL/hr -- prescribed 80. Excess fluid in PE worsens right heart strain.',
+   done:()=>G.actionsTaken.includes('iv_rate'),unlock:2,need:'iv'},
+  {key:'call',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Physician called':'Call physician -- SBAR now',
+   desc:'SpO2 91% trending, pleuritic pain, swollen calf, missed anticoag -- this needs a doctor immediately.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'met',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('met')?'MET called':'Call MET -- deteriorating patient',
+   desc:'SpO2 trending down meets MET criteria.',
+   done:()=>G.actionsTaken.includes('met'),unlock:3,need:'chest'},
+  {key:'flag',pri:2,sec:'Urgent -- Medication Safety',
+   getL:()=>G.actionsTaken.includes('flag')?'Enoxaparin flagged':'Flag missed enoxaparin to physician',
+   desc:'Missed DVT prophylaxis in a post-op PE suspect.',
+   done:()=>G.actionsTaken.includes('flag'),unlock:2,need:'iv'},
+  {key:'vfreq',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('vfreq')?'Monitoring q15min':'Increase monitoring -- q15min vitals',
+   desc:'SpO2, HR, BP continuous. Alert if SpO2 <90%, HR >120.',
+   done:()=>G.actionsTaken.includes('vfreq'),unlock:2,need:null},
+  {key:'family',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('family')?'Family updated':'Update family -- patient is worried',
+   desc:'"She is having trouble breathing and we are assessing her urgently." No speculation.',
+   done:()=>G.actionsTaken.includes('family'),unlock:2,need:null},
+  {key:'charge',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('charge')?'Charge nurse notified':'Notify charge nurse',
+   desc:'Escalating concern: suspected PE, O2 applied, physician called.',
+   done:()=>G.actionsTaken.includes('charge'),unlock:2,need:null},
+  {key:'chart',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart')?'Nursing note written':'Write nursing assessment note',
+   desc:'Document assessment, interventions, notifications. Time-stamp everything.',
+   done:()=>G.actionsTaken.includes('chart'),unlock:3,need:null},
+  {key:'pain',pri:3,sec:'Comfort & Monitoring',
+   getL:()=>G.actionsTaken.includes('pain')?'Pain reassessed':'Reassess pain -- pleuritic chest pain',
+   desc:'Pain score: 7/10 sharp, right-sided. Do NOT give opioids -- respiratory depression risk.',
+   done:()=>G.actionsTaken.includes('pain'),unlock:2,need:'chest'},
+];
+
+// === ACTIONS DAY 2 ===
+const ACTS_D2=[
+  {key:'fluids',pri:1,sec:'Immediate -- Circulation',
+   getL:()=>G.actionsTaken.includes('fluids')?'Fluid bolus running':'Start IV fluid bolus -- 500 mL stat',
+   desc:'MAP 62, no active resuscitation. Start 500 mL 0.9% NaCl now.',
+   done:()=>G.actionsTaken.includes('fluids'),unlock:1,need:null},
+  {key:'o2_d2',pri:1,sec:'Immediate -- Airway & Breathing',
+   getL:()=>G.actionsTaken.includes('o2_d2')?'O2 escalated':'Escalate O2 -- target SpO2 at least 94%',
+   desc:'SpO2 95% on 2L is marginal for ICU. Increase to 4-6L or simple face mask.',
+   done:()=>G.actionsTaken.includes('o2_d2'),unlock:1,need:null},
+  {key:'position_d2',pri:1,sec:'Immediate -- Circulation',
+   getL:()=>G.actionsTaken.includes('position_d2')?'Positioned':'Position -- supine, legs slightly elevated',
+   desc:'Passive leg raise improves venous return. Not a substitute for fluids.',
+   done:()=>G.actionsTaken.includes('position_d2'),unlock:1,need:null},
+  {key:'cultures',pri:2,sec:'Urgent -- Sepsis Bundle',
+   getL:()=>G.actionsTaken.includes('cultures')?'Blood cultures drawn x2 -- BEFORE antibiotics':'Draw blood cultures x2 -- BEFORE antibiotics',
+   desc:'Two sets from different sites. Takes 2 minutes. Must happen before antibiotics.',
+   done:()=>G.actionsTaken.includes('cultures'),unlock:1,need:null},
+  {key:'antibiotics',pri:2,sec:'Urgent -- Sepsis Bundle',
+   getL:()=>G.actionsTaken.includes('antibiotics')?'Pip-Tazo 3.375g IV given':G.actionsTaken.includes('cultures')?'Give Pip-Tazo 3.375g IV -- NOW':'Draw blood cultures FIRST -- then give Pip-Tazo',
+   desc:'6 hours overdue. Give after cultures. Every hour of delay increases mortality 7.6%.',
+   done:()=>G.actionsTaken.includes('antibiotics'),unlock:1,need:null},
+  {key:'call_d2',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Physician called':'Call physician -- SBAR now',
+   desc:'MAP 62, qSOFA 3/3, confusion, surgical source. Vasopressors may be needed. Call now.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:1,need:null},
+  {key:'lactate_repeat',pri:2,sec:'Urgent -- Sepsis Bundle',
+   getL:()=>G.actionsTaken.includes('lactate_repeat')?'Repeat lactate ordered':'Order repeat lactate in 2 hours',
+   desc:'Lactate clearance at least 10% at 2 hours is the treatment target (SSC 2021).',
+   done:()=>G.actionsTaken.includes('lactate_repeat'),unlock:2,need:null},
+  {key:'cath',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('cath')?'Urinary catheter inserted':'Insert urinary catheter -- strict hourly UO',
+   desc:'UO 18 mL/hr -- oliguric. Target at least 0.5 mL/kg/hr.',
+   done:()=>G.actionsTaken.includes('cath'),unlock:2,need:null},
+  {key:'vfreq_d2',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('vfreq_d2')?'Continuous monitoring':'Continuous monitoring -- q15min vitals',
+   desc:'MAP, HR, SpO2 continuous. Alert: MAP <60, HR >130, SpO2 <92%, GCS drop.',
+   done:()=>G.actionsTaken.includes('vfreq_d2'),unlock:1,need:null},
+  {key:'family_d2',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('family_d2')?'Family updated':'Update family -- patient confused',
+   desc:'"He has a serious infection and his blood pressure is low. We are treating him urgently."',
+   done:()=>G.actionsTaken.includes('family_d2'),unlock:2,need:null},
+  {key:'charge_d2',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('charge_d2')?'Charge nurse notified':'Notify charge nurse',
+   desc:'Inform charge: septic shock, bundle started, physician called.',
+   done:()=>G.actionsTaken.includes('charge_d2'),unlock:2,need:null},
+  {key:'chart_d2',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d2')?'Nursing note written':'Write nursing assessment note',
+   desc:'Document: confusion, GCS, vitals trend, lactate, wound findings, bundle started.',
+   done:()=>G.actionsTaken.includes('chart_d2'),unlock:2,need:null},
+];
+
+
+const ACTS_D3=[
+  {key:'assess_abd',pri:1,sec:'Immediate -- Assessment',
+   getL:()=>G.actionsTaken.includes('assess_abd')?'Abdominal assessment done':'Assess abdomen -- distension + guarding',
+   desc:'Palpate all four quadrants. Check for rigidity, guarding, rebound. Compare to post-op baseline. This takes 60 seconds and changes everything.',
+   done:()=>G.actionsTaken.includes('assess_abd'),unlock:1,need:null},
+  {key:'hold_morphine',pri:1,sec:'Immediate -- Medication Safety',
+   getL:()=>G.actionsTaken.includes('hold_morphine')?'Morphine held -- awaiting assessment':'HOLD morphine -- assess before medicating',
+   desc:'Morphine masks abdominal pain and causes vasodilation. In suspected haemorrhage, giving it delays diagnosis and can precipitate collapse.',
+   done:()=>G.actionsTaken.includes('hold_morphine'),unlock:1,need:null},
+  {key:'drain_check',pri:2,sec:'Immediate -- Assessment',
+   getL:()=>G.actionsTaken.includes('drain_check')?'Drain output reviewed':'Check drain output and colour',
+   desc:'Post-cholecystectomy JP drain output should be minimal and serosanguineous. Dark red or increasing output = active bleeding.',
+   done:()=>G.actionsTaken.includes('drain_check'),unlock:1,need:'drain'},
+  {key:'call_surg',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Surgeon called':'Call Dr. Martinez -- surgical emergency',
+   desc:'Post-op haemorrhage requires surgical review. Do not call MET first -- call the surgeon. They need to make the decision to return to theatre.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'iv_bolus_d3',pri:2,sec:'Urgent -- Circulation',
+   getL:()=>G.actionsTaken.includes('iv_bolus_d3')?'IV rate increased':'Increase IV rate -- haemodynamic support',
+   desc:'BP is trending down. Start a fluid challenge: increase rate or run a 250 mL bolus. Maintain IV access with large bore. Do not give NSAIDs.',
+   done:()=>G.actionsTaken.includes('iv_bolus_d3'),unlock:2,need:'iv'},
+  {key:'vfreq_d3',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('vfreq_d3')?'Monitoring increased':'Increase monitoring -- q15min vitals',
+   desc:'Trending vitals are the key. Q15min HR and BP. Alert thresholds: HR >110, BP <100 systolic, any further drop.',
+   done:()=>G.actionsTaken.includes('vfreq_d3'),unlock:2,need:null},
+  {key:'crossmatch',pri:2,sec:'Urgent -- Preparation',
+   getL:()=>G.actionsTaken.includes('crossmatch')?'Crossmatch ordered':'Order type and crossmatch -- anticipate transfusion',
+   desc:'If the bleed is confirmed, he will need blood. Order type and crossmatch now so it is ready. Do not wait for the surgeon to order it.',
+   done:()=>G.actionsTaken.includes('crossmatch'),unlock:3,need:'chart'},
+  {key:'charge_d3',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('charge_d3')?'Charge nurse notified':'Notify charge nurse',
+   desc:'Room 214 -- possible post-op haemorrhage. Surgeon called. May need theatre.',
+   done:()=>G.actionsTaken.includes('charge_d3'),unlock:2,need:null},
+  {key:'reassure_d3',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('reassure_d3')?'Patient updated':'Explain to Tyler -- honest, calm',
+   desc:'"I am concerned about some changes in your assessment and I have called your surgeon. He is coming right away." No false reassurance.',
+   done:()=>G.actionsTaken.includes('reassure_d3'),unlock:2,need:null},
+  {key:'chart_d3',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d3')?'Nursing note written':'Document assessment and actions',
+   desc:'Time-stamp everything: when you assessed, what you found, who you called, what you held, what you started.',
+   done:()=>G.actionsTaken.includes('chart_d3'),unlock:3,need:null},
+];
+
+function getACTS(){
+  if(G.currentDay===2)return ACTS_D2;
+  if(G.currentDay===3)return ACTS_D3;
+  return ACTS;
+}
+function getSC(){return SCENARIOS[G.currentDay]||SCENARIOS[1];}
+function getSBAR(){return SBAR_DATA[G.currentDay]||SBAR_DATA[1];}
+function isSBARDragMode(){return (G.currentDay||1)<=5;}
+function getTouchLimit(){const d=G.currentDay||1;if(d<=10)return 6;if(d<=20)return 5;return 4;}
+
+// === O2 LEVELS ===
+const O2L=[
+  {id:'prong',lbl:'NC 2L/min',spo2:{val:'93%',state:'warn'},hr:{val:'100',state:'warn'},rr:{val:'22',state:'warn'}},
+  {id:'mask',lbl:'SM 6L/min',spo2:{val:'94%',state:'warn'},hr:{val:'97',state:'warn'},rr:{val:'20',state:'ok'}},
+  {id:'nrb',lbl:'NRB 15L/min',spo2:{val:'96%',state:'ok'},hr:{val:'94',state:'ok'},rr:{val:'18',state:'ok'}},
+];
+function getO2I(){return O2L.findIndex(l=>l.id===G.o2Device);}
+
+// === NAVIGATION ===
+function showScreen(id){document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));const el=document.getElementById('scr-'+id);if(el)el.classList.add('on');}
+function wipeGo(fn){const w=document.getElementById('wipe');if(!w){fn();return;}w.classList.add('in');setTimeout(()=>{fn();setTimeout(()=>w.classList.remove('in'),350);},320);}
+function gotoTitle(){showScreen('title');}
+
+// === VS SYSTEM ===
+function getVSForDay(day){
+  const sc=SCENARIOS[day]||SCENARIOS[1];
+  if(sc&&sc.vitals){
+    const v=sc.vitals;
+    const mapN=calcMAP((v.bp||{val:'138/90'}).val);
+    return {spo2:v.spo2||{val:'91%',state:'crit'},hr:v.hr||{val:'104',state:'warn'},
+      rr:v.rr||{val:'24',state:'warn'},bp:v.bp||{val:'138/90',state:'warn'},
+      map:{val:mapN+'',state:mapN<65?'crit':'ok'},
+      iv_rate:{val:(sc.iv&&sc.iv.main?sc.iv.main.rate:'--'),state:(sc.iv&&sc.iv.main?sc.iv.main.state:'ok')},
+    };
+  }
+  return {spo2:{val:'91%',state:'crit'},hr:{val:'104',state:'warn'},rr:{val:'24',state:'warn'},bp:{val:'138/90',state:'warn'},map:{val:'106',state:'ok'},iv_rate:{val:'--',state:'ok'}};
+}
+function resetVSForDay(day){
+  Object.assign(VS,getVSForDay(day));
+  if(day===1&&SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='150 mL/hr';SCENARIOS[1].iv.main.state='crit';SCENARIOS[1].iv.main.note='Prescribed 80 mL/hr -- running too fast';}
+  if(SCENARIOS[2]&&SCENARIOS[2].vitals){SCENARIOS[2].vitals.lac=null;}
+  renderIVPanel(day);
+}
+function updateVitals(chg={}){
+  if(chg.spo2)Object.assign(VS.spo2,chg.spo2);if(chg.hr)Object.assign(VS.hr,chg.hr);
+  if(chg.rr)Object.assign(VS.rr,chg.rr);if(chg.bp)Object.assign(VS.bp,chg.bp);
+  if(chg.iv_rate)Object.assign(VS.iv_rate,chg.iv_rate);
+  if(chg.map)Object.assign(VS.map,chg.map);
+  else{const mn=calcMAP(VS.bp.val);VS.map={val:mn+'',state:mn<60?'crit':mn<65?'warn':'ok'};}
+  const se=(id,val,state)=>{const el=document.getElementById(id);if(el){el.textContent=val;el.className='monval '+state;}};
+  se('mo-spo2',VS.spo2.val,VS.spo2.state);se('mo-hr',VS.hr.val,VS.hr.state);
+  se('mo-bp',VS.bp.val,VS.bp.state);se('mo-rr',VS.rr.val,VS.rr.state);
+  if(G.currentDay===2){
+    const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
+    if(g1)g1.style.display='none';if(g2)g2.style.display='';if(mt)mt.textContent='Monitor ICU';
+    se('mo-bp-d2',VS.bp.val,VS.bp.state);se('mo-map',VS.map.val,VS.map.state);
+    se('mo-hr-d2',VS.hr.val,VS.hr.state);se('mo-rr-d2',VS.rr.val,VS.rr.state);
+    se('mo-spo2-d2',VS.spo2.val,VS.spo2.state);
+    const scv=(SCENARIOS[2]||{}).vitals||{};
+    if(scv.temp){const te=document.getElementById('mo-temp');if(te){te.textContent=scv.temp.val;te.className='monval '+scv.temp.state;}}
+    if(scv.uo){const ue=document.getElementById('mo-uo');if(ue){ue.textContent=scv.uo.val;ue.className='monval '+scv.uo.state;}}
+    if(scv.gcs){const ge=document.getElementById('mo-gcs');if(ge){ge.textContent=scv.gcs.val;ge.className='monval '+scv.gcs.state;}}
+  }else{
+    const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
+    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':'Monitor Bay 4';
+    const sc1v=(SCENARIOS[1]||{}).vitals||{};
+    if(sc1v.temp){const te=document.getElementById('mo-temp-d1');if(te){te.textContent=sc1v.temp.val;te.className='monval '+sc1v.temp.state;}}
+    if(sc1v.gcs){const ge=document.getElementById('mo-gcs-d1');if(ge){ge.textContent=sc1v.gcs.val;ge.className='monval '+sc1v.gcs.state;}}
+  }
+  const alarm=document.getElementById('alarm-badge');
+  if(alarm)alarm.classList.toggle('show',Object.values(VS).some(v=>typeof v==='object'&&v.state==='crit'));
+  renderIVPanel(G.currentDay);
+}
+function applyVC(chg,delaySec){setTimeout(()=>updateVitals(chg),delaySec*1000);}
+
+// === IV + LABS ===
+function renderIVPanel(day){
+  const rows=document.getElementById('iv-rows');if(!rows)return;
+  const sc=SCENARIOS[day]||SCENARIOS[1];
+  if(!sc||!sc.iv){rows.innerHTML='<div class="iv-detail" style="color:var(--muted);font-size:7px;">No active IV orders</div>';return;}
+  const iv=sc.iv;let html='';
+  if(iv.main){
+    const running=G.fluidRunning;
+    const rate=running?(G.fluidRate||'WIDE OPEN'):(G.fluidMl>=500?'500mL done':iv.main.rate);
+    const rst=running?'ok':(G.fluidMl>=500?'ok':iv.main.state);
+    const drip=running?'<span class="iv-drip"> &bull;</span>':'';
+    html+=`<div class="iv-row"><div class="iv-name">${iv.main.name} <span style="color:var(--muted2)">${iv.main.vol}</span></div><div class="iv-detail" style="${iv.main.state==='crit'?'color:var(--alarm);':''}">${iv.main.note||''}</div><span class="iv-rate-badge ${rst}">${rate}${drip}</span></div>`;
+  }
+  if(iv.abx){
+    const abxGiven=G.actionsTaken.includes('antibiotics');
+    const abxSt=abxGiven?'ok':'crit';
+    const rtxt=abxGiven?(G.abxProgress>=100?'Complete':''+G.abxProgress+'% infusing'):'OVERDUE';
+    html+=`<div class="iv-row"><div class="iv-name">${iv.abx.name}</div><div class="iv-detail">${iv.abx.dose}/${iv.abx.vol} &middot; ${abxGiven?iv.abx.rate:'Not given'}</div><span class="iv-rate-badge ${abxSt}">${rtxt}</span>${!abxGiven&&iv.abx.note?`<div class="iv-alert">! ${iv.abx.note}</div>`:''}</div>`;
+  }
+  rows.innerHTML=html||'<div class="iv-detail" style="color:var(--muted);font-size:7px;">No active IV orders</div>';
+}
+function addLabResult(name,val,state,isNew=true){
+  const panel=document.getElementById('labs-panel'),labRows=document.getElementById('lab-rows');
+  if(!panel||!labRows)return;
+  panel.classList.add('show');
+  const id='lab-'+name.replace(/[^a-z]/gi,'_');
+  const existing=document.getElementById(id);
+  if(existing)existing.outerHTML=labRowHTML(id,name,val,state,false);
+  else labRows.insertAdjacentHTML('beforeend',labRowHTML(id,name,val,state,isNew));
+  if(isNew)setTimeout(()=>{const el=document.querySelector('#'+id+' .lab-new');if(el)el.remove();},5000);
+}
+function labRowHTML(id,name,val,state,isNew){return '<div class="lab-row" id="'+id+'"><span class="lab-name">'+name+'</span><span class="lab-val '+state+'">'+val+(isNew?'<span class="lab-new"> NEW</span>':'')+'</span></div>';}
+
+// === VISUAL STATE ===
+function initVisualState(day){
+  if(day===2){G.patientState='deteriorating';G.o2Saturation=95;G.skinFlush=0.7;G.diaphoresis=0.8;G.mottle=0.4;G.confusion=true;G.ecgChaos=0.3;}
+  else if(day===3){
+    G.patientState='deteriorating';G.o2Saturation=97;
+    G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0.1;G.confusion=false;G.ecgChaos=0.1;
+    // Day 3: pale skin, slightly clammy, restless -- not dramatic
+  }
+  else{G.patientState='deteriorating';G.o2Saturation=91;G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0;G.confusion=false;G.ecgChaos=0.15;}
+}
+function applyVisualImprovement(type){
+  if(type==='o2'||type==='o2_d2')G.o2Saturation=Math.min(99,G.o2Saturation+4);
+  if(type==='fluids')setTimeout(()=>{G.mottle=Math.max(0,G.mottle-0.3);},3000);
+}
+function tickVisualDeterioration(){
+  if(G.currentDay===2&&!G.actionsTaken.includes('fluids')){G.mottle=Math.min(1,G.mottle+0.02);G.ecgChaos=Math.min(0.8,G.ecgChaos+0.01);}
+  if(!G.actionsTaken.includes('o2')&&!G.actionsTaken.includes('o2_d2'))G.o2Saturation=Math.max(82,G.o2Saturation-0.05);
+}
+
+// === DRAWING ===
+function drawTitleChar(){
+  try{
+    const c=document.getElementById('title-canvas');if(!c)return;
+    const ctx=c.getContext('2d');if(!ctx)return;
+    ctx.clearRect(0,0,200,200);
+    ctx.strokeStyle='rgba(42,50,72,.3)';ctx.lineWidth=1;
+    for(let i=0;i<200;i+=22){ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(200,i);ctx.stroke();}
+    drawNurse(ctx,100,155,2.5,'neutral');
+  }catch(e){}
+}
+function drawNurse(ctx,x,y,sc=1,emo='neutral'){
+  const p=n=>n*sc;
+  ctx.fillStyle='#1e4080';ctx.beginPath();ctx.roundRect(x-p(10),y-p(18),p(20),p(30),p(3));ctx.fill();
+  ctx.fillStyle='#c89060';ctx.beginPath();ctx.roundRect(x-p(8),y-p(32),p(16),p(16),p(6));ctx.fill();
+  ctx.fillStyle='#4a2800';ctx.beginPath();ctx.roundRect(x-p(9),y-p(34),p(18),p(8),p(5));ctx.fill();
+  ctx.fillStyle='#1a0a00';
+  if(emo==='smile'){ctx.lineWidth=1.5;ctx.strokeStyle='#1a0a00';ctx.beginPath();ctx.arc(x-p(3),y-p(24),p(2),Math.PI*1.1,Math.PI*1.9);ctx.stroke();ctx.beginPath();ctx.arc(x+p(3),y-p(24),p(2),Math.PI*1.1,Math.PI*1.9);ctx.stroke();}
+  else{ctx.beginPath();ctx.ellipse(x-p(3),y-p(24),p(2),p(1.5),0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(x+p(3),y-p(24),p(2),p(1.5),0,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#1e4080';ctx.beginPath();ctx.roundRect(x-p(16),y-p(14),p(7),p(20),p(3));ctx.fill();ctx.beginPath();ctx.roundRect(x+p(9),y-p(14),p(7),p(20),p(3));ctx.fill();
+  ctx.fillStyle='#2a3a5a';ctx.beginPath();ctx.roundRect(x-p(8),y+p(10),p(7),p(18),p(2));ctx.fill();ctx.beginPath();ctx.roundRect(x+p(1),y+p(10),p(7),p(18),p(2));ctx.fill();
+}
+function drawRoom(ctx,W,H){
+  ctx.fillStyle='#0c1120';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#101628';ctx.fillRect(0,0,W,H*0.4);
+  ctx.fillStyle='#0a0f1e';ctx.fillRect(0,H*0.75,W,H*0.25);
+  ctx.fillStyle='rgba(100,140,200,0.05)';ctx.fillRect(W*0.04,H*0.06,W*0.3,H*0.25);
+  ctx.strokeStyle='rgba(100,140,200,.2)';ctx.lineWidth=1;ctx.strokeRect(W*0.04,H*0.06,W*0.3,H*0.25);
+}
+function drawPatient(ctx,W,H){
+  const cx=Math.round(W*.38),cy=Math.round(H*.50);
+  const t=Date.now()/1000;
+  ctx.fillStyle='#1e2840';ctx.fillRect(Math.round(W*.05),Math.round(H*.42),Math.round(W*.74),Math.round(H*.54));
+  ctx.fillStyle='#e8e0d0';ctx.fillRect(Math.round(W*.07),Math.round(H*.44),Math.round(W*.7),Math.round(H*.16));
+  ctx.fillStyle='#f0ece4';ctx.beginPath();ctx.roundRect(Math.round(W*.08),Math.round(H*.44)+4,Math.round(W*.3),Math.round(H*.12),5);ctx.fill();
+  ctx.fillStyle='#2a3a52';ctx.fillRect(Math.round(W*.07),Math.round(H*.56),Math.round(W*.7),Math.round(H*.20));
+  if(G.mottle>0.1){[[W*.15,H*.70],[W*.28,H*.68],[W*.22,H*.74]].forEach(([mx,my])=>{ctx.fillStyle=`rgba(120,60,80,${G.mottle*.4})`;ctx.beginPath();ctx.ellipse(mx,my,8+4*G.mottle,5,0,0,Math.PI*2);ctx.fill();});if(G.mottle>0.3){ctx.fillStyle=`rgba(217,100,100,${G.mottle*.8})`;ctx.font="bold 7px 'DM Mono'";ctx.fillText('mottling',Math.round(W*.10),Math.round(H*.77));}}
+  const spo2=G.o2Saturation||91;const cyano=spo2<90?Math.min(1,(90-spo2)/10):0;const flush=G.skinFlush||0;
+  const sr=Math.max(80,Math.min(255,200+Math.round(30*flush)-Math.round(50*cyano)));
+  const sg=Math.max(60,Math.min(200,140-Math.round(20*flush)-Math.round(30*cyano)));
+  const sb=Math.max(60,Math.min(200,96+Math.round(80*cyano)-Math.round(20*flush)));
+  const breathY=Math.sin(t*1.2)*2;
+  ctx.fillStyle=`rgb(${sr},${sg},${sb})`;ctx.beginPath();ctx.roundRect(cx-22,cy-46+breathY,44,36,12);ctx.fill();
+  if(flush>0.3){ctx.fillStyle=`rgba(220,80,60,${flush*.3})`;ctx.beginPath();ctx.ellipse(cx-14,cy-34+breathY,7,5,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+14,cy-34+breathY,7,5,0,0,Math.PI*2);ctx.fill();}
+  ctx.fillStyle='#6a4020';ctx.beginPath();ctx.roundRect(cx-22,cy-50+breathY,44,14,9);ctx.fill();
+  const ey=cy-32+breathY;ctx.fillStyle='#1a0a00';
+  if(G.confusion){ctx.beginPath();ctx.ellipse(cx-8,ey,4,1.5,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+8,ey,4,1.5,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='rgba(232,168,74,.9)';ctx.font="bold 7px 'DM Mono'";ctx.textAlign='center';ctx.fillText('confused',cx,cy-52+breathY);ctx.textAlign='left';}
+  else{ctx.beginPath();ctx.ellipse(cx-8,ey,4,2.5,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+8,ey,4,2.5,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#1a0a00';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-12,ey-7);ctx.lineTo(cx-4,ey-5);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+12,ey-7);ctx.lineTo(cx+4,ey-5);ctx.stroke();}
+  ctx.strokeStyle='#5a1a10';ctx.lineWidth=1.5;ctx.lineCap='round';
+  if(G.patientState==='stable'){ctx.beginPath();ctx.arc(cx,cy-28+breathY,5,0.2,Math.PI-0.2);ctx.stroke();}
+  else{ctx.beginPath();ctx.moveTo(cx-5,cy-27+breathY);ctx.lineTo(cx+5,cy-27+breathY);ctx.stroke();}
+  if(G.o2Device)drawO2(ctx,cx,cy+breathY,G.o2Device);
+  if(G.currentDay===2)drawIVFluid(ctx,W,H);
+}
+function drawO2(ctx,cx,cy,dev){
+  if(dev==='prong'){ctx.strokeStyle='rgba(100,200,255,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-20,cy-32);ctx.bezierCurveTo(cx-15,cy-38,cx-8,cy-38,cx-6,cy-34);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+20,cy-32);ctx.bezierCurveTo(cx+15,cy-38,cx+8,cy-38,cx+6,cy-34);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-6,cy-34);ctx.bezierCurveTo(cx-3,cy-30,cx+3,cy-30,cx+6,cy-34);ctx.stroke();ctx.fillStyle='rgba(100,200,255,.8)';ctx.font="bold 7px 'DM Mono'";ctx.fillText('NC 2L',cx-18,cy-44);}
+  else if(dev==='mask'){ctx.fillStyle='rgba(0,180,100,.18)';ctx.strokeStyle='rgba(0,201,160,.6)';ctx.lineWidth=1.5;ctx.beginPath();ctx.ellipse(cx,cy-30,14,10,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(0,201,160,.8)';ctx.font="bold 7px 'DM Mono'";ctx.fillText('SM 6L',cx-16,cy-44);}
+  else if(dev==='nrb'){ctx.fillStyle='rgba(0,100,200,.22)';ctx.strokeStyle='rgba(100,160,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(cx,cy-30,16,12,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='rgba(100,160,255,.9)';ctx.font="bold 7px 'DM Mono'";ctx.fillText('NRB 15L',cx-18,cy-46);}
+}
+function drawIVFluid(ctx,W,H){
+  const ipx=Math.round(W*.88),ipy=Math.round(H*.07);
+  const bagW=24,bagH=38,bagX=ipx-bagW/2,bagY=ipy;
+  ctx.strokeStyle='rgba(150,210,255,.7)';ctx.lineWidth=1.5;ctx.fillStyle='rgba(150,200,255,.06)';
+  ctx.beginPath();ctx.roundRect(bagX,bagY,bagW,bagH,4);ctx.fill();ctx.stroke();
+  if(G.fluidRunning||G.fluidMl>0){
+    const fillH=Math.round((bagH-6)*Math.min(1,(500-G.fluidMl)/500));
+    const fillY=bagY+3+(bagH-6-fillH);
+    ctx.fillStyle=`rgba(100,200,255,${G.fluidRunning?.55:.3})`;ctx.beginPath();ctx.roundRect(bagX+3,fillY,bagW-6,fillH,2);ctx.fill();
+    ctx.fillStyle='rgba(200,235,255,.95)';ctx.font="bold 7px 'DM Mono'";ctx.textAlign='center';ctx.fillText(G.fluidMl+'mL',bagX+bagW/2,bagY+bagH/2+3);ctx.textAlign='left';
+  }else{ctx.fillStyle='rgba(150,200,255,.2)';ctx.beginPath();ctx.roundRect(bagX+3,bagY+3,bagW-6,bagH-6,2);ctx.fill();}
+  ctx.fillStyle='rgba(180,225,255,.9)';ctx.font="bold 7px 'DM Mono'";ctx.fillText(G.fluidName,bagX-2,bagY-6);
+  const rateCol=G.fluidRunning?'rgba(0,229,184,.95)':'rgba(130,180,255,.7)';
+  ctx.fillStyle=rateCol;ctx.font="bold 8px 'DM Mono'";
+  ctx.fillText(G.fluidRunning?G.fluidRate:G.fluidMl>=500?'Done':'KVO',bagX-42,bagY+bagH/2);
+  if(G.fluidRunning){const dcY=bagY+bagH+2;const t3=Date.now()/500;const dp=t3%1;const dropY=dcY+7+6*dp;ctx.fillStyle=`rgba(150,220,255,${.9-dp*.8})`;ctx.beginPath();ctx.ellipse(ipx,dropY,2,2.5,0,0,Math.PI*2);ctx.fill();}
+}
+function drawECG(canvas){
+  if(!canvas||typeof canvas.getContext!=='function')return;
+  const ctx=canvas.getContext('2d');if(!ctx)return;
+  const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(0,201,160,.6)';ctx.lineWidth=1;ctx.beginPath();
+  for(let x=0;x<W;x++){
+    const phase=(x/W*8+G.ecgT)%(2*Math.PI);
+    let y=H/2;
+    if(phase>1.2&&phase<1.4)y=H*.1;else if(phase>1.4&&phase<1.6)y=H*.9;
+    else y=H/2+Math.sin(phase*.8)*H*.15;
+    if(x===0)ctx.moveTo(x,y);else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+}
+
+// === SCENE LOOP ===
+function startSceneLoop(){
+  try{
+    const canvas=document.getElementById('scene-canvas');const wrap=document.getElementById('scene-wrap');if(!canvas||!wrap)return;
+    canvas.width=wrap.offsetWidth||390;canvas.height=wrap.offsetHeight||560;
+    const W=canvas.width,H=canvas.height;
+    function loop(){G.animFrame=requestAnimationFrame(loop);const ctx=canvas.getContext('2d');if(!ctx)return;ctx.clearRect(0,0,W,H);drawRoom(ctx,W,H);drawPatient(ctx,W,H);const bob=Math.sin(Date.now()*.001)*2;drawNurse(ctx,Math.round(W*.83),Math.round(H*.76)+bob,1.05,G.actionsTaken.length>2?'smile':'neutral');G.ecgT+=0.06;const ecgCanvas=document.getElementById('ecg-canvas');if(ecgCanvas)drawECG(ecgCanvas);}
+    loop();setTimeout(()=>renderTZ(),50);
+  }catch(e){console.warn('scene:',e);}
+}
+function stopScene(){if(G.animFrame){cancelAnimationFrame(G.animFrame);G.animFrame=null;}SFX.stopMonitorLoop();}
+function renderTZ(){
+  const wrap=document.getElementById('scene-wrap');const zones=document.getElementById('tap-zones');if(!wrap||!zones)return;
+  const W=wrap.offsetWidth,H=wrap.offsetHeight;if(!W||!H){setTimeout(renderTZ,120);return;}
+  zones.innerHTML='';
+  getSC().taps.forEach(tap=>{
+    const px=Math.round(W*parseFloat(tap.x)/100),py=Math.round(H*parseFloat(tap.y)/100);
+    const div=document.createElement('div');div.className='tz';div.style.left=px+'px';div.style.top=py+'px';
+    if(tap.wrong){div.onclick=()=>handleWrongTap(tap);}
+    else{div.innerHTML='<div class="tzring"></div>'+(tap.lbl?`<div class="tzlbl">${tap.lbl}</div>`:'');div.onclick=()=>handleTap(tap);}
+    zones.appendChild(div);
+  });
+}
+function handleTap(tap){
+  if(G.touchesLeft<=0){openDrawer('No touches left',[{p:'w',t:'You have used all your touches. Make your decision.'}],null);return;}
+  if(G.clues.includes(tap.id))return;
+  G.touchesLeft--;G.clues.push(tap.id);renderPips();SFX.init();SFX.tapFind();
+  const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft+' of '+getTouchLimit()+' touches left';
+  openDrawer(tap.lbl||'Finding',tap.finds.slice(0,3),tap.insight);checkActions();
+}
+function handleWrongTap(tap){
+  G.touchesLeft--;renderPips();SFX.init();SFX.tapWrong();
+  const fl=document.getElementById('wrong-flash');if(fl){fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),500);}
+  const msgs={feet:'Peripheral oedema is not your priority. ABCs first.',pillow:'Nothing clinically relevant here. Every touch costs time.',window:'The window is not a clinical cue. Keep your eyes on the patient.',default:tap.wrongTxt||'Not a priority right now.'};
+  openDrawer('Clinical focus',[{p:'w',t:msgs[tap.id]||msgs.default}],null);
+}
+function renderPips(){
+  const row=document.getElementById('pip-row');if(!row)return;
+  const total=getTouchLimit();const used=total-G.touchesLeft;
+  row.innerHTML='';for(let i=0;i<total;i++){const pip=document.createElement('div');pip.className='pip'+(i<used?' used':G.touchesLeft===0?' gone':'');row.appendChild(pip);}
+  const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft===0?'No touches left':G.touchesLeft+' of '+total+' touches left';
+}
+
+// === DRAWERS ===
+function openDrawer(title,finds,insight){
+  document.getElementById('cd-title').textContent=title;
+  const body=document.getElementById('cd-body');
+  body.innerHTML=finds.map(f=>`<div class="cdfind"><div class="cfpip p${f.p}"></div><div class="cftxt">${f.t}</div></div>`).join('');
+  if(insight)body.innerHTML+=`<div class="cdinsight"><div class="cditxt">${insight}</div></div>`;
+  document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+}
+function closeDrawer(){document.getElementById('clue-drawer').classList.remove('open');document.getElementById('act-bar').style.display='';}
+function closePP(){document.getElementById('pp-panel').classList.remove('open');}
+function handlePP(key){closePP();doAction(key);}
+
+// === ACTIONS / PP ===
+function checkActions(){
+  const valid=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
+  const avail=getACTS().filter(a=>(!a.need||G.clues.includes(a.need))&&valid.length>=a.unlock);
+  const scroll=document.getElementById('act-scroll');
+  if(scroll){scroll.innerHTML='';avail.filter(a=>!a.done()&&a.pri<=2).slice(0,3).forEach(a=>{const btn=document.createElement('button');btn.className='actbtn'+(a.pri===1?' p1':'');btn.textContent=a.getL();btn.onclick=()=>doAction(a.key);scroll.appendChild(btn);});if(avail.length>0){const all=document.createElement('button');all.className='actbtn';all.textContent='All options...';all.onclick=openPP;scroll.appendChild(all);}}
+  document.getElementById('act-bar').style.display=avail.length>0?'':'none';
+  if(valid.length>=4&&!G.priorityShown){G.priorityShown=true;setTimeout(openPP,400);}
+}
+function openPP(){
+  closeDrawer();
+  const valid=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
+  const avail=getACTS().filter(a=>(!a.need||G.clues.includes(a.need))&&valid.length>=a.unlock);
+  const secs={};avail.forEach(a=>{if(!secs[a.sec])secs[a.sec]=[];secs[a.sec].push(a);});
+  const secOrder=['Immediate -- Airway & Breathing','Immediate -- Circulation','Urgent -- Sepsis Bundle','Urgent -- Escalation','Urgent -- Medication Safety','Urgent -- Monitoring','Communication','Documentation','Comfort & Monitoring'];
+  let html='';
+  secOrder.filter(s=>secs[s]).forEach(s=>{
+    const btns=secs[s];const pri=btns[0].pri;const tm={1:'tp1',2:'tp2',3:'tp3'};const pt={1:'P1 NOW',2:'P2 SOON',3:'P3 DO'};
+    html+=`<div class="ppsec"><div class="ppshdr"><span class="${tm[pri]}">${pt[pri]}</span> -- ${s}</div>`;
+    btns.forEach(a=>{html+=`<button class="ppbtn${a.done()?' done':''}" onclick="handlePP('${a.key}')"><div class="ppbtn-lbl">${a.getL()}</div><div class="ppbtn-desc">${a.desc}</div></button>`;});
+    html+='</div>';
+  });
+  document.getElementById('pp-body').innerHTML=html||'<div style="padding:16px;font-family:var(--body);font-size:13px;color:var(--muted2);">Find more clues to unlock actions.</div>';
+  document.getElementById('pp-panel').classList.add('open');
+}
+
+// === HANDOFF ===
+function gotoHandoff(){
+  if(G._endAnimId){cancelAnimationFrame(G._endAnimId);G._endAnimId=null;}
+  G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;
+  G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];
+  G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.fluidName='0.9% NaCl 1L';
+  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;
+  G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;G._phoneRing=null;
+  stopScene();if(G.timerIv)clearInterval(G.timerIv);
+  resetVSForDay(G.currentDay);initVisualState(G.currentDay);
+  wipeGo(()=>{showScreen('handoff');startHandoff();});
+}
+function startHandoff(){
+  const chat=document.getElementById('ho-chat');if(chat)chat.innerHTML='';
+  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':'Day 1 Bay 4 23:42';
+  const lbl=document.getElementById('ho-vitals-lbl');const grid=document.getElementById('ho-vitals-grid');
+  if(G.currentDay===2){if(lbl)lbl.textContent='Last recorded vitals 30 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>';}
+  else if(G.currentDay===3){if(lbl)lbl.textContent='Last recorded vitals -- trending';if(grid)grid.innerHTML='<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">35mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>';}
+  else{if(lbl)lbl.textContent='Last recorded vitals';if(grid)grid.innerHTML='<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
+  const vc=document.getElementById('ho-vitals');if(vc)vc.style.display='none';
+  const sc=getSC();let i=0;
+  function next(){if(i>=sc.handoff.length)return;const msg=sc.handoff[i++];setTimeout(()=>{
+    if(msg.alert){const ab=document.getElementById('handoff-alert');if(ab){ab.textContent=msg.txt;ab.style.display='block';}}
+    else{const d=document.createElement('div');d.className='hochat-msg'+(msg.you?' you':'');d.innerHTML=(msg.you?'':'<div class="hochat-from">'+msg.from+'</div>')+'<div class="hochat-bubble">'+msg.txt+'</div>';if(chat)chat.appendChild(d);if(chat)chat.scrollTop=chat.scrollHeight;if(!msg.you){SFX.init();SFX.pagerBuzz();}}
+    if(i===sc.handoff.length){
+      // Show vitals card and enter button after last message
+      setTimeout(()=>{
+        if(vc)vc.style.display='';
+        const eb=document.getElementById('ho-enter-btn');
+        if(eb){eb.style.display='block';}
+        // Scroll to bottom so button is visible
+        if(chat)chat.scrollTop=chat.scrollHeight;
+      },400);
+    }
+    next();},msg.delay||800);
+  }next();
+}
+function gotoInvestigate(){
+  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':'Day 1 Bay 4';
+  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':'Mrs. Delgado, 58F';
+  const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=dayHud;if(pe)pe.textContent=ptHud;
+  resetVSForDay(G.currentDay);initVisualState(G.currentDay);
+  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);},100);});
+}
+
+// === TIMER ===
+function startTimer(resume=false){
+  if(!resume)G.timerSec=600;
+  if(G.timerIv)clearInterval(G.timerIv);
+  G.timerIv=setInterval(()=>{
+    G.timerSec--;const m=Math.floor(G.timerSec/60),s=G.timerSec%60;
+    const el=document.getElementById('timer');if(el){el.textContent=m+':'+(s<10?'0':'')+s;el.className='timer'+(G.timerSec<180?' urgent':'')+(G.timerSec<60?' critical':'');}
+    if(G.timerSec===90){SFX.init();SFX.urgentAlarm();}
+    if(G.timerSec%10===0)tickVisualDeterioration();
+    if(G.currentDay===2&&G.timerSec===180&&!G.actionsTaken.includes('fluids')){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
+    if(G.currentDay===2&&G.timerSec===90&&G.actionsTaken.includes('fluids'))G.codeBluePending=false;
+    if(G.timerSec<=0){clearInterval(G.timerIv);stopScene();gotoAction();}
+  },1000);
+}
+function showCodeBlueWarning(){
+  if(G.actionsTaken.includes('fluids'))return;
+  document.getElementById('cd-title').textContent='Deterioration -- Act Now';
+  document.getElementById('cd-body').innerHTML='<div class="cdfind"><div class="cfpip pc"></div><div class="cftxt"><strong>MAP dropping. No resuscitation in progress. Without fluids: cardiac arrest.</strong></div></div><div class="cdfind"><div class="cfpip pw"></div><div class="cftxt">Start fluid bolus. Call the physician. Every minute matters.</div></div>';
+  document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  updateVitals({bp:{val:'80/44',state:'crit'},hr:{val:'128',state:'crit'}});SFX.init();SFX.urgentAlarm();
+}
+
+// === doAction ===
+function doAction(type){
+  closeDrawer();closePP();
+  if(type==='o2'){
+    const ni=getO2I()+1;if(ni>=O2L.length){openDrawer('Maximum O2 applied',[{p:'o',t:'NRB mask is the maximum before intubation.'}],null);return;}
+    const lvl=O2L[ni];G.o2Device=lvl.id;G.actionsTaken.push('o2');applyVisualImprovement('o2');
+    updateVitals(lvl);SFX.init();SFX.o2Flow();
+    openDrawer('O2 applied -- '+lvl.lbl,[{p:'o',t:'Oxygen applied: '+lvl.lbl+'. SpO2 should improve within 1-2 minutes.'},{p:'w',t:'Target SpO2 >94%.'}],null);setTimeout(checkActions,200);
+  }else if(type==='position'){
+    if(!G.actionsTaken.includes('position'))G.actionsTaken.push('position');applyVC({rr:{val:'22',state:'warn'}},2);
+    openDrawer('HOB elevated 45 degrees',[{p:'o',t:'Head of bed elevated 45 degrees.'},{p:'o',t:'She says: "That feels a little better."'}],null);setTimeout(checkActions,200);
+  }else if(type==='iv_rate'){
+    if(!G.actionsTaken.includes('iv_rate'))G.actionsTaken.push('iv_rate');
+    if(SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='80 mL/hr';SCENARIOS[1].iv.main.state='ok';SCENARIOS[1].iv.main.note='Rate corrected (was 150)';}
+    renderIVPanel(G.currentDay);applyVC({bp:{val:'132/86',state:'warn'}},4);
+    openDrawer('IV rate corrected',[{p:'o',t:'Rate adjusted: 150 to 80 mL/hr (prescribed).'},{p:'w',t:'Excess fluid in PE increases pulmonary oedema risk.'}],null);setTimeout(checkActions,200);
+  }else if(type==='call'){gotoSBAR();
+  }else if(type==='met'){
+    if(!G.actionsTaken.includes('met'))G.actionsTaken.push('met');SFX.init();SFX.pagerBuzz();
+    openDrawer('MET called',[{p:'o',t:'MET criteria met. Senior support arriving within 3 minutes.'}],null);setTimeout(checkActions,200);
+  }else if(type==='flag'){
+    if(!G.actionsTaken.includes('flag'))G.actionsTaken.push('flag');
+    openDrawer('Enoxaparin flagged',[{p:'o',t:'Missed dose documented. Prescriber and pharmacist notified.'},{p:'w',t:'Do NOT give the missed dose without a new physician order.'}],null);setTimeout(checkActions,200);
+  }else if(type==='vfreq'){
+    if(!G.actionsTaken.includes('vfreq'))G.actionsTaken.push('vfreq');
+    openDrawer('Monitoring increased',[{p:'o',t:'Continuous SpO2, HR, BP. RR and LOC q15min.'}],null);setTimeout(checkActions,200);
+  }else if(type==='family'){
+    if(!G.actionsTaken.includes('family'))G.actionsTaken.push('family');SFX.init();SFX.chime();
+    openDrawer('Family updated',[{p:'o',t:'She is having trouble breathing. The doctor has been called.'}],null);setTimeout(checkActions,200);
+  }else if(type==='charge'){
+    if(!G.actionsTaken.includes('charge'))G.actionsTaken.push('charge');SFX.init();SFX.chime();
+    openDrawer('Charge nurse notified',[{p:'o',t:'Bay 4 -- Mrs. Delgado, suspected PE. O2 applied, physician called.'}],null);setTimeout(checkActions,200);
+  }else if(type==='chart'){
+    if(!G.actionsTaken.includes('chart'))G.actionsTaken.push('chart');
+    document.getElementById('cd-title').textContent='Write nursing note';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" id="chart-ta" rows="5">23:45 -- Assessment: Sudden onset SOB. SpO2 91% trending. HR 104, RR 24. Pleuritic chest pain right side. Right calf swollen and tender. Missed enoxaparin flagged. IV rate corrected. O2 applied. HOB elevated. Dr. Okonkwo notified.</textarea><div><div class="chartnotetxt">Include: time, findings, interventions, notifications.</div></div><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  }else if(type==='pain'){
+    if(!G.actionsTaken.includes('pain'))G.actionsTaken.push('pain');
+    openDrawer('Pain reassessed',[{p:'o',t:'Pain 7/10, right-sided, sharp, worse on inspiration.'},{p:'w',t:'Do NOT give opioids -- respiratory depression in a hypoxic patient.'}],null);setTimeout(checkActions,200);
+  // === DAY 2 ===
+  }else if(type==='fluids'){
+    if(!G.actionsTaken.includes('fluids'))G.actionsTaken.push('fluids');
+    G.fluidRunning=true;G.fluidMl=0;G.fluidRate='WIDE OPEN';applyVisualImprovement('fluids');
+    updateVitals({iv_rate:{val:'WIDE OPEN',state:'ok'}});renderIVPanel(G.currentDay);
+    SFX.init();SFX.o2Flow();setTimeout(()=>{SFX.init();SFX.fluidDrip();},800);
+    let mlCount=0;const flIv=setInterval(()=>{mlCount+=10;G.fluidMl=mlCount;renderIVPanel(G.currentDay);if(mlCount>=500){clearInterval(flIv);G.fluidRunning=false;renderIVPanel(G.currentDay);}},200);
+    applyVC({bp:{val:'90/56',state:'warn'}},2);applyVC({bp:{val:'96/62',state:'warn'}},5);applyVC({hr:{val:'108',state:'warn'}},6);
+    openDrawer('IV fluid bolus -- 0.9% NaCl',[{p:'o',t:'500 mL 0.9% NaCl running wide open.'},{p:'o',t:'Target: 30 mL/kg total. This is bolus 1.'},{p:'c',t:'If MAP stays <65 after 1-2L, vasopressors will be needed.'}],null);setTimeout(checkActions,200);
+  }else if(type==='o2_d2'){
+    if(!G.actionsTaken.includes('o2_d2'))G.actionsTaken.push('o2_d2');applyVisualImprovement('o2_d2');G.confusion=false;
+    updateVitals({spo2:{val:'97%',state:'ok'}});applyVC({rr:{val:'20',state:'warn'}},3);SFX.init();SFX.o2Flow();
+    openDrawer('O2 escalated',[{p:'o',t:'O2 increased to 6L via simple face mask. SpO2 to 97%.'}],null);setTimeout(checkActions,200);
+  }else if(type==='position_d2'){
+    if(!G.actionsTaken.includes('position_d2'))G.actionsTaken.push('position_d2');
+    openDrawer('Repositioned',[{p:'o',t:'Passive leg raise. Bridges until IV fluids take effect.'}],null);setTimeout(checkActions,200);
+  }else if(type==='cultures'){
+    if(!G.actionsTaken.includes('cultures'))G.actionsTaken.push('cultures');G.labsDrawn=true;SFX.init();SFX.tapFind();
+    setTimeout(()=>{addLabResult('Lactate','3.2 mmol/L','crit',true);addLabResult('WBC','18.4 x10^9/L','crit',true);SFX.init();SFX.urgentAlarm();},2000);
+    openDrawer('Blood cultures x2 drawn',[{p:'o',t:'Two sets drawn. Aseptic technique. Sent to lab.'},{p:'w',t:'Cultures must always precede antibiotics.'},{p:'c',t:'Lactate result returning in 2 minutes...'}],null);setTimeout(checkActions,200);
+  }else if(type==='antibiotics'){
+    if(!G.actionsTaken.includes('cultures')){openDrawer('Blood cultures first',[{p:'c',t:'Do not give antibiotics before drawing blood cultures. Cultures will be useless.'}],null);SFX.init();SFX.tapWrong();return;}
+    if(!G.actionsTaken.includes('antibiotics'))G.actionsTaken.push('antibiotics');
+    G.abxRunning=true;G.abxProgress=0;G.abxName='Pip-Tazo 3.375g';
+    const abxIv=setInterval(()=>{G.abxProgress+=5;renderIVPanel(G.currentDay);if(G.abxProgress>=100){G.abxRunning=false;clearInterval(abxIv);renderIVPanel(G.currentDay);}},1000);
+    openDrawer('Pip-Tazo 3.375g IV infusing',[{p:'o',t:'100 mL NS over 30 min. Overdue dose given after cultures drawn.'},{p:'w',t:'Every hour of delay in septic shock increases mortality 7.6%.'}],null);setTimeout(checkActions,200);
+  }else if(type==='call_d2'){gotoSBAR();
+  }else if(type==='lactate_repeat'){if(!G.actionsTaken.includes('lactate_repeat'))G.actionsTaken.push('lactate_repeat');openDrawer('Repeat lactate ordered',[{p:'o',t:'Target: clearance at least 10% at 2 hours (SSC 2021).'}],null);setTimeout(checkActions,200);
+  }else if(type==='cath'){if(!G.actionsTaken.includes('cath'))G.actionsTaken.push('cath');openDrawer('Urinary catheter inserted',[{p:'o',t:'IDC inserted. Hourly drainage chart started. Target at least 0.5 mL/kg/hr.'}],null);setTimeout(checkActions,200);
+  }else if(type==='vfreq_d2'){if(!G.actionsTaken.includes('vfreq_d2'))G.actionsTaken.push('vfreq_d2');openDrawer('Continuous monitoring',[{p:'o',t:'Continuous: arterial BP, HR, SpO2. Temp q1h. GCS q30min.'}],null);setTimeout(checkActions,200);
+  }else if(type==='family_d2'){if(!G.actionsTaken.includes('family_d2'))G.actionsTaken.push('family_d2');SFX.init();SFX.chime();openDrawer('Family updated',[{p:'o',t:'He has a serious infection and his blood pressure is low. We are treating him urgently.'}],null);setTimeout(checkActions,200);
+  }else if(type==='charge_d2'){if(!G.actionsTaken.includes('charge_d2'))G.actionsTaken.push('charge_d2');SFX.init();SFX.chime();openDrawer('Charge nurse notified',[{p:'o',t:'Bed 3 -- Mr. Chen, septic shock. Bundle started. Physician called.'}],null);setTimeout(checkActions,200);
+  }else if(type==='chart_d2'){
+    if(!G.actionsTaken.includes('chart_d2'))G.actionsTaken.push('chart_d2');
+    document.getElementById('cd-title').textContent='Write nursing note -- Sepsis';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" id="chart-ta" rows="6">[TIME] -- Mr. Chen, 67M, Bed 3. New confusion GCS 13 (was 15). Febrile 39.1C. BP 86/50 MAP 62 trending down 4h. HR 118. SpO2 95% on 2L. Lactate 3.2. UO 18mL last hour. Wound erythema, cloudy drain, abdomen guarded. Septic shock suspected.\n\nInterventions: O2 to 6L SM. Fluid bolus 500mL NaCl. Blood cultures x2. Pip-Tazo 3.375g IV. IDC inserted. Repeat lactate x2h ordered.\n\nDr. Yuen notified. Charge Nurse Park notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  // === DAY 3 HANDLERS ===
+  }else if(type==='assess_abd'){
+    if(!G.actionsTaken.includes('assess_abd'))G.actionsTaken.push('assess_abd');
+    SFX.init();SFX.tapFind();
+    openDrawer('Abdominal assessment',[
+      {p:'c',t:'Abdomen: distended, firm. Guarding in all quadrants, worse RUQ.'},
+      {p:'c',t:'Rebound tenderness present -- peritoneal irritation.'},
+      {p:'c',t:'Right shoulder tip pain on palpation -- diaphragmatic irritation from blood.'},
+      {p:'w',t:'This is not normal post-op discomfort. This is peritoneal signs.'},
+    ],'Peritoneal signs + shoulder tip pain after cholecystectomy = blood in the abdomen until proven otherwise.');
+    applyVC({hr:{val:'102',state:'warn'}},2);
+    setTimeout(checkActions,200);
+  }else if(type==='hold_morphine'){
+    if(!G.actionsTaken.includes('hold_morphine'))G.actionsTaken.push('hold_morphine');
+    openDrawer('Morphine held',[
+      {p:'o',t:'Morphine held. Decision documented with rationale.'},
+      {p:'w',t:'Morphine masks abdominal pain -- the key diagnostic symptom here.'},
+      {p:'w',t:'Opioid-induced vasodilation in haemorrhagic shock accelerates cardiovascular collapse.'},
+      {p:'c',t:'Document: "Morphine withheld pending surgical assessment -- suspected haemorrhage."'},
+    ],null);
+    setTimeout(checkActions,200);
+  }else if(type==='drain_check'){
+    if(!G.actionsTaken.includes('drain_check'))G.actionsTaken.push('drain_check');
+    SFX.init();SFX.tapFind();
+    openDrawer('JP drain reviewed',[
+      {p:'c',t:'Drain output last 4 hours: 35 mL -- dark reddish-brown.'},
+      {p:'c',t:'Previous 4 hours: 12 mL serosanguineous. Output tripled and darkened.'},
+      {p:'w',t:'The drain only catches what reaches it. The rest is in the abdomen.'},
+    ],'Tripling drain output + colour change = active intra-abdominal haemorrhage.');
+    setTimeout(checkActions,200);
+  }else if(type==='call_surg'){
+    gotoSBAR();
+  }else if(type==='iv_bolus_d3'){
+    if(!G.actionsTaken.includes('iv_bolus_d3'))G.actionsTaken.push('iv_bolus_d3');
+    if(SCENARIOS[3]&&SCENARIOS[3].iv&&SCENARIOS[3].iv.main){SCENARIOS[3].iv.main.rate='250 mL bolus';SCENARIOS[3].iv.main.state='ok';SCENARIOS[3].iv.main.note='Fluid challenge -- haemodynamic support';}
+    renderIVPanel(G.currentDay);SFX.init();SFX.o2Flow();
+    applyVC({hr:{val:'100',state:'warn'}},3);
+    openDrawer('IV fluid challenge',[
+      {p:'o',t:'250 mL NaCl 0.9% bolus commenced. IV site patent.'},
+      {p:'w',t:'Fluids maintain preload but do not stop the bleeding. This buys time for the surgeon.'},
+      {p:'c',t:'Avoid NSAIDs -- ketorolac contraindicated in suspected haemorrhage.'},
+    ],null);
+    setTimeout(checkActions,200);
+  }else if(type==='vfreq_d3'){
+    if(!G.actionsTaken.includes('vfreq_d3'))G.actionsTaken.push('vfreq_d3');
+    openDrawer('Monitoring increased',[
+      {p:'o',t:'Continuous HR, BP, SpO2. Vitals q15min.'},
+      {p:'o',t:'Alert thresholds: HR >110, SBP <100, any further drop.'},
+    ],null);
+    setTimeout(checkActions,200);
+  }else if(type==='crossmatch'){
+    if(!G.actionsTaken.includes('crossmatch'))G.actionsTaken.push('crossmatch');
+    addLabResult('Type & X-match','Pending','warn',true);
+    openDrawer('Type and crossmatch ordered',[
+      {p:'o',t:'Type and crossmatch sent to blood bank. 2 units pRBC requested.'},
+      {p:'w',t:'Blood type A+ on file. Crossmatch takes 20-30 minutes. Order early.'},
+    ],null);
+    setTimeout(checkActions,200);
+  }else if(type==='charge_d3'){
+    if(!G.actionsTaken.includes('charge_d3'))G.actionsTaken.push('charge_d3');
+    SFX.init();SFX.chime();
+    openDrawer('Charge nurse notified',[
+      {p:'o',t:'"Room 214 -- Tyler, possible post-op haemorrhage. Surgeon called, on the way. May need theatre."'},
+    ],null);
+    setTimeout(checkActions,200);
+  }else if(type==='reassure_d3'){
+    if(!G.actionsTaken.includes('reassure_d3'))G.actionsTaken.push('reassure_d3');
+    SFX.init();SFX.chime();
+    openDrawer('Tyler updated',[
+      {p:'o',t:'"I am concerned about some changes in your assessment and I have called your surgeon. He is on his way right now."'},
+      {p:'w',t:'No false reassurance. No speculation. Honest and calm.'},
+      {p:'o',t:'Tyler: "Is it serious?" -- "Your surgeon will explain everything when he arrives. I am staying right here with you."'},
+    ],null);
+    setTimeout(checkActions,200);
+  }else if(type==='chart_d3'){
+    if(!G.actionsTaken.includes('chart_d3'))G.actionsTaken.push('chart_d3');
+    document.getElementById('cd-title').textContent='Write nursing note -- Suspected Haemorrhage';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" id="chart-ta" rows="6">[TIME] -- Tyler, 45M, Room 214. Post-op Day 1 lap chole. Reassessed at request for pain.\n\nFindings: Abdomen distended, firm, guarding RUQ, rebound tenderness. Right shoulder tip pain. JP drain output tripled -- 35 mL dark reddish-brown in 4h (12 mL prior 4h). Skin pale, cool, clammy. HR trending 88 to 98 over 6h. BP trending 128/84 to 118/76 over 6h.\n\nMorphine withheld -- suspected post-op haemorrhage. IV fluid challenge 250 mL commenced. Type and crossmatch ordered. Dr. Martinez notified [TIME], on way. Charge Nurse Ramos notified. Patient updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  }
+}
+function submitChart(){const key=G.currentDay===2?'chart_d2':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
+
+// === SBAR ===
+function gotoSBAR(){
+  if(G.timerIv)clearInterval(G.timerIv);SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
+  G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
+  wipeGo(()=>{showScreen('sbar');renderSBAR();});
+}
+function renderSBAR(){
+  const sd=getSBAR();const dragMode=isSBARDragMode();
+  document.getElementById('phone-name').textContent=sd.doctor;document.getElementById('phone-role').textContent=sd.role+' '+sd.phone;
+  document.getElementById('sbar-title').textContent='SBAR -- '+sd.doctor;
+  document.getElementById('sbar-sub').textContent=dragMode?'Drag each card to the correct section':'SBAR Report';
+  if(!G._phoneRing)G._phoneRing=setInterval(()=>{SFX.init();SFX.pagerBuzz();},4000);
+  const btn=document.getElementById('btn-sbar-deliver');
+  if(btn){btn.textContent='Deliver SBAR (match all 4 first)';btn.disabled=true;btn.style.opacity='.35';btn.style.fontSize='9px';}
+  if(dragMode)renderSBARDrag(sd);else renderSBARFull(sd);
+}
+function renderSBARDrag(sd){
+  const body=document.getElementById('sbar-body');
+  const cards=[...sd.cards].sort(()=>Math.random()-.5);
+  body.innerHTML='<div style="padding:6px 14px 4px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Drag each card to the correct section</div><div id="sbar-card-pool">'+cards.map(card=>'<div class="sbar-card" id="card-'+card.id+'" draggable="true" ontouchstart="touchStartCard(event,\''+card.id+'\')" ontouchmove="touchMoveCard(event)" ontouchend="touchEndCard(event,\''+card.id+'\')" ondragstart="dragStartCard(event,\''+card.id+'\')"><div class="sbar-card-text">'+card.text+'</div></div>').join('')+'</div></div><div style="padding:4px 14px 8px;">'+['s','b','a','r'].map(k=>'<div class="sbar-zone" id="zone-'+k+'" ondragover="event.preventDefault();this.classList.add(\'drag-over\')" ondragleave="this.classList.remove(\'drag-over\')" ondrop="dropCard(event,\''+k+'\')"><div class="zone-letter '+k+'-letter" id="zletter-'+k+'">'+k.toUpperCase()+'</div><div style="flex:1;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">'+sd[k].title+'</div><div class="zone-hint" id="zone-hint-'+k+'">'+sd[k].hint+'</div><div class="zone-content" id="zone-content-'+k+'" style="display:none;"></div></div></div>').join('')+'</div>';
+  G._sbarPlaced={s:null,b:null,a:null,r:null};G._dragCardId=null;
+}
+function renderSBARFull(sd){
+  const body=document.getElementById('sbar-body');
+  body.innerHTML=['s','b','a','r'].map(k=>{const card=sd.cards.find(c=>c.zone===k);return '<div class="sbar-section"><div class="sbar-sec-hdr"><div class="sbar-letter">'+k.toUpperCase()+'</div><div class="sbar-sec-title">'+sd[k].title+'</div></div><div class="sbar-sec-body"><div class="sbar-field">'+(card?card.text:sd[k].hint)+'</div></div></div>';}).join('');
+  const btn=document.getElementById('btn-sbar-deliver');if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.fontSize='';btn.textContent='Deliver SBAR';}
+}
+function dragStartCard(e,cardId){G._dragCardId=cardId;e.dataTransfer.setData('text/plain',cardId);setTimeout(()=>{const el=document.getElementById('card-'+cardId);if(el)el.classList.add('dragging');},0);}
+function dropCard(e,zone){e.preventDefault();const zEl=document.getElementById('zone-'+zone);if(zEl)zEl.classList.remove('drag-over');const cardId=G._dragCardId||e.dataTransfer.getData('text/plain');if(!cardId)return;placeCard(cardId,zone);}
+let _touchCardId=null,_touchClone=null;
+function touchStartCard(e,cardId){_touchCardId=cardId;const el=document.getElementById('card-'+cardId);if(!el)return;_touchClone=el.cloneNode(true);_touchClone.style.cssText='position:fixed;z-index:9999;pointer-events:none;opacity:.88;width:'+el.offsetWidth+'px;background:var(--ink2);border:1px solid var(--amber);padding:8px 10px;font-size:12px;';document.body.appendChild(_touchClone);el.classList.add('dragging');}
+function touchMoveCard(e){e.preventDefault();if(!_touchClone)return;const t=e.touches[0];_touchClone.style.left=(t.clientX-80)+'px';_touchClone.style.top=(t.clientY-30)+'px';document.querySelectorAll('.sbar-zone').forEach(z=>z.classList.remove('drag-over'));const el=document.elementFromPoint(t.clientX,t.clientY);const zone=el&&el.closest('.sbar-zone');if(zone)zone.classList.add('drag-over');}
+function touchEndCard(e,cardId){if(_touchClone){_touchClone.remove();_touchClone=null;}const el=document.getElementById('card-'+cardId);if(el)el.classList.remove('dragging');document.querySelectorAll('.sbar-zone').forEach(z=>z.classList.remove('drag-over'));if(!e.changedTouches)return;const t=e.changedTouches[0];const target=document.elementFromPoint(t.clientX,t.clientY);const zone=target&&target.closest('.sbar-zone');if(zone)placeCard(cardId,zone.id.replace('zone-',''));}
+function placeCard(cardId,zone){
+  const sd=getSBAR();const card=sd.cards.find(cd=>cd.id===cardId);if(!card)return;
+  if(Object.keys(G._sbarPlaced).some(z=>G._sbarPlaced[z]===cardId&&z===card.zone))return;
+  Object.keys(G._sbarPlaced).forEach(z=>{if(G._sbarPlaced[z]===cardId){G._sbarPlaced[z]=null;resetZone(z);}});
+  const isCorrect=card.zone===zone;
+  const zEl=document.getElementById('zone-'+zone);const hEl=document.getElementById('zone-hint-'+zone);const cEl=document.getElementById('zone-content-'+zone);const lEl=document.getElementById('zletter-'+zone);
+  if(isCorrect){
+    G._sbarPlaced[zone]=cardId;
+    if(zEl){zEl.classList.remove('wrong');zEl.classList.add('correct');}if(hEl)hEl.style.display='none';if(cEl){cEl.style.display='block';cEl.textContent=card.text;}if(lEl)lEl.classList.add('filled');
+    const cardEl=document.getElementById('card-'+cardId);if(cardEl){cardEl.classList.add('placed');cardEl.draggable=false;}
+    SFX.init();SFX.tapFind();updateSBARPips();
+    if(sd.cards.every(cd=>G._sbarPlaced[cd.zone]===cd.id)){const btn=document.getElementById('btn-sbar-deliver');if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.fontSize='';btn.textContent='Deliver SBAR';}SFX.init();SFX.chime();}
+  }else{
+    if(zEl){zEl.classList.remove('correct');zEl.classList.add('wrong');setTimeout(()=>zEl.classList.remove('wrong'),600);}
+    const cardEl=document.getElementById('card-'+cardId);if(cardEl)cardEl.classList.remove('dragging');
+    SFX.init();SFX.tapWrong();
+    const hints={s:'S = Situation: What is happening right now?',b:'B = Background: Why is this patient at risk?',a:'A = Assessment: What do the numbers say?',r:'R = Recommendation: What do you need?'};
+    const hEl2=document.getElementById('zone-hint-'+zone);if(hEl2&&hEl2.style.display!=='none'){const orig=hEl2.textContent;hEl2.style.color='var(--alarm)';hEl2.textContent='Try again -- '+hints[zone];setTimeout(()=>{hEl2.style.color='';hEl2.textContent=orig;},1500);}
+  }
+}
+function resetZone(zone){const hEl=document.getElementById('zone-hint-'+zone);const cEl=document.getElementById('zone-content-'+zone);const lEl=document.getElementById('zletter-'+zone);const zEl=document.getElementById('zone-'+zone);if(hEl)hEl.style.display='';if(cEl){cEl.style.display='none';cEl.textContent='';}if(lEl)lEl.classList.remove('filled');if(zEl)zEl.classList.remove('correct','wrong');}
+function updateSBARPips(){
+  const sd=getSBAR();const correct=sd.cards.filter(cd=>G._sbarPlaced[cd.zone]===cd.id).length;
+  ['s','b','a','r'].forEach(k=>{const p=document.getElementById('pip-'+k);if(p)p.classList.toggle('done',!!G._sbarPlaced[k]);});
+  const st=document.getElementById('pip-status');if(st){st.textContent=correct+' / 4 matched';st.style.color=correct===4?'var(--teal)':'var(--muted)';}
+}
+function deliverSBAR(){
+  if(G._sbarDone)return;G._sbarDone=true;if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}
+  const sd=getSBAR();const deliverBtn=document.getElementById('btn-sbar-deliver');
+  if(deliverBtn){deliverBtn.textContent='Delivered';deliverBtn.disabled=true;deliverBtn.style.background='var(--teal)';deliverBtn.style.color='var(--ink)';}
+  const backBtn=document.querySelector('#scr-sbar .btn-sbar-edit');if(backBtn)backBtn.style.display='none';
+  SFX.init();SFX.confirm();
+  const body=document.getElementById('sbar-body');const typing=document.createElement('div');typing.style.cssText='padding:10px 12px;font-family:var(--mono);font-size:9px;color:var(--muted);';typing.innerHTML='<span style="animation:blink .6s infinite;display:inline-block;">&#9679;</span> '+sd.doctor.split(' ')[1]+' is responding...';body.appendChild(typing);body.scrollTop=body.scrollHeight;
+  setTimeout(()=>{
+    typing.remove();const resp=document.createElement('div');resp.className='md-response';resp.innerHTML='<div class="md-name">'+sd.doctor+' responds</div><div class="md-text">'+sd.md_response.text+'</div>';body.appendChild(resp);
+    const fu=document.createElement('div');fu.style.cssText='padding:8px 12px 4px;font-family:var(--mono);font-size:9px;color:var(--teal);border-top:1px solid var(--wire);';fu.textContent='OK -- '+sd.md_response.followup;body.appendChild(fu);body.scrollTop=body.scrollHeight;SFX.init();SFX.resolve();
+    setTimeout(()=>{
+      const actArea=document.getElementById('sbar-actions');if(actArea){actArea.innerHTML='';const cont=document.createElement('button');cont.className='btn-sbar-call';cont.style.background='var(--teal)';cont.textContent='Continue shift';cont.onclick=()=>wipeGo(()=>{showScreen('action');renderActionScreen();});actArea.appendChild(cont);}
+    },1500);
+  },sd.md_response.delay);
+}
+function goBackToInvestigate(){
+  const idx=G.actionsTaken.indexOf('call_md');if(idx>-1)G.actionsTaken.splice(idx,1);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}
+  wipeGo(()=>{showScreen('investigate');if(!G.animFrame)startSceneLoop();renderPips();updateVitals();checkActions();if(!G.timerIv&&G.timerSec>0)startTimer(true);});
+}
+
+// === ACTION SCREEN ===
+let _answered=false;
+function gotoAction(){_answered=false;if(G.timerIv)clearInterval(G.timerIv);stopScene();wipeGo(()=>{showScreen('action');renderActionScreen();});}
+function renderActionScreen(){
+  const row=document.getElementById('ct-row');if(row)row.innerHTML=getSC().taps.filter(t=>!t.wrong).map(t=>`<div class="cttag ${G.clues.includes(t.id)?'':'off'}">${t.clue||t.lbl}</div>`).join('');
+  document.getElementById('aq-text').textContent=getSC().question;document.getElementById('aq-sub').textContent=getSC().sub;
+  document.getElementById('choices-wrap').innerHTML=getSC().choices.map((c,i)=>`<button class="choicebtn" onclick="answerChoice(${i})"><div class="ckey">${c.key}</div><div class="clbl">${c.lbl}</div><div class="cdesc">${c.desc}</div></button>`).join('');
+  document.getElementById('choice-exp').innerHTML='';
+}
+function answerChoice(idx){
+  if(_answered)return;_answered=true;
+  const ch=getSC().choices[idx];
+  document.querySelectorAll('.choicebtn').forEach((el,i)=>{el.setAttribute('disabled','');if(i===idx)el.classList.add(ch.correct?'cor':'wrng');else if(getSC().choices[i].correct)el.classList.add('rev');});
+  G.outcome=ch.correct?'good':'bad';
+  const expBox=document.getElementById('choice-exp');
+  if(ch.correct){
+    SFX.init();SFX.resolve();
+    if(expBox){expBox.style.cssText='background:rgba(0,201,160,.08);border-left:3px solid var(--teal);padding:10px 14px;margin:8px 16px;';expBox.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:var(--teal);margin-bottom:4px;">Correct</div><div style="font-family:var(--body);font-size:12px;color:var(--text);line-height:1.65;font-weight:300;">'+ch.exp+'</div>';}
+    setTimeout(()=>wipeGo(()=>{showScreen('handoff2');buildHandoff2();}),2200);
+  }else{
+    SFX.init();SFX.flatline();
+    if(expBox){expBox.style.cssText='background:rgba(217,64,64,.08);border-left:3px solid var(--alarm);padding:10px 14px;margin:8px 16px;';expBox.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:var(--alarm);margin-bottom:5px;">Why this was dangerous</div><div style="font-family:var(--body);font-size:12px;color:var(--text);line-height:1.65;font-weight:300;margin-bottom:8px;">'+ch.exp+'</div><div style="font-family:var(--mono);font-size:8px;color:var(--muted);margin-bottom:8px;">The correct approach:</div><div style="font-family:var(--body);font-size:12px;color:var(--teal);line-height:1.65;font-weight:300;margin-bottom:10px;">'+getSC().choices.find(x=>x.correct).exp+'</div><div style="display:flex;gap:8px;"><button onclick="tryAgainSameDay()" style="flex:1;padding:10px;background:rgba(232,168,74,.15);border:1px solid var(--amber);color:var(--amber);font-family:var(--mono);font-size:10px;font-weight:700;cursor:pointer;text-transform:uppercase;">Try again</button><button onclick="continueAfterFail()" style="flex:1;padding:10px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;text-transform:uppercase;">Continue</button></div>';}
+  }
+}
+function continueAfterFail(){wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
+function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
+
+// === HANDOFF 2 ===
+const HO2_ITEMS={
+  1:['Patient: Mrs. Delgado, 58F, Bay 4 -- suspected PE, post-op Day 2 hip replacement','SpO2 91% trending -- O2 applied, targeting >94%','Physician called -- CT-PA and heparin pending','Missed enoxaparin today -- DVT history, high risk','IV rate corrected 150 to 80 mL/hr','Right calf swollen and tender -- DVT source likely','Monitoring q15min','Family aware'],
+  2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- IDC inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
+  3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- new distension, guarding, shoulder tip pain','JP drain output tripled -- 35 mL dark red in 4 hours','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern, surgical assessment required','IV fluid challenge 250 mL commenced. Type and crossmatch ordered','Dr. Martinez notified -- returned to theatre or imaging pending','Family aware'],
+};
+function buildHandoff2(){
+  const items=HO2_ITEMS[G.currentDay]||HO2_ITEMS[1];G.handoffSel=[];
+  const wrap=document.getElementById('ho2-items');if(!wrap)return;
+  wrap.innerHTML=items.map((txt,i)=>`<div class="ho2item" onclick="toggleHO2(${i})"><div class="ho2check" id="hoc-${i}"></div><div class="ho2txt" id="hot-${i}">${txt}</div></div>`).join('');updateHo2Fb();
+}
+function toggleHO2(i){const idx=G.handoffSel.indexOf(i);if(idx===-1)G.handoffSel.push(i);else G.handoffSel.splice(idx,1);const on=G.handoffSel.includes(i);const check=document.getElementById('hoc-'+i);const txt=document.getElementById('hot-'+i);if(check){check.className='ho2check'+(on?' on':'');check.textContent=on?'OK':'';}if(txt)txt.className='ho2txt'+(on?' on':'');updateHo2Fb();}
+function updateHo2Fb(){const n=G.handoffSel.length;const total=(HO2_ITEMS[G.currentDay]||HO2_ITEMS[1]).length;const fb=document.getElementById('ho2-fb');if(!fb)return;if(n===0){fb.textContent='Select items to include.';fb.className='ho2fb';}else if(n<total*0.4){fb.textContent='Too brief -- your colleague will miss critical information.';fb.className='ho2fb bad';}else if(n<total*0.65){fb.textContent='Selective -- verify priorities are included.';fb.className='ho2fb warn';}else{fb.textContent='Complete handoff -- your colleague has the full picture.';fb.className='ho2fb good';}}
+function confirmHandoff(){wipeGo(()=>{showScreen('endshift');buildEndShift();});}
+function gotoHandoff2(){wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
+
+// === END SHIFT ===
+function buildEndShift(){
+  const sc=getSC();const good=G.outcome==='good';
+  const deltas=good?sc.outcomeGood.statDeltas:sc.outcomeBad.statDeltas;
+  const esTitle=document.getElementById('es-title');if(esTitle)esTitle.textContent=(good?sc.outcomeGood.headline:sc.outcomeBad.headline)||'Shift complete.';
+  const statsEl=document.getElementById('es-stats');
+  if(statsEl&&deltas){statsEl.innerHTML=Object.entries(deltas).map(([k,v])=>{const pct=Math.min(100,Math.max(0,(G.stats[k]||40)+v));const col=k==='fatigue'?'var(--amber)':'var(--teal)';return '<div class="essbar"><div class="essname">'+k+'</div><div class="essbarbg"><div class="essfill" style="width:'+pct+'%;background:'+col+';"></div></div><div class="essval">'+(v>0?'+'+v:v)+'</div></div>';}).join('');Object.entries(deltas).forEach(([k,v])=>{if(G.stats[k]!==undefined)G.stats[k]=Math.max(0,Math.min(100,(G.stats[k]||40)+v));});}
+  const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
+  setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
+  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'}};
+  const srcs={1:'BTS PE Guidelines 2017 / Canadian Cardiovascular Society / Wells DVT Score',2:'Surviving Sepsis Campaign 2021 / Kumar et al. Crit Care Med 2006'};
+  const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
+  G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
+  if(good&&G.currentDay>=G.highestDay)G.highestDay=Math.min(30,G.currentDay+1);
+  else if(!G.highestDay||G.currentDay>=G.highestDay)G.highestDay=Math.max(G.highestDay,G.currentDay);
+  SFX.init();SFX.dawnAmbient();saveProgress();
+  setTimeout(()=>playEndScene(G.outcome),400);
+}
+
+// === END SCENE ===
+const END_MSGS={
+  1:{good:["You made the call. Your voice might have shaken. You still picked up the phone and delivered that SBAR. That is the hardest part -- and you did it on Day 1.","She was struggling to breathe and you figured it out. O2, positioning, physician called. That instinct is already forming.","You connected the calf, the missed anticoag, the sudden SOB before the monitor screamed. That is pattern recognition."],bad:["The pattern -- post-op, swollen calf, sudden SOB -- now lives in your memory. You will not miss it again.","The hesitation before calling is real. Every nurse feels it. Today you learned what the hesitation costs. Come back.","This is the safest place to make this mistake. No one was harmed. Come back tomorrow."]},
+  2:{good:["qSOFA 3/3, MAP under 65 -- you recognised septic shock and you started the bundle. Blood cultures first, then antibiotics. The order matters.","You initiated resuscitation before the physician arrived. That is nursing.","The 1-hour bundle runs in parallel. You understood that under pressure. That is clinical judgment."],bad:["Sepsis is one of the hardest clinical pictures to act on decisively. Come back.","Cultures before antibiotics. Two minutes. You know now why it matters.","Today you learned what the bundle looks like. Come back and run it."]},
+  3:{good:["The vitals looked normal. The trend was not. You read the trend. That is the skill that takes most nurses months to build -- and you found it on Day 3.","You held the morphine. That single decision -- assessment before medication -- is one of the hardest calls in nursing. You made it correctly.","Shoulder tip pain. Distension. A tripling drain. Each clue alone has an explanation. Together they told a story. You listened to the story."],bad:["Trending vitals are more important than a single value. HR 88 to 98 is not alarming. The direction over 6 hours is. That direction is what you are looking for next time.","Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate. Those are two different things. You know that now.","Post-operative haemorrhage hides in plain sight. The body compensates. Normal-looking numbers with an abnormal trend. You have seen it now. You will not miss it again."]},
+};
+const END_SUBS={good:["Go home. You earned it.","That shift is done. You are not the same nurse who started it.","Rest well. Come back tomorrow."],bad:["Come back. It will be different next time.","One step further than yesterday. Always.","Rest. Then come back."]};
+function getEndMsg(day,outcome){const pool=(END_MSGS[day]||END_MSGS[1])[outcome==='good'?'good':'bad'];const msg=pool[Math.floor(Math.random()*pool.length)];const sub=END_SUBS[outcome==='good'?'good':'bad'][Math.floor(Math.random()*END_SUBS.good.length)];return {msg,sub};}
+function playEndScene(outcome){
+  const canvas=document.getElementById('end-canvas');if(!canvas)return;
+  const wrap=document.getElementById('end-scene-wrap');if(wrap){canvas.width=wrap.offsetWidth||390;canvas.height=200;}
+  const ctx=canvas.getContext('2d');if(!ctx)return;
+  const W=canvas.width,H=canvas.height;
+  let frame=0,phase=0,phaseT=0;
+  const st={cabinetAngle:0,scrubOpacity:1,mirrorSmile:0,breathY:0,starAlpha:0,lights:Array.from({length:5},(_,i)=>({x:W*(0.1+i*.2),y:H*.12,r:3+Math.random()*3,a:.2+Math.random()*.3,ph:Math.random()*Math.PI*2}))};
+  let animId2;
+  function fr(){
+    frame++;phaseT++;if(phase===0&&phaseT>60){phase=1;phaseT=0;}if(phase===1&&phaseT>90){phase=2;phaseT=0;}if(phase===2&&phaseT>100){phase=3;phaseT=0;}if(phase===3&&phaseT>80)st.starAlpha=Math.min(1,st.starAlpha+0.02);
+    st.cabinetAngle+=((phase>=1?1:0)-st.cabinetAngle)*.05;st.scrubOpacity+=((phase>=2?0:1)-st.scrubOpacity)*.03;st.mirrorSmile+=((phase>=3?1:0)-st.mirrorSmile)*.04;st.breathY=Math.sin(frame*.04)*2;
+    ctx.fillStyle='#0e1520';ctx.fillRect(0,0,W,H);ctx.fillStyle='#1a2235';ctx.fillRect(0,0,W,H*.75);
+    st.lights.forEach(l=>{l.ph+=.03;ctx.fillStyle=`rgba(200,220,255,${l.a+.05*Math.sin(l.ph)})`;ctx.beginPath();ctx.ellipse(l.x,l.y,l.r,l.r*.4,0,0,Math.PI*2);ctx.fill();});
+    ctx.fillStyle='#141c2e';ctx.fillRect(0,H*.75,W,H*.25);
+    [.05,.18,.31].forEach((xr,i)=>{const lx=W*xr,ly=H*.22,lw=W*.11,lh=H*.52;ctx.fillStyle=i===1?'#1e3060':'#162040';ctx.fillRect(lx,ly,lw,lh);ctx.strokeStyle='rgba(100,140,200,.3)';ctx.lineWidth=1;ctx.strokeRect(lx,ly,lw,lh);ctx.fillStyle='rgba(180,200,240,.5)';ctx.fillRect(lx+lw-6,ly+lh*.45,3,lh*.1);});
+    const mx=W*.62,my=H*.2,mw=W*.28,mh=H*.48;ctx.fillStyle='#0a1020';ctx.strokeStyle='rgba(150,180,220,.4)';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(mx,my,mw,mh,4);ctx.fill();ctx.stroke();
+    if(st.cabinetAngle>0){const lx=W*.18,ly=H*.22,lw=W*.11,lh=H*.52;ctx.fillStyle=`rgba(20,40,80,${.9-st.cabinetAngle*.3})`;ctx.fillRect(lx,ly,lw*(1-st.cabinetAngle*.8),lh);}
+    const cx=W*.38,cy=H*.72+st.breathY;
+    if(st.scrubOpacity>0){ctx.save();ctx.globalAlpha=st.scrubOpacity;ctx.fillStyle='#2a5080';ctx.beginPath();ctx.roundRect(cx-18,cy-30,36,48,4);ctx.fill();ctx.restore();}
+    ctx.fillStyle='rgb(200,165,120)';ctx.beginPath();ctx.roundRect(cx-14,cy-55,28,28,10);ctx.fill();ctx.fillStyle='#2a1800';ctx.beginPath();ctx.roundRect(cx-15,cy-58,30,16,8);ctx.fill();
+    ctx.fillStyle='#1a0a00';
+    if(st.mirrorSmile>0.5){ctx.lineWidth=2;ctx.strokeStyle='#1a0a00';ctx.beginPath();ctx.arc(cx-6,cy-38,4,Math.PI*1.1,Math.PI*1.9);ctx.stroke();ctx.beginPath();ctx.arc(cx+6,cy-38,4,Math.PI*1.1,Math.PI*1.9);ctx.stroke();ctx.fillStyle=`rgba(220,130,120,${st.mirrorSmile*.35})`;ctx.beginPath();ctx.ellipse(cx-10,cy-34,6,4,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+10,cy-34,6,4,0,0,Math.PI*2);ctx.fill();}
+    else{ctx.beginPath();ctx.ellipse(cx-6,cy-38,3.5,2.5,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(cx+6,cy-38,3.5,2.5,0,0,Math.PI*2);ctx.fill();}
+    ctx.strokeStyle='#5a1a10';ctx.lineWidth=1.5;ctx.lineCap='round';
+    if(st.mirrorSmile>0.5){ctx.beginPath();ctx.arc(cx,cy-31,6,.15,Math.PI-.15);ctx.stroke();}else{ctx.beginPath();ctx.moveTo(cx-4,cy-30);ctx.lineTo(cx+4,cy-30);ctx.stroke();}
+    if(st.mirrorSmile>0.7){ctx.save();ctx.globalAlpha=(st.mirrorSmile-.7)*3;ctx.font="bold 10px 'DM Mono'";ctx.fillStyle='rgba(0,201,160,.9)';ctx.textAlign='center';ctx.fillText('Time to go home',mx+mw*.5,my-8);ctx.textAlign='left';ctx.restore();}
+    if(st.starAlpha>0){[[cx-30,cy-70],[cx+35,cy-60],[cx-20,cy-80]].forEach(([sx,sy],i)=>{ctx.save();ctx.globalAlpha=st.starAlpha*(Math.sin(frame*.12+i*1.2)*.5+.5);ctx.fillStyle=['#ffd700','#00c9a0','#ffffff'][i];ctx.font='12px serif';ctx.fillText(['*','o','*'][i],sx,sy);ctx.restore();});}
+    animId2=requestAnimationFrame(fr);
+  }
+  fr();G._endAnimId=animId2;
+  setTimeout(()=>{const {msg,sub}=getEndMsg(G.currentDay,outcome);const msgEl=document.getElementById('end-msg-text');const subEl=document.getElementById('end-msg-sub');if(msgEl){msgEl.textContent=msg;msgEl.classList.add('show');}if(subEl){subEl.textContent=sub;subEl.classList.add('show');}},2000);
+}
+
+// === CALENDAR ===
+function gotoCalendar(){wipeGo(()=>{showScreen('calendar');renderCalendar();});}
+function renderCalendar(){
+  const done=Object.keys(G.dayResults).length;const el=document.getElementById('cal-days-done');if(el)el.textContent=done;const xe=document.getElementById('cal-xp');if(xe)xe.textContent=G.xp;
+  const se=document.getElementById('cal-sub');if(se)se.textContent='Day '+G.highestDay+' unlocked -- '+done+' completed';
+  const tabs=document.getElementById('cal-level-tabs');if(tabs)tabs.innerHTML=[0,1,2,3,4,5,6].map(l=>'<button class="cal-level-tab '+(l===0?'active':'')+'" onclick="filterCalLevel('+l+')" id="cal-tab-'+l+'">'+(l===0?'All':'L'+l+' '+LEVEL_NAMES[l])+'</button>').join('');
+  renderCalGrid(0);
+}
+function filterCalLevel(level){document.querySelectorAll('.cal-level-tab').forEach(t=>t.classList.remove('active'));const tab=document.getElementById('cal-tab-'+level);if(tab)tab.classList.add('active');renderCalGrid(level);}
+function renderCalGrid(filterLevel){
+  const body=document.getElementById('cal-body');if(!body)return;
+  const levels=filterLevel===0?[1,2,3,4,5,6]:[filterLevel];
+  const themes=['','Learn to see the danger.','Not every situation is clear.','Move before panic takes over.','Tiny changes can kill.','Being clinically right is not enough.','Patients are people before diagnoses.'];
+  body.innerHTML=levels.map(lv=>{const days=DAY_META.filter(d=>d&&d.level===lv);const col=LEVEL_COLORS[lv];return '<div class="cal-section"><div class="cal-section-hdr"><div class="cal-section-dot" style="background:'+col+'"></div><span class="cal-section-name" style="color:'+col+'">Level '+lv+' -- '+LEVEL_NAMES[lv]+'</span><span class="cal-section-theme">"'+themes[lv]+'"</span></div><div class="cal-grid">'+days.map(d=>renderCalDay(d)).join('')+'</div></div>';}).join('');
+}
+function getDayStatus(day){if(G.dayResults[day])return 'done';if(day===G.highestDay)return 'current';if(day<G.highestDay)return 'unlocked';return 'locked';}
+function renderCalDay(meta){
+  const status=getDayStatus(meta.day);const result=G.dayResults[meta.day];const isLocked=status==='locked';
+  const onclick=isLocked?'':`onclick="selectDay(${meta.day})"`;const tick=status==='done'?'<div class="cal-done-tick">OK</div>':'';const outcome=result?`<div class="cal-outcome ${result.outcome}"></div>`:'';
+  const nameHtml=status==='done'?'<div class="cal-day-name">'+(meta.name.split(' -- ')[0]||meta.name)+'</div>':'';
+  return '<div class="cal-day '+status+'" '+onclick+'>'+tick+'<div class="cal-day-num">'+meta.day+'</div><div class="cal-day-icon">'+(isLocked?'&#128274;':meta.icon)+'</div><div class="cal-day-dept">'+meta.dept+'</div>'+nameHtml+outcome+'</div>';
+}
+function selectDay(day){
+  if(getDayStatus(day)==='locked')return;G.currentDay=day;
+  G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.fluidName='0.9% NaCl 1L';G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
+  resetVSForDay(day);showDayDetail(day);
+}
+function showDayDetail(day){
+  const meta=DAY_META[day];if(!meta)return;const result=G.dayResults[day];const col=LEVEL_COLORS[meta.level];
+  const old=document.getElementById('day-detail-overlay');if(old)old.remove();
+  const overlay=document.createElement('div');overlay.id='day-detail-overlay';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:800;display:flex;align-items:flex-end;justify-content:center;';
+  const panel=document.createElement('div');panel.style.cssText='width:100%;max-width:414px;background:var(--ink2);border-top:2px solid '+col+';padding:20px 18px 32px;';
+  const prevText=result?'<div style="margin:10px 0;padding:8px 12px;background:rgba(0,0,0,.3);border-left:2px solid '+(result.outcome==='good'?'var(--teal)':'var(--amber)')+'"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">Previous result</div><div style="font-family:var(--body);font-size:13px;color:var(--text);font-weight:300;">'+(result.outcome==='good'?'Correct decision':'Learning opportunity')+' -- '+(result.cluesFound||0)+' clues found</div></div>':'';
+  panel.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:'+col+';letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px;">Level '+meta.level+' '+LEVEL_NAMES[meta.level]+'</div><div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;"><div style="font-size:36px;">'+meta.icon+'</div><div><div style="font-family:var(--serif);font-size:18px;font-weight:700;color:#fff;">Day '+meta.day+'</div><div style="font-family:var(--body);font-size:13px;color:var(--muted2);font-weight:300;">'+meta.name+'</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px;">'+meta.dept+'</div></div></div>'+prevText+'<div style="display:flex;gap:8px;margin-top:14px;"><button onclick="document.getElementById(\'day-detail-overlay\').remove();gotoHandoff();" style="flex:1;padding:13px;background:'+col+';color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.15em;border:none;cursor:pointer;text-transform:uppercase;">'+(result?'Replay shift':'Begin shift')+'</button><button onclick="document.getElementById(\'day-detail-overlay\').remove();" style="padding:13px 16px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;">Cancel</button></div>';
+  overlay.appendChild(panel);overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});document.getElementById('app').appendChild(overlay);
+}
+
+// === HUD MENU ===
+function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
+function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
+function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
+function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
+function closeHudConfirm(){const el=document.getElementById('hud-confirm');if(el)el.remove();}
+function showHudConfirm(title,msg,confirmLabel,onConfirm){const old=document.getElementById('hud-confirm');if(old)old.remove();const overlay=document.createElement('div');overlay.id='hud-confirm';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;';const box=document.createElement('div');box.style.cssText='background:var(--ink2);border:1px solid var(--wire2);padding:20px 18px;max-width:280px;width:90%;';box.innerHTML='<div style="font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">'+title+'</div><div style="font-family:var(--body);font-size:13px;color:var(--muted2);font-weight:300;line-height:1.6;margin-bottom:16px;">'+msg+'</div><div style="display:flex;gap:8px;"><button id="hud-confirm-yes" style="flex:1;padding:11px;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;border:none;cursor:pointer;text-transform:uppercase;">'+confirmLabel+'</button><button onclick="closeHudConfirm()" style="flex:1;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;">Cancel</button></div>';overlay.appendChild(box);document.getElementById('app').appendChild(overlay);document.getElementById('hud-confirm-yes').onclick=()=>{overlay.remove();onConfirm();};}
+
+// === SAVE / LOAD ===
+function saveProgress(){try{localStorage.setItem('n30v3',JSON.stringify({stats:G.stats,xp:G.xp,level:G.level,badges:G.badges,highestDay:G.highestDay,dayResults:G.dayResults,savedAt:Date.now()}));}catch(e){}}
+function loadProgress(){try{const raw=localStorage.getItem('n30v3');if(!raw)return;const s=JSON.parse(raw);if(s.stats)Object.assign(G.stats,s.stats);if(s.xp)G.xp=s.xp;if(s.level)G.level=s.level;if(s.badges)G.badges=s.badges;if(s.highestDay)G.highestDay=s.highestDay;else G.highestDay=1;if(s.dayResults)G.dayResults=s.dayResults;}catch(e){}SFX.loadMuted();}
+function goToNextDay(){G.currentDay=G.currentDay===1?2:1;gotoHandoff();}
+
+// === SFX ===
+const SFX={
+  _ctx:null,_muted:false,_beepIv:null,
+  init(){
+    if(!this._ctx){try{this._ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}
+    if(this._ctx&&this._ctx.state==='suspended'){try{this._ctx.resume();}catch(e){}}
+  },
+  loadMuted(){try{this._muted=localStorage.getItem('n30muted')==='1';}catch(e){}this._updateBtn();},
+  toggle(){this._muted=!this._muted;try{localStorage.setItem('n30muted',this._muted?'1':'0');}catch(e){}this._updateBtn();},
+  _updateBtn(){const t=document.getElementById('snd-txt');if(t)t.textContent=this._muted?'Sound off':'Sound on';},
+  _t(freq,type,gain,dur,startTime){if(!this._ctx||this._muted)return;const o=this._ctx.createOscillator();const g=this._ctx.createGain();o.connect(g);g.connect(this._ctx.destination);o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,startTime);g.gain.exponentialRampToValueAtTime(0.001,startTime+dur);o.start(startTime);o.stop(startTime+dur);},
+  _n(dur,gain,startTime,cutoff=800){if(!this._ctx||this._muted)return;const b=this._ctx.createBuffer(1,this._ctx.sampleRate*dur,this._ctx.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=this._ctx.createBufferSource();const f=this._ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=cutoff;const g=this._ctx.createGain();s.buffer=b;s.connect(f);f.connect(g);g.connect(this._ctx.destination);g.gain.setValueAtTime(gain,startTime);g.gain.exponentialRampToValueAtTime(0.001,startTime+dur);s.start(startTime);s.stop(startTime+dur);},
+  monitorBeep(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(1046,'sine',.08,.1,t);this._t(1318,'sine',.06,.08,t+.12);},
+  startMonitorLoop(){if(this._beepIv)return;this._beepIv=setInterval(()=>{if(!this._muted&&this._ctx){const t=this._ctx.currentTime;this._t(1046,'sine',.04,.1,t);}},1800);},
+  startICULoop(){if(this._beepIv)return;this._beepIv=setInterval(()=>{if(!this._muted&&this._ctx){const t=this._ctx.currentTime;this._t(1200,'sine',.04,.1,t);this._t(1200,'sine',.04,.08,t+.12);}},1200);},
+  stopMonitorLoop(){if(this._beepIv){clearInterval(this._beepIv);this._beepIv=null;}},
+  tapFind(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(880,'sine',.12,.08,t);this._t(1320,'sine',.08,.06,t+.1);},
+  tapWrong(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(220,'square',.15,.12,t);this._n(.1,.06,t,200);},
+  urgentAlarm(){if(!this._ctx)return;const t=this._ctx.currentTime;[0,.15,.3,.45].forEach(o=>this._t(1760,'square',.12,.12,t+o));},
+  flatline(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(440,'square',1.5,.15,t);},
+  flatlineLong(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(440,'square',2.5,.18,t);},
+  codeBlueAlarm(){if(!this._ctx)return;const t=this._ctx.currentTime;for(let i=0;i<6;i++)this._t(1760,'square',.12,.18,t+i*.15);},
+  fluidDrip(){if(!this._ctx)return;const t=this._ctx.currentTime;this._n(.06,.04,t,600);},
+  bpRising(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(440,'sine',.06,.2,t);this._t(520,'sine',.06,.2,t+.25);},
+  deterioration(){if(!this._ctx)return;const t=this._ctx.currentTime;this._n(.4,.08,t,300);},
+  o2Flow(){if(!this._ctx)return;const t=this._ctx.currentTime;this._n(.3,.04,t,2000);},
+  pagerBuzz(){if(!this._ctx)return;const t=this._ctx.currentTime;[0,.08,.16].forEach(o=>this._n(.06,.08,t+o,400));},
+  resolve(){if(!this._ctx)return;const t=this._ctx.currentTime;[0,.15,.3].forEach((o,i)=>this._t([523,659,784][i],'sine',.08,.15,t+o));},
+  chime(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(1047,'sine',.12,.3,t);this._t(1319,'sine',.08,.25,t+.08);this._t(1568,'sine',.06,.2,t+.16);},
+  confirm(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(659,'sine',.1,.15,t);this._t(784,'sine',.08,.12,t+.12);},
+  dawnAmbient(){if(!this._ctx)return;const t=this._ctx.currentTime;[0,.3,.6,.9].forEach((o,i)=>this._t([523,587,659,784][i],'sine',.04,.4,t+o));},
+  xpGain(){if(!this._ctx)return;const t=this._ctx.currentTime;[523,659,784,1047].forEach((f,i)=>this._t(f,'sine',.06,.15,t+i*.12));},
+  badge(){if(!this._ctx)return;const t=this._ctx.currentTime;[784,988,1175,1319].forEach((f,i)=>this._t(f,'sine',.08,.18,t+i*.1));},
+};
+
+// === INIT ===
+try{loadProgress();}catch(e){}
+try{drawTitleChar();}catch(e){}
+try{
+  // Resume AudioContext on any user interaction
+  const resumeAudio=()=>{SFX.init();};
+  document.addEventListener('click',resumeAudio);
+  document.addEventListener('touchstart',resumeAudio);
+  document.addEventListener('keydown',resumeAudio);
+}catch(e){}
+try{window.addEventListener('resize',()=>{const sc=document.getElementById('scene-canvas');const wrap=document.getElementById('scene-wrap');if(sc&&wrap&&wrap.offsetWidth){sc.width=wrap.offsetWidth;sc.height=wrap.offsetHeight;renderTZ();}});}catch(e){}
+</script>
+</body>
+</html>
