@@ -1,0 +1,1530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NURSE 30: The Detective</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d0f14;--ink2:#181c26;--ink3:#222838;
+  --wire:#2a3248;--wire2:#3a4560;
+  --paper:#f2ede4;--paper2:#e8e0d4;
+  --amber:#e8a84a;--amber2:#f5c26a;--amber-bg:#2a1e08;
+  --red:#d94040;--red-bg:#2a0f0f;
+  --teal:#00c9a0;--teal-bg:#012420;
+  --muted:#5a6890;--muted2:#8090b8;
+  --alarm:#ff4444;
+  --serif:'Syne',sans-serif;
+  --mono:'DM Mono',monospace;
+  --body:'DM Sans',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;background:#0d0f14;display:flex;align-items:center;justify-content:center;}
+#root{width:100%;max-width:414px;height:100svh;max-height:900px;position:relative;overflow:hidden;background:var(--ink);font-family:var(--body);}
+
+/* WIPE */
+#wipe{position:absolute;inset:0;background:var(--ink);z-index:999;pointer-events:none;opacity:0;transition:opacity .35s;}
+#wipe.in{opacity:1;}
+
+/* SCREENS */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;opacity:0;pointer-events:none;transition:opacity .5s;}
+.scr.on{opacity:1;pointer-events:all;}
+
+/* ═══ TITLE ═══════════════════════════════════════ */
+#scr-title{background:var(--ink);align-items:stretch;}
+.title-scan{position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);opacity:.4;animation:scan 5s linear infinite;z-index:2;}
+@keyframes scan{0%{top:0}100%{top:100%}}
+.title-grid{position:absolute;inset:0;background-image:linear-gradient(var(--wire) 1px,transparent 1px),linear-gradient(90deg,var(--wire) 1px,transparent 1px);background-size:28px 28px;opacity:.18;}
+.title-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,transparent 30%,var(--ink) 100%);}
+.title-body{position:relative;z-index:3;flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:0;}
+
+/* Top bar */
+.title-topbar{padding:20px 24px 0;display:flex;align-items:center;gap:10px;}
+.title-pill{background:var(--teal-bg);border:1px solid var(--teal);color:var(--teal);font-family:var(--mono);font-size:9px;letter-spacing:.2em;padding:4px 10px;}
+.title-blink{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--teal);animation:blink .9s infinite;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Main title */
+.title-hero{padding:0 24px;display:flex;flex-direction:column;gap:0;}
+.title-day{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.2em;margin-bottom:8px;}
+.title-n30{font-family:var(--serif);font-weight:800;font-size:64px;line-height:.88;color:#fff;letter-spacing:-2px;}
+.title-n30 span{color:var(--amber);}
+.title-det{font-family:var(--mono);font-size:13px;color:var(--muted2);letter-spacing:.25em;margin-top:10px;border-left:2px solid var(--wire2);padding-left:12px;}
+.title-clue-strip{margin:20px 24px 0;display:flex;gap:8px;}
+.tclue{flex:1;background:var(--ink2);border:1px solid var(--wire);padding:10px 10px 10px 12px;border-left:3px solid var(--wire2);position:relative;overflow:hidden;}
+.tclue::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--teal),transparent);}
+.tclue-icon{font-size:16px;margin-bottom:4px;}
+.tclue-label{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;margin-bottom:2px;}
+.tclue-val{font-size:11px;color:var(--paper);font-weight:500;}
+
+/* CTA */
+.title-cta{padding:20px 24px 32px;display:flex;flex-direction:column;gap:10px;}
+.btn-start{width:100%;padding:16px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:12px;font-weight:700;letter-spacing:.2em;border:none;cursor:pointer;transition:all .2s;position:relative;overflow:hidden;text-transform:uppercase;}
+.btn-start::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,.15);transform:translateX(-100%);transition:transform .4s;}
+.btn-start:active::before{transform:translateX(100%);}
+.title-note{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;letter-spacing:.1em;}
+
+/* ═══ HANDOFF ══════════════════════════════════════ */
+#scr-handoff{background:var(--ink);}
+.ho-header{padding:16px 20px 12px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.ho-status{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.ho-dot{width:7px;height:7px;border-radius:50%;background:var(--amber);animation:blink .8s infinite;}
+.ho-status-text{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.18em;text-transform:uppercase;}
+.ho-title{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;}
+.ho-sub{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.12em;margin-top:2px;}
+
+/* Chat-style handoff */
+.ho-chat{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px;scrollbar-width:none;}
+.ho-chat::-webkit-scrollbar{display:none;}
+.chat-bubble{max-width:88%;padding:11px 14px;border-radius:0;font-size:13px;font-family:var(--body);line-height:1.65;animation:slideUp .4s ease both;}
+@keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.bubble-from{align-self:flex-start;background:var(--ink2);border:1px solid var(--wire);color:var(--paper);border-left:3px solid var(--muted);}
+.bubble-from .b-name{font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:.12em;margin-bottom:5px;}
+.bubble-you{align-self:flex-end;background:var(--teal-bg);border:1px solid var(--teal);color:var(--teal);}
+.bubble-alert{align-self:stretch;background:var(--amber-bg);border:1px solid var(--amber);color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:.05em;}
+.bubble-alert .b-icon{font-size:16px;margin-bottom:4px;}
+.chat-typing{display:flex;gap:4px;align-items:center;padding:11px 14px;background:var(--ink2);border:1px solid var(--wire);align-self:flex-start;}
+.typing-dot{width:5px;height:5px;border-radius:50%;background:var(--muted);animation:typedot 1.2s infinite;}
+.typing-dot:nth-child(2){animation-delay:.2s;}
+.typing-dot:nth-child(3){animation-delay:.4s;}
+@keyframes typedot{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* Vitals card */
+.vitals-card{background:var(--ink2);border:1px solid var(--wire);padding:12px 14px;margin:0 20px;}
+.vc-title{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.15em;margin-bottom:10px;}
+.vc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.vc-item{}
+.vc-label{font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:.1em;margin-bottom:3px;}
+.vc-val{font-family:var(--mono);font-size:14px;font-weight:500;}
+.val-warn{color:var(--amber);}
+.val-crit{color:var(--alarm);}
+.val-ok{color:var(--teal);}
+
+.ho-cta{padding:14px 20px 28px;flex-shrink:0;border-top:1px solid var(--wire);}
+.btn-investigate{width:100%;padding:14px;background:transparent;border:1px solid var(--amber);color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:.2em;cursor:pointer;transition:all .2s;text-transform:uppercase;}
+.btn-investigate:active{background:var(--amber-bg);}
+.ho-timer{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.1em;}
+
+/* ═══ INVESTIGATE ══════════════════════════════════ */
+#scr-investigate{background:var(--ink);}
+.inv-hud{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.inv-hud-left{display:flex;flex-direction:column;gap:2px;}
+.inv-day{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:.12em;}
+.inv-pt{font-size:13px;font-weight:500;color:var(--paper);}
+.inv-hud-right{display:flex;align-items:center;gap:10px;}
+.touches-left{display:flex;gap:5px;}
+.touch-pip{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--muted);transition:all .3s;}
+.touch-pip.used{border-color:var(--amber);background:var(--amber);}
+.touch-pip.gone{border-color:var(--wire);background:transparent;opacity:.3;}
+.alarm-flash{font-family:var(--mono);font-size:9px;color:var(--alarm);letter-spacing:.12em;display:none;animation:blink .6s infinite;}
+.alarm-flash.show{display:block;}
+
+/* Timer ring */
+.timer-ring-wrap{position:relative;width:38px;height:38px;}
+.timer-ring{transform:rotate(-90deg);}
+.timer-ring-bg{stroke:var(--wire);}
+.timer-ring-fill{stroke:var(--teal);stroke-linecap:butt;transition:stroke-dashoffset .9s linear,stroke .3s;}
+.timer-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10px;font-weight:500;color:var(--teal);}
+
+/* Scene area */
+.scene-wrap{flex:1;position:relative;overflow:hidden;}
+.scene-canvas{position:absolute;inset:0;width:100%;height:100%;display:block;}
+.scene-overlay{position:absolute;inset:0;pointer-events:none;}
+/* tap-zones container: none, each .tap-zone: all */
+#tap-zones{pointer-events:none;}
+.tap-zone{pointer-events:all;}
+
+/* Clue tap zones */
+/* tap-zone inline-styled in JS for pixel accuracy */
+@keyframes tapring{0%,100%{transform:scale(1);opacity:.55}50%{transform:scale(1.18);opacity:1}}
+.tap-hint{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.35);white-space:nowrap;pointer-events:none;}
+
+/* Vital monitor overlay */
+.monitor-overlay{position:absolute;top:8px;left:8px;background:rgba(13,15,20,.9);border:1px solid var(--wire2);padding:8px 10px;min-width:140px;backdrop-filter:blur(4px);}
+.mo-title{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.15em;margin-bottom:6px;text-transform:uppercase;}
+.mo-rows{display:flex;flex-direction:column;gap:3px;}
+.mo-row{display:flex;justify-content:space-between;gap:12px;}
+.mo-label{font-family:var(--mono);font-size:8px;color:var(--muted2);}
+.mo-val{font-family:var(--mono);font-size:9px;font-weight:500;}
+.ecg-strip{margin-top:7px;height:24px;width:100%;}
+
+/* Clue drawer */
+.clue-drawer{position:absolute;bottom:0;left:0;right:0;background:var(--ink2);border-top:2px solid var(--teal);transform:translateY(100%);transition:transform .38s cubic-bezier(.16,1,.3,1);z-index:30;max-height:52%;}
+.clue-drawer.open{transform:translateY(0);}
+.cd-bar{width:28px;height:3px;background:var(--wire2);margin:10px auto 0;}
+.cd-header{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 6px;}
+.cd-title{font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.18em;text-transform:uppercase;}
+.cd-close{background:transparent;border:1px solid var(--wire);color:var(--muted2);width:24px;height:24px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.cd-body{padding:0 16px 16px;overflow-y:auto;max-height:34vh;scrollbar-width:none;}
+.cd-body::-webkit-scrollbar{display:none;}
+.cd-finding{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--wire);}
+.cd-finding:last-of-type{border:none;}
+.cf-pip{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.pip-warn{background:var(--amber);}
+.pip-crit{background:var(--alarm);animation:blink .8s infinite;}
+.pip-ok{background:var(--teal);}
+.pip-neutral{background:var(--muted);}
+/* Simple readable body font for findings */
+.cd-finding-text{font-family:var(--body);font-size:14px;line-height:1.6;color:var(--paper2);font-weight:300;}
+.cd-finding-text strong{color:#fff;font-weight:500;}
+.cd-finding-text em{color:var(--amber);font-style:normal;font-weight:500;}
+.cd-finding-text.crit strong,.cd-finding-text.crit em{color:var(--alarm);}
+.cd-insight{margin-top:10px;padding:10px 12px;border-left:2px solid var(--teal);background:rgba(0,201,160,.05);}
+/* Insight text - clean readable */
+.cd-insight-text{font-family:var(--body);font-size:13px;color:var(--muted2);line-height:1.7;font-style:italic;font-weight:300;}
+
+/* Wrong tap feedback */
+.wrong-flash{position:absolute;inset:0;background:rgba(217,64,64,.06);opacity:0;pointer-events:none;transition:opacity .3s;}
+.wrong-flash.show{opacity:1;}
+
+/* Action bar */
+.action-bar{position:absolute;bottom:0;left:0;right:0;padding:10px 12px 24px;background:linear-gradient(0deg,var(--ink) 60%,transparent);z-index:20;}
+.action-scroll{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;}
+.action-scroll::-webkit-scrollbar{display:none;}
+.act-btn{flex-shrink:0;padding:10px 16px;border:1px solid var(--wire2);background:rgba(13,15,20,.92);color:var(--muted2);font-family:var(--mono);font-size:9px;letter-spacing:.12em;cursor:pointer;transition:all .2s;white-space:nowrap;text-transform:uppercase;}
+.act-btn:hover,.act-btn:active{border-color:var(--teal);color:var(--teal);}
+.act-btn.urgent{border-color:rgba(217,64,64,.6);color:var(--alarm);}
+.act-btn.locked{opacity:.3;pointer-events:none;}
+.act-btn.used{opacity:.2;pointer-events:none;}
+
+/* ═══ ACTION ═══════════════════════════════════════ */
+#scr-action{background:var(--ink);}
+.act-header{padding:16px 20px 12px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.act-header-label{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.2em;margin-bottom:4px;}
+.act-header-title{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;}
+.clue-summary{padding:14px 20px;flex-shrink:0;}
+.cs-title{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.15em;margin-bottom:10px;text-transform:uppercase;}
+.cs-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.cs-tag{padding:5px 10px;background:var(--ink2);border:1px solid var(--wire);font-family:var(--mono);font-size:9px;color:var(--muted2);letter-spacing:.08em;}
+.cs-tag.active{border-color:var(--teal);color:var(--teal);}
+.clue-question{padding:0 20px 14px;flex-shrink:0;}
+/* Story text - clean simple readable */
+.cq-text{font-family:var(--body);font-size:16px;line-height:1.65;color:var(--paper);font-weight:400;}
+.cq-sub{font-family:var(--body);font-size:13px;color:var(--muted2);line-height:1.6;margin-top:8px;font-weight:300;}
+.choices-wrap{flex:1;overflow-y:auto;padding:0 20px 20px;scrollbar-width:none;}
+.choices-wrap::-webkit-scrollbar{display:none;}
+.choice-btn{width:100%;padding:14px 16px;background:var(--ink2);border:1px solid var(--wire);margin-bottom:8px;cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:flex-start;gap:12px;}
+.choice-btn:active{border-color:var(--teal);}
+.choice-key{font-family:var(--mono);font-size:10px;color:var(--muted);width:20px;flex-shrink:0;padding-top:2px;}
+.choice-content{}
+.choice-label{font-size:14px;color:var(--paper);font-family:var(--body);font-weight:500;margin-bottom:3px;}
+.choice-desc{font-size:12px;color:var(--muted2);font-family:var(--body);font-weight:300;line-height:1.5;}
+.choice-btn.correct{border-color:var(--teal);background:var(--teal-bg);}
+.choice-btn.correct .choice-label{color:var(--teal);}
+.choice-btn.wrong{border-color:var(--red);background:var(--red-bg);}
+.choice-btn.wrong .choice-label{color:var(--red);}
+.choice-btn.reveal{border-color:var(--teal);background:var(--teal-bg);pointer-events:none;}
+.choice-btn.reveal .choice-label{color:var(--teal);}
+.choice-btn[disabled]{pointer-events:none;}
+
+/* ═══ OUTCOME ══════════════════════════════════════ */
+#scr-outcome{background:var(--ink);}
+.out-top{flex:0 0 55%;position:relative;overflow:hidden;}
+.out-canvas{display:block;width:100%;height:100%;}
+.out-status-badge{position:absolute;top:14px;left:16px;padding:6px 12px;font-family:var(--mono);font-size:9px;letter-spacing:.2em;text-transform:uppercase;}
+.badge-good{background:var(--teal-bg);border:1px solid var(--teal);color:var(--teal);}
+.badge-bad{background:var(--red-bg);border:1px solid var(--red);color:var(--red);}
+.out-bottom{flex:1;padding:16px 20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;border-top:2px solid var(--wire);}
+.out-bottom::-webkit-scrollbar{display:none;}
+.out-headline{font-family:var(--serif);font-size:22px;font-weight:700;color:#fff;line-height:1.2;}
+/* Outcome story text - largest, most readable */
+.out-story{font-family:var(--body);font-size:15px;color:var(--paper2);line-height:1.75;font-weight:300;}
+.out-today{background:var(--ink2);border:1px solid var(--wire);padding:12px 14px;border-left:3px solid var(--amber);}
+.out-today-label{font-family:var(--mono);font-size:8px;color:var(--amber);letter-spacing:.15em;margin-bottom:5px;text-transform:uppercase;}
+/* Daily summary text */
+.out-today-text{font-family:var(--body);font-size:13px;color:var(--paper);line-height:1.65;font-weight:400;}
+.out-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.stat-box{background:var(--ink2);border:1px solid var(--wire);padding:10px 12px;}
+.sb-label{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;margin-bottom:5px;text-transform:uppercase;}
+.sb-bar{height:3px;background:var(--wire);margin-bottom:4px;}
+.sb-fill{height:100%;transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+.sb-val{font-family:var(--mono);font-size:10px;font-weight:500;}
+.out-cta{display:flex;gap:8px;flex-shrink:0;}
+.btn-next{flex:1;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.18em;border:none;cursor:pointer;text-transform:uppercase;}
+.btn-retry{flex:0 0 auto;padding:13px 18px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;letter-spacing:.15em;cursor:pointer;text-transform:uppercase;}
+
+/* ═══ HANDOFF SCREEN ══════════════════════════════ */
+#scr-handoff2{background:var(--ink);}
+.ho2-header{padding:14px 18px 10px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.ho2-label{font-family:var(--mono);font-size:9px;color:var(--amber);letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px;}
+.ho2-title{font-family:var(--serif);font-size:20px;font-weight:700;color:#fff;}
+.ho2-sub{font-size:12px;color:var(--muted);font-family:var(--body);margin-top:2px;font-weight:300;}
+.ho2-list{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:7px;scrollbar-width:none;}
+.ho2-list::-webkit-scrollbar{display:none;}
+.ho2-item{display:flex;align-items:flex-start;gap:10px;padding:11px 13px;border:1px solid var(--wire);background:var(--ink2);cursor:pointer;transition:all .2s;}
+.ho2-item.on{border-color:var(--teal);background:rgba(0,201,160,.07);}
+.ho2-check{width:18px;height:18px;border:1.5px solid var(--wire2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:11px;transition:all .2s;}
+.ho2-item.on .ho2-check{background:var(--teal);border-color:var(--teal);color:var(--ink);}
+.ho2-text{font-family:var(--body);font-size:13px;color:var(--muted2);line-height:1.6;font-weight:300;}
+.ho2-item.on .ho2-text{color:var(--text);}
+.ho2-feedback{padding:10px 16px;border-top:1px solid var(--wire);font-family:var(--mono);font-size:9px;letter-spacing:.08em;flex-shrink:0;transition:color .3s;}
+.ho2-cta{padding:12px 16px 24px;flex-shrink:0;}
+.ho2-confirm{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;border:none;cursor:pointer;text-transform:uppercase;}
+/* ═══ END SHIFT SCREEN ════════════════════════════ */
+#scr-endshift{background:var(--ink);}
+.es-header{padding:14px 18px 10px;border-bottom:1px solid var(--wire);flex-shrink:0;}
+.es-label{font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.18em;text-transform:uppercase;margin-bottom:3px;}
+.es-title{font-family:var(--serif);font-size:20px;font-weight:700;color:#fff;}
+.es-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:18px;scrollbar-width:none;}
+.es-body::-webkit-scrollbar{display:none;}
+.es-section-label{font-family:var(--mono);font-size:8px;letter-spacing:.16em;color:var(--muted);text-transform:uppercase;margin-bottom:8px;}
+/* Stats */
+.es-stat-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.es-stat-name{font-family:var(--mono);font-size:9px;color:var(--muted2);width:110px;flex-shrink:0;letter-spacing:.05em;}
+.es-stat-bar{flex:1;height:4px;background:var(--wire);border-radius:0;}
+.es-stat-fill{height:100%;transition:width 1.2s cubic-bezier(.16,1,.3,1);}
+.es-stat-delta{font-family:var(--mono);font-size:10px;font-weight:500;width:34px;text-align:right;flex-shrink:0;}
+.delta-pos{color:var(--teal);}
+.delta-neg{color:var(--alarm);}
+/* XP */
+.es-xp-wrap{background:var(--ink2);border:1px solid var(--wire);padding:14px 16px;}
+.es-xp-score{font-family:var(--serif);font-size:40px;font-weight:700;color:var(--teal);line-height:1;margin-bottom:4px;}
+.es-xp-breakdown{font-family:var(--mono);font-size:9px;color:var(--muted);line-height:1.9;letter-spacing:.05em;margin-bottom:12px;}
+.es-xp-bar-bg{height:5px;background:var(--wire);}
+.es-xp-bar-fill{height:100%;background:var(--teal);width:0%;transition:width 1.4s cubic-bezier(.16,1,.3,1);}
+.es-xp-level{display:flex;justify-content:space-between;margin-top:5px;font-family:var(--mono);font-size:8px;color:var(--muted);}
+/* Badge */
+.es-badge{display:flex;align-items:center;gap:12px;background:var(--amber-bg);border:1px solid var(--amber);padding:12px 14px;}
+.es-badge-icon{font-size:26px;flex-shrink:0;}
+.es-badge-name{font-family:var(--serif);font-size:14px;font-weight:700;color:var(--amber2);margin-bottom:2px;}
+.es-badge-desc{font-family:var(--body);font-size:12px;color:var(--amber);font-weight:300;line-height:1.5;}
+.es-badge-new{font-family:var(--mono);font-size:8px;padding:2px 7px;background:var(--amber);color:var(--ink);margin-left:6px;letter-spacing:.08em;}
+/* Tip */
+.es-tip{border-left:2px solid var(--teal);background:rgba(0,201,160,.04);padding:12px 14px;}
+.es-tip-label{font-family:var(--mono);font-size:8px;color:var(--teal);letter-spacing:.15em;margin-bottom:6px;text-transform:uppercase;}
+.es-tip-main{font-family:var(--body);font-size:15px;color:var(--text);font-weight:500;line-height:1.5;margin-bottom:5px;}
+.es-tip-sub{font-family:var(--body);font-size:12px;color:var(--muted2);line-height:1.65;font-weight:300;}
+.es-tip-src{font-family:var(--mono);font-size:8px;color:var(--teal);margin-top:8px;letter-spacing:.06em;}
+.es-tip-saved{font-family:var(--mono);font-size:8px;color:var(--muted);margin-top:4px;letter-spacing:.06em;}
+/* CTA */
+.es-cta{padding:12px 18px 28px;flex-shrink:0;display:flex;gap:8px;}
+.es-btn-next{flex:1;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;border:none;cursor:pointer;text-transform:uppercase;}
+.es-btn-retry{padding:13px 16px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;letter-spacing:.12em;cursor:pointer;text-transform:uppercase;}
+</style>
+</head>
+<body>
+<div id="root">
+<div id="wipe"></div>
+
+<!-- ═══ TITLE ═══ -->
+<div id="scr-title" class="scr on">
+  <div class="title-scan"></div>
+  <div class="title-grid"></div>
+  <div class="title-vignette"></div>
+  <div class="title-body">
+    <div class="title-topbar">
+      <div class="title-pill"><span class="title-blink"></span> &nbsp;LIVE</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;">EMERGENCY DEPT · NIGHT SHIFT</div>
+    </div>
+    <div style="padding:24px 24px 0;">
+      <canvas id="title-char-canvas" width="200" height="220" style="display:block;margin:0 auto;"></canvas>
+    </div>
+    <div class="title-hero">
+      <div class="title-day">30-DAY CLINICAL SIMULATION</div>
+      <div class="title-n30">NURSE<br><span>30</span></div>
+      <div class="title-det">THE DETECTIVE</div>
+    </div>
+    <div class="title-clue-strip">
+      <div class="tclue"><div class="tclue-icon">🔍</div><div class="tclue-label">MECHANIC</div><div class="tclue-val">Find clues. Deduce.</div></div>
+      <div class="tclue"><div class="tclue-icon">🏥</div><div class="tclue-label">DOMAIN</div><div class="tclue-val">Real bedside care.</div></div>
+      <div class="tclue"><div class="tclue-icon">📅</div><div class="tclue-label">GOAL</div><div class="tclue-val">Grow over 30 days.</div></div>
+    </div>
+    <div class="title-cta">
+      <button class="btn-start" onclick="gotoHandoff()">BEGIN SHIFT →</button>
+      <div class="title-note">5 minutes · portrait mode · one hand</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HANDOFF ═══ -->
+<div id="scr-handoff" class="scr">
+  <div class="ho-header">
+    <div class="ho-status"><div class="ho-dot"></div><div class="ho-status-text">Incoming handoff</div></div>
+    <div class="ho-title">Your assignment</div>
+    <div class="ho-sub">Day 1 · Bay 4 · 23:42</div>
+  </div>
+  <div class="ho-chat" id="ho-chat"></div>
+  <div class="vitals-card" id="ho-vitals" style="display:none;">
+    <div class="vc-title">Last recorded vitals</div>
+    <div class="vc-grid">
+      <div class="vc-item"><div class="vc-label">SpO2</div><div class="vc-val val-crit">91%</div></div>
+      <div class="vc-item"><div class="vc-label">HR</div><div class="vc-val val-warn">104</div></div>
+      <div class="vc-item"><div class="vc-label">RR</div><div class="vc-val val-warn">24</div></div>
+      <div class="vc-item"><div class="vc-label">BP</div><div class="vc-val val-warn">138/90</div></div>
+      <div class="vc-item"><div class="vc-label">Temp</div><div class="vc-val val-ok">37.2°</div></div>
+      <div class="vc-item"><div class="vc-label">GCS</div><div class="vc-val val-warn">14</div></div>
+    </div>
+  </div>
+  <div class="ho-cta">
+    <button class="btn-investigate" id="ho-cta-btn" style="display:none;" onclick="gotoInvestigate()">ENTER BAY 4 →</button>
+    <div class="ho-timer" id="ho-timer-text"></div>
+  </div>
+</div>
+
+<!-- ═══ INVESTIGATE ═══ -->
+<div id="scr-investigate" class="scr">
+  <div class="inv-hud">
+    <div class="inv-hud-left">
+      <div class="inv-day">Day 1 · Bay 4</div>
+      <div class="inv-pt" id="inv-pt">Mrs. Delgado, 58F</div>
+    </div>
+    <div class="inv-hud-right">
+      <div class="alarm-flash" id="alarm-flash">⬤ ALARM</div>
+      <div class="touches-left" id="touches-left"></div>
+      <div class="timer-ring-wrap">
+        <svg class="timer-ring" width="38" height="38" viewBox="0 0 38 38">
+          <circle class="timer-ring-bg" cx="19" cy="19" r="16" fill="none" stroke-width="2.5"/>
+          <circle class="timer-ring-fill" id="timer-ring-fill" cx="19" cy="19" r="16" fill="none" stroke-width="2.5" stroke-dasharray="100.5" stroke-dashoffset="0"/>
+        </svg>
+        <div class="timer-num" id="timer-num">3:00</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scene-wrap" id="scene-wrap">
+    <canvas id="scene-canvas" class="scene-canvas"></canvas>
+    <!-- tap-zones lives OUTSIDE scene-overlay so pointer-events work -->
+    <div id="tap-zones" style="position:absolute;inset:0;z-index:15;pointer-events:none;"></div>
+    <div class="wrong-flash" id="wrong-flash"></div>
+    <!-- monitor + vstrip: pointer-events:none wrapper, monitor itself clickable -->
+    <div style="position:absolute;inset:0;pointer-events:none;z-index:10;">
+      <div class="monitor-overlay" style="pointer-events:all;">
+        <div class="mo-title">Monitor</div>
+        <div class="mo-rows">
+          <div class="mo-row"><span class="mo-label">SpO2</span><span class="mo-val val-crit" id="mo-spo2">91%</span></div>
+          <div class="mo-row"><span class="mo-label">HR</span><span class="mo-val val-warn" id="mo-hr">104</span></div>
+          <div class="mo-row"><span class="mo-label">RR</span><span class="mo-val val-warn" id="mo-rr">24</span></div>
+        </div>
+        <canvas class="ecg-strip" id="ecg-canvas" width="130" height="24"></canvas>
+      </div>
+      <div style="position:absolute;bottom:72px;left:8px;right:8px;display:flex;gap:5px;flex-wrap:wrap;" id="vstrip"></div>
+    </div>
+    <!-- Clue drawer -->
+    <div class="clue-drawer" id="clue-drawer">
+      <div class="cd-bar"></div>
+      <div class="cd-header">
+        <div class="cd-title" id="cd-title">Finding</div>
+        <button class="cd-close" onclick="closeDrawer()">×</button>
+      </div>
+      <div class="cd-body" id="cd-body"></div>
+    </div>
+    <!-- Action bar -->
+    <div class="action-bar" id="action-bar" style="display:none;">
+      <div class="action-scroll" id="action-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ACTION ═══ -->
+<div id="scr-action" class="scr">
+  <div class="act-header">
+    <div class="act-header-label">Make your decision</div>
+    <div class="act-header-title">What do you do?</div>
+  </div>
+  <div class="clue-summary">
+    <div class="cs-title">Clues collected</div>
+    <div class="cs-tags" id="cs-tags"></div>
+  </div>
+  <div class="clue-question">
+    <div class="cq-text" id="cq-text"></div>
+    <div class="cq-sub" id="cq-sub"></div>
+  </div>
+  <div class="choices-wrap" id="choices-wrap"></div>
+</div>
+
+
+<!-- ═══ HANDOFF SCREEN ═══ -->
+<div id="scr-handoff2" class="scr">
+  <div class="ho2-header">
+    <div class="ho2-label">End of shift</div>
+    <div class="ho2-title">Give handoff</div>
+    <div class="ho2-sub">Select what your next nurse needs to know.</div>
+  </div>
+  <div class="ho2-list" id="ho2-list"></div>
+  <div class="ho2-feedback" id="ho2-feedback" style="color:var(--muted);">Select the items your next nurse needs to act on.</div>
+  <div class="ho2-cta">
+    <button class="ho2-confirm" id="ho2-confirm" onclick="confirmHandoff()">Confirm handoff →</button>
+  </div>
+</div>
+
+<!-- ═══ END SHIFT SCREEN ═══ -->
+<div id="scr-endshift" class="scr">
+  <div class="es-header">
+    <div class="es-label">Shift complete</div>
+    <div class="es-title" id="es-title">Day 1 done.</div>
+  </div>
+  <div class="es-body">
+    <div>
+      <div class="es-section-label">Your growth this shift</div>
+      <div id="es-stats"></div>
+    </div>
+    <div class="es-xp-wrap">
+      <div class="es-xp-score" id="es-xp-score">0</div>
+      <div class="es-xp-breakdown" id="es-xp-breakdown"></div>
+      <div class="es-xp-bar-bg"><div class="es-xp-bar-fill" id="es-xp-fill"></div></div>
+      <div class="es-xp-level"><span id="es-level-label">Level 2 — New Grad</span><span id="es-xp-label">0 / 1000 XP</span></div>
+    </div>
+    <div class="es-badge" id="es-badge" style="display:none;"></div>
+    <div class="es-tip" id="es-tip"></div>
+  </div>
+  <div class="es-cta">
+    <button class="es-btn-retry" onclick="wipeGo(gotoHandoff)">Retry</button>
+    <button class="es-btn-next" onclick="wipeGo(gotoTitle)">Next day →</button>
+  </div>
+</div>
+
+<!-- ═══ OUTCOME ═══ -->
+<div id="scr-outcome" class="scr">
+  <div class="out-top">
+    <canvas id="out-canvas"></canvas>
+    <div class="out-status-badge" id="out-badge"></div>
+  </div>
+  <div class="out-bottom">
+    <div class="out-headline" id="out-headline"></div>
+    <div class="out-story" id="out-story"></div>
+    <div class="out-today">
+      <div class="out-today-label">Today's lesson</div>
+      <div class="out-today-text" id="out-today"></div>
+    </div>
+    <div class="out-stats" id="out-stats"></div>
+    <div class="out-cta">
+      <button class="btn-retry" onclick="wipeGo(gotoHandoff)">Retry</button>
+      <button class="btn-next" onclick="wipeGo(gotoTitle)">Next day →</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────
+const G={
+  clues:[],touchesLeft:3,timerSec:180,timerActive:false,
+  o2Device:null, // null | 'prong' | 'mask' | 'nrb'
+  xp:0,level:1,badges:[],tipsUnlocked:[],
+  handoffSelections:[],
+  timerInterval:null,ecgInterval:null,animFrame:null,
+  outcome:null,ecgT:0,
+  stats:{judgment:42,confidence:38,communication:40,resilience:45,fatigue:28},
+};
+
+// ─── SCENARIO ─────────────────────────────────────
+const SCENARIO={
+  patient:'Mrs. Delgado, 58F',
+  dept:'Post-op · Hip replacement · Day 2',
+  handoff:[
+    {delay:300,from:'Charge Nurse Kim',text:'Hey — Bay 4, Mrs. Delgado, 58F. Post-op day 2 after a hip replacement. She\'s been saying she can\'t catch her breath. Started about 30 minutes ago.'},
+    {delay:1800,from:'Charge Kim',text:'SpO2 just dropped to 91%. She\'s anxious, pale, and sweating. I need you to go in and assess her. I\'ll be right behind you.'},
+    {delay:3400,from:'You',text:'On my way.',you:true},
+    {delay:4500,alert:true,text:'Patient deterioration detected · Bay 4 · SpO2 ↓'},
+  ],
+  taps:[
+    {id:'face',label:'Observe',x:'38%',y:'32%',findings:[
+      {pip:'warn',text:'Pale and <strong>visibly anxious</strong>. Skin cool and clammy.'},
+      {pip:'warn',text:'Gripping the bed rail. Eyes wide.'},
+      {pip:'crit',text:'She says: "<em>I can\'t get a full breath.</em> It just... came on suddenly."'},
+    ],insight:'Sudden onset. Post-operative. Frightened. Something is wrong.',clue:'Sudden SOB'},
+    {id:'chest',label:'Auscultate',x:'40%',y:'50%',findings:[
+      {pip:'crit',text:'<em>Breath sounds decreased at the right base.</em>'},
+      {pip:'warn',text:'No wheeze. Respiratory rate: <strong>24/min</strong>.'},
+      {pip:'warn',text:'She winces. "<em>It hurts when I breathe in deeply.</em>"'},
+    ],insight:'Pleuritic chest pain + decreased breath sounds + post-op day 2. This pattern means something.',clue:'Pleuritic pain'},
+    {id:'iv',label:'IV line',x:'72%',y:'48%',findings:[
+      {pip:'crit',text:'IV infusion running at <em>150 mL/hr</em> — faster than prescribed (80 mL/hr).'},
+      {pip:'warn',text:'Chart shows <em>enoxaparin was not given today.</em>'},
+      {pip:'crit',text:'Previous DVT history — <strong>4 years ago.</strong>'},
+    ],insight:'Missed anticoagulation. History of DVT. Post-op immobility. Everything is connecting.',clue:'Missed anticoag'},
+    {id:'legs',label:'Assess legs',x:'42%',y:'72%',findings:[
+      {pip:'crit',text:'Right calf: <em>swollen, warm, and tender</em> on palpation.'},
+      {pip:'warn',text:'Left leg appears normal.'},
+      {pip:'crit',text:'She flinches when you press gently.'},
+    ],insight:'Right calf swelling + warmth + post-op + sudden SOB. You know what you have to do next.',clue:'R calf swelling'},
+    {id:'chart',label:'Chart',x:'85%',y:'62%',findings:[
+      {pip:'warn',text:'Post-op day 2. <strong>Hip replacement.</strong>'},
+      {pip:'crit',text:'Enoxaparin 40mg SC — <em>missed today\'s dose.</em>'},
+      {pip:'warn',text:'Physio: patient refused this morning. "<em>Too tired.</em>"'},
+    ],insight:'Missed DVT prophylaxis. No mobilization. The picture is becoming clear.',clue:'DVT risk factors'},
+    // Wrong taps
+    {id:'feet',label:'',x:'35%',y:'83%',wrong:true,wrongText:'No significant findings at the feet. You\'ve used a touch with nothing to show for it.'},
+    {id:'pillow',label:'',x:'20%',y:'25%',wrong:true,wrongText:'Nothing clinically relevant here. Focus on the patient.'},
+    {id:'window',label:'',x:'12%',y:'22%',wrong:true,wrongText:'The window is closed. Stay focused — you have limited time.'},
+  ],
+  question:'You\'ve found the key pieces. Post-op day 2. Missed enoxaparin. Swollen right calf. Sudden SpO2 drop and pleuritic chest pain.',
+  sub:'Your clinical picture is forming. This looks like a pulmonary embolism. What do you do first?',
+  choices:[
+    {key:'A',label:'Apply O2 and call physician (full SBAR)',desc:'Address hypoxia, then escalate immediately with all your findings.',correct:true,exp:'Correct. O2 first to stabilize SpO2, then call the physician with a clear SBAR — suspected PE, post-op day 2, swollen calf, missed enoxaparin. This is the right sequence.'},
+    {key:'B',label:'Give oral paracetamol for pain',desc:'Address the pain complaint before escalating.',correct:false,exp:'Paracetamol will not treat a PE. The pain here is pleuritic — a symptom of a clot, not primary pain. This delays critical intervention.'},
+    {key:'C',label:'Increase the IV drip rate',desc:'More fluids might stabilize her blood pressure.',correct:false,exp:'Increasing IV fluids in a suspected PE with fluid overload risk is dangerous. The IV rate was already running too fast. This worsens the situation.'},
+    {key:'D',label:'Wait and recheck in 30 minutes',desc:'The situation may resolve on its own.',correct:false,exp:'A patient with SpO2 of 91%, pleuritic chest pain, and suspected DVT/PE cannot wait 30 minutes. This is a time-critical clinical emergency.'},
+  ],
+  outcome_good:{
+    headline:'She\'s stable.',
+    story:'The CT confirmed a right-sided pulmonary embolism. Heparin was started within the hour. Dr. Okonkwo told you later: "Good call. You got there early." You felt the shake leave your hands only after you hung up the phone.',
+    today:'You identified a post-op PE before it became catastrophic. Missed anticoagulation + immobility + sudden SOB = PE until proven otherwise. You\'ll remember this pattern. +12 Clinical Judgment',
+    statDeltas:{judgment:12,confidence:10,communication:8,resilience:6,fatigue:8},
+  },
+  outcome_bad:{
+    headline:'She deteriorated.',
+    story:'SpO2 dropped to 84%. The monitor alarmed. Her daughter was on her feet. You called, finally — but you\'d lost time. Next time, the call comes sooner. The voice shaking is okay. Making it is what matters.',
+    today:'Delayed escalation in a suspected PE is dangerous. When the picture fits — post-op, swollen calf, sudden SOB, missed anticoag — call now. Your voice can shake. The call must happen. +5 Clinical Judgment',
+    statDeltas:{judgment:5,confidence:-6,communication:3,resilience:4,fatigue:15},
+  },
+};
+
+// ─── DRAWING ──────────────────────────────────────
+const SKINS=['#fde0c0','#f0c896','#e8b88a','#c89060','#a06840'];
+const SCRUBS=[{c:'#5dcaa5',d:'#0f6e56'},{c:'#4a8fd4',d:'#185fa5'},{c:'#a78bfa',d:'#5b21b6'},{c:'#f472b6',d:'#9d174d'},{c:'#e8a84a',d:'#854f0b'}];
+let skinIdx=2,scrubIdx=0;
+
+function drawNurse(ctx,x,y,scale=1,emotion='neutral',pose='stand'){
+  const p=n=>n*scale;const s=SCRUBS[scrubIdx];const skin=SKINS[skinIdx];
+  ctx.save();ctx.translate(x,y);
+  // shadow
+  ctx.fillStyle='rgba(0,0,0,.15)';ctx.beginPath();ctx.ellipse(0,p(32),p(16),p(5),0,0,Math.PI*2);ctx.fill();
+  // legs
+  ctx.fillStyle=s.d;ctx.fillRect(p(-9),p(10),p(8),p(22));ctx.fillRect(p(1),p(10),p(8),p(22));
+  // shoes
+  ctx.fillStyle='#111';ctx.beginPath();ctx.roundRect(p(-10),p(31),p(10),p(5),p(2));ctx.fill();
+  ctx.beginPath();ctx.roundRect(p(0),p(31),p(10),p(5),p(2));ctx.fill();
+  // body
+  ctx.fillStyle=s.c;ctx.beginPath();ctx.roundRect(p(-12),p(-13),p(24),p(25),p(3));ctx.fill();
+  ctx.fillStyle=s.d;ctx.fillRect(p(-1),p(-13),p(2),p(25));
+  // pocket
+  ctx.strokeStyle=s.d;ctx.lineWidth=p(.8);ctx.strokeRect(p(-9),p(-7),p(6),p(6));
+  // arms
+  ctx.fillStyle=s.c;
+  if(pose==='give'){ctx.fillRect(p(-19),p(-13),p(8),p(14));ctx.fillRect(p(11),p(-17),p(8),p(14));ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(p(16),p(-17),p(4),p(4),0,0,Math.PI*2);ctx.fill();}
+  else{ctx.fillRect(p(-19),p(-13),p(8),p(14));ctx.fillRect(p(11),p(-13),p(8),p(14));}
+  ctx.fillStyle=skin;ctx.beginPath();ctx.ellipse(p(-14),p(1),p(4),p(4),0,0,Math.PI*2);ctx.fill();
+  if(pose!=='give'){ctx.beginPath();ctx.ellipse(p(14),p(1),p(4),p(4),0,0,Math.PI*2);ctx.fill();}
+  // collar
+  ctx.fillStyle=s.d;ctx.beginPath();ctx.moveTo(p(-4),p(-13));ctx.lineTo(p(0),p(-7));ctx.lineTo(p(4),p(-13));ctx.fill();
+  // neck
+  ctx.fillStyle=skin;ctx.fillRect(p(-4),p(-18),p(8),p(7));
+  // head
+  ctx.fillStyle=skin;ctx.beginPath();ctx.roundRect(p(-13),p(-38),p(26),p(23),p(8));ctx.fill();
+  // hair
+  const hair='#2c1a0a';
+  ctx.fillStyle=hair;
+  ctx.beginPath();ctx.roundRect(p(-14),p(-41),p(28),p(13),p(6));ctx.fill();
+  ctx.beginPath();ctx.roundRect(p(-16),p(-40),p(6),p(18),p(3));ctx.fill();
+  ctx.beginPath();ctx.roundRect(p(10),p(-40),p(6),p(18),p(3));ctx.fill();
+  // face
+  const ey=p(-27);
+  ctx.fillStyle='#1a0a00';
+  if(emotion==='happy'){ctx.beginPath();ctx.arc(p(-5),ey,p(3.5),Math.PI,Math.PI*2);ctx.fill();ctx.beginPath();ctx.arc(p(5),ey,p(3.5),Math.PI,Math.PI*2);ctx.fill();}
+  else if(emotion==='worried'){
+    ctx.beginPath();ctx.ellipse(p(-5),ey,p(3.5),p(2),-.2,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(p(5),ey,p(3.5),p(2),.2,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='#1a0a00';ctx.lineWidth=p(1.2);
+    ctx.beginPath();ctx.moveTo(p(-9),p(-33));ctx.lineTo(p(-2),p(-31));ctx.stroke();
+    ctx.beginPath();ctx.moveTo(p(9),p(-33));ctx.lineTo(p(2),p(-31));ctx.stroke();
+  }else{
+    ctx.beginPath();ctx.ellipse(p(-5),ey,p(3.5),p(3.5),0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(p(5),ey,p(3.5),p(3.5),0,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,.7)';ctx.beginPath();ctx.ellipse(p(-4),ey-p(1),p(1.2),p(1.2),0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(p(6),ey-p(1),p(1.2),p(1.2),0,0,Math.PI*2);ctx.fill();
+  }
+  ctx.strokeStyle='#5a1a10';ctx.lineWidth=p(1.2);ctx.lineCap='round';
+  if(emotion==='happy'){ctx.beginPath();ctx.arc(p(0),p(-20),p(5),0,Math.PI);ctx.stroke();}
+  else if(emotion==='worried'){ctx.beginPath();ctx.arc(p(0),p(-18),p(4),Math.PI,Math.PI*2);ctx.stroke();}
+  else{ctx.beginPath();ctx.moveTo(p(-4),p(-21));ctx.quadraticCurveTo(p(0),p(-19),p(4),p(-21));ctx.stroke();}
+  // stethoscope
+  ctx.strokeStyle='rgba(160,160,160,.6)';ctx.lineWidth=p(1.3);ctx.beginPath();ctx.arc(p(3),p(-5),p(5),0,Math.PI);ctx.stroke();
+  ctx.restore();
+}
+
+
+// ─── O2 DEVICE DRAWING ────────────────────────────────
+function drawO2Device(ctx, cx, cy, device) {
+  if (!device) return;
+
+  if (device === 'prong') {
+    // Nasal prongs — two small loops at nostrils
+    const ny = cy - 17; // nose area
+    // Tubing across face
+    ctx.strokeStyle = 'rgba(180,210,255,.75)';
+    ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(cx - 18, ny + 2);
+    ctx.lineTo(cx + 18, ny + 2);
+    ctx.stroke();
+    // Two prong loops
+    ctx.strokeStyle = 'rgba(150,200,255,.9)'; ctx.lineWidth = 1.5;
+    // Left prong
+    ctx.beginPath(); ctx.arc(cx - 6, ny + 2, 4, 0, Math.PI); ctx.stroke();
+    // Right prong
+    ctx.beginPath(); ctx.arc(cx + 6, ny + 2, 4, 0, Math.PI); ctx.stroke();
+    // Ear loops going down
+    ctx.strokeStyle = 'rgba(150,200,255,.5)'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(cx - 18, ny + 2); ctx.lineTo(cx - 22, ny + 14); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 18, ny + 2); ctx.lineTo(cx + 22, ny + 14); ctx.stroke();
+    // Tube going to IV pole side
+    ctx.strokeStyle = 'rgba(150,200,255,.25)'; ctx.lineWidth = 1.5; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(cx + 22, ny + 14); ctx.bezierCurveTo(cx + 40, ny + 20, cx + 60, cy - 30, cx + 80, cy - 40); ctx.stroke();
+    ctx.setLineDash([]);
+    // Label
+    ctx.fillStyle = 'rgba(150,200,255,.7)'; ctx.font = `bold 8px 'DM Mono'`;
+    ctx.fillText('NC · 2L', cx + 24, ny - 2);
+
+  } else if (device === 'mask') {
+    // Simple face mask — green-tinted transparent ellipse
+    const my = cy - 23;
+    ctx.fillStyle = 'rgba(100,200,140,.18)';
+    ctx.beginPath(); ctx.ellipse(cx, my, 20, 14, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(100,200,140,.65)'; ctx.lineWidth = 1.8;
+    ctx.beginPath(); ctx.ellipse(cx, my, 20, 14, 0, 0, Math.PI * 2); ctx.stroke();
+    // Mask strap left
+    ctx.strokeStyle = 'rgba(100,200,140,.4)'; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(cx - 20, my - 4); ctx.bezierCurveTo(cx - 26, my - 10, cx - 24, my - 18, cx - 20, my - 20); ctx.stroke();
+    // Mask strap right
+    ctx.beginPath(); ctx.moveTo(cx + 20, my - 4); ctx.bezierCurveTo(cx + 26, my - 10, cx + 24, my - 18, cx + 20, my - 20); ctx.stroke();
+    // Vent holes
+    ctx.fillStyle = 'rgba(100,200,140,.3)';
+    [[-8, my + 5],[8, my + 5]].forEach(([hx,hy]) => { ctx.beginPath(); ctx.ellipse(hx + cx, hy, 2.5, 2.5, 0, 0, Math.PI * 2); ctx.fill(); });
+    // O2 tube from mask
+    ctx.strokeStyle = 'rgba(100,200,140,.3)'; ctx.lineWidth = 1.5; ctx.setLineDash([3,3]);
+    ctx.beginPath(); ctx.moveTo(cx, my + 14); ctx.bezierCurveTo(cx + 20, my + 25, cx + 55, my, cx + 80, my - 10); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(100,200,140,.7)'; ctx.font = `bold 8px 'DM Mono'`;
+    ctx.fillText('SM · 6L', cx + 24, my - 8);
+
+  } else if (device === 'nrb') {
+    // Non-rebreather mask — larger, blue tint with reservoir bag visible
+    const my = cy - 22;
+    // Reservoir bag
+    ctx.fillStyle = 'rgba(100,160,255,.15)';
+    ctx.beginPath(); ctx.roundRect(cx - 10, my + 14, 20, 22, 4); ctx.fill();
+    ctx.strokeStyle = 'rgba(100,160,255,.5)'; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.roundRect(cx - 10, my + 14, 20, 22, 4); ctx.stroke();
+    // Mask body
+    ctx.fillStyle = 'rgba(80,130,255,.2)';
+    ctx.beginPath(); ctx.ellipse(cx, my, 22, 15, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(80,130,255,.75)'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(cx, my, 22, 15, 0, 0, Math.PI * 2); ctx.stroke();
+    // One-way valves (circles on sides)
+    ctx.fillStyle = 'rgba(80,130,255,.4)';
+    ctx.beginPath(); ctx.arc(cx - 22, my, 4, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = 'rgba(80,130,255,.6)'; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.arc(cx - 22, my, 4, 0, Math.PI * 2); ctx.stroke();
+    // Straps
+    ctx.strokeStyle = 'rgba(80,130,255,.4)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(cx - 22, my - 5); ctx.bezierCurveTo(cx - 26, my - 14, cx - 22, my - 22, cx - 18, my - 24); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 22, my - 5); ctx.bezierCurveTo(cx + 26, my - 14, cx + 22, my - 22, cx + 18, my - 24); ctx.stroke();
+    // O2 tube
+    ctx.strokeStyle = 'rgba(80,130,255,.3)'; ctx.lineWidth = 1.8; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(cx, my + 35); ctx.bezierCurveTo(cx + 20, my + 50, cx + 60, my + 20, cx + 85, my + 10); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(80,130,255,.8)'; ctx.font = `bold 8px 'DM Mono'`;
+    ctx.fillText('NRB · 15L', cx + 24, my - 12);
+    // ALARM text if NRB still not enough
+    if (G.o2Device === 'nrb' && G.clues.length > 3) {
+      const t = Date.now() / 500;
+      ctx.fillStyle = `rgba(217,64,64,${0.6 + 0.4 * Math.sin(t)})`;
+      ctx.font = `bold 8px 'DM Mono'`;
+      ctx.fillText('SpO2 STILL LOW', cx - 32, my - 26);
+    }
+  }
+}
+
+function drawPatient(ctx,W,H,state='sick'){
+  const cx=Math.round(W*.38),cy=Math.round(H*.5);
+  // Bed
+  ctx.fillStyle='#1e2840';ctx.fillRect(Math.round(W*.05),Math.round(H*.42),Math.round(W*.74),Math.round(H*.56));
+  ctx.fillStyle='#e8e0d0';ctx.fillRect(Math.round(W*.07),Math.round(H*.44),Math.round(W*.7),Math.round(H*.16));
+  ctx.fillStyle='#f0ece4';ctx.beginPath();ctx.roundRect(Math.round(W*.08),Math.round(H*.44)+4,Math.round(W*.3),Math.round(H*.12),5);ctx.fill();
+  ctx.fillStyle=state==='dead'?'#4a3030':'#2a3a52';ctx.fillRect(Math.round(W*.07),Math.round(H*.56),Math.round(W*.7),Math.round(H*.2));
+  // Patient head + body
+  const skin='#c89060';
+  ctx.fillStyle=state==='dead'?'#9a8070':skin;ctx.beginPath();ctx.roundRect(cx-22,cy-46,44,36,12);ctx.fill();
+  ctx.fillStyle='#6a4020';ctx.beginPath();ctx.roundRect(cx-22,cy-50,44,14,9);ctx.fill();
+  // Face expression
+  ctx.fillStyle='#1a0a00';
+  const ey=cy-32;
+  if(state==='dead'){
+    ctx.strokeStyle='#4a2020';ctx.lineWidth=1.8;
+    [-10,-4].forEach(ox=>{ctx.beginPath();ctx.moveTo(cx+ox,ey-4);ctx.lineTo(cx+ox+6,ey+4);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+ox+6,ey-4);ctx.lineTo(cx+ox,ey+4);ctx.stroke();});
+  } else {
+    ctx.beginPath();ctx.ellipse(cx-8,ey,4,state==='recovering'?4:2.5,0,0,Math.PI*2);ctx.fill();
+    ctx.beginPath();ctx.ellipse(cx+8,ey,4,state==='recovering'?4:2.5,0,0,Math.PI*2);ctx.fill();
+    if(state==='sick'){ctx.strokeStyle='#1a0a00';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-8,ey-7);ctx.lineTo(cx-3,ey-5);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+8,ey-7);ctx.lineTo(cx+3,ey-5);ctx.stroke();}
+  }
+  ctx.strokeStyle='#5a1a10';ctx.lineWidth=1.5;ctx.lineCap='round';
+  if(state==='dead'){ctx.beginPath();ctx.moveTo(cx-6,cy-18);ctx.lineTo(cx+6,cy-18);ctx.stroke();}
+  else if(state==='recovering'){ctx.beginPath();ctx.arc(cx,cy-18,5,0,Math.PI);ctx.stroke();}
+  else{ctx.beginPath();ctx.arc(cx,cy-16,4,Math.PI,Math.PI*2);ctx.stroke();}
+  // Sweat for sick
+  if(state==='sick'||state==='critical'){
+    ctx.fillStyle='rgba(100,180,220,.45)';
+    [[cx-20,cy-38],[cx+18,cy-34],[cx-12,cy-18]].forEach(([sx,sy])=>{ctx.beginPath();ctx.ellipse(sx,sy,2,3.5,-.3,0,Math.PI*2);ctx.fill();});
+    // Pain aura
+    const t=Date.now()/700;ctx.fillStyle=`rgba(217,64,64,${.06+.04*Math.sin(t)})`;
+    ctx.beginPath();ctx.ellipse(cx,cy-30,38,32,0,0,Math.PI*2);ctx.fill();
+  }
+  // O2 device overlay — drawn on top of face
+  if (G.o2Device) drawO2Device(ctx, cx, cy, G.o2Device);
+}
+
+function drawRoom(ctx,W,H){
+  ctx.fillStyle='#0c1120';ctx.fillRect(0,0,W,H);
+  ctx.fillStyle='#101626';ctx.fillRect(0,0,W,Math.round(H*.54));
+  // Scan line atmosphere
+  ctx.fillStyle='rgba(0,201,160,.015)';ctx.fillRect(0,0,W,H*.54);
+  // Window
+  ctx.fillStyle='#060c1a';ctx.fillRect(Math.round(W*.04),Math.round(H*.06),Math.round(W*.32),Math.round(H*.3));
+  ctx.strokeStyle='rgba(0,201,160,.2)';ctx.lineWidth=1.5;ctx.strokeRect(Math.round(W*.04),Math.round(H*.06),Math.round(W*.32),H*.3);
+  // window frame
+  ctx.strokeStyle='rgba(0,201,160,.1)';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(Math.round(W*.04+W*.16),H*.06);ctx.lineTo(Math.round(W*.04+W*.16),H*.06+H*.3);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(W*.04,H*.06+H*.15);ctx.lineTo(W*.04+W*.32,H*.06+H*.15);ctx.stroke();
+  // Stars
+  ctx.fillStyle='rgba(255,255,255,.6)';
+  [[W*.1,H*.1],[W*.2,H*.08],[W*.07,H*.17],[W*.28,H*.12]].forEach(([sx,sy])=>{ctx.beginPath();ctx.arc(sx,sy,1,0,Math.PI*2);ctx.fill();});
+  // Monitor
+  const mx=Math.round(W*.66),my=Math.round(H*.08),mw=Math.round(W*.28),mh=Math.round(H*.24);
+  ctx.fillStyle='#040e0a';ctx.fillRect(mx,my,mw,mh);
+  ctx.strokeStyle='rgba(0,201,160,.35)';ctx.lineWidth=1.5;ctx.strokeRect(mx,my,mw,mh);
+  ctx.fillStyle='rgba(0,201,160,.08)';ctx.fillRect(mx-6,my-6,mw+12,mh+12);
+  // Monitor text
+  ctx.fillStyle='rgba(0,201,160,.9)';ctx.font=`bold 8px 'DM Mono'`;ctx.fillText('SpO2',mx+4,my+13);
+  ctx.fillStyle='#ff4444';ctx.font=`bold 12px 'DM Mono'`;ctx.fillText('91%',mx+4,my+27);
+  ctx.fillStyle='rgba(232,168,74,.8)';ctx.font=`bold 8px 'DM Mono'`;ctx.fillText('HR',mx+mw-28,my+13);
+  ctx.fillStyle='#e8a84a';ctx.font=`bold 11px 'DM Mono'`;ctx.fillText('104',mx+mw-32,my+27);
+  // Monitor stand
+  ctx.fillStyle='#1a2235';ctx.fillRect(mx+mw/2-4,my+mh,7,Math.round(H*.1));ctx.fillRect(mx+mw/2-16,my+mh+Math.round(H*.09),32,5);
+  // IV pole
+  const ipx=Math.round(W*.88);
+  ctx.fillStyle='#2a3550';ctx.fillRect(ipx,Math.round(H*.14),3,Math.round(H*.5));
+  ctx.fillStyle='rgba(150,200,255,.12)';ctx.beginPath();ctx.roundRect(ipx-5,Math.round(H*.08),16,22,3);ctx.fill();
+  ctx.strokeStyle='rgba(150,200,255,.25)';ctx.lineWidth=1;ctx.strokeRect(ipx-5,Math.round(H*.08),16,22);
+  // IV tubing
+  ctx.strokeStyle='rgba(150,200,255,.18)';ctx.lineWidth=1.5;ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(ipx+2,H*.3);ctx.bezierCurveTo(ipx,H*.4,W*.7,H*.42,W*.64,H*.46);ctx.stroke();ctx.setLineDash([]);
+  // Floor tiles
+  ctx.strokeStyle='rgba(255,255,255,.02)';ctx.lineWidth=1;
+  const ts=Math.round(W/5);for(let x=0;x<W;x+=ts)ctx.strokeRect(x,Math.round(H*.55),ts,H*.45);
+  // Dept label
+  ctx.fillStyle='rgba(0,201,160,.4)';ctx.font=`7px 'DM Mono'`;ctx.fillText('EMERGENCY · BAY 4',Math.round(W*.38),14);
+}
+
+function drawECG(canvas){
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  G.ecgT+=1.5;
+  const speed=5;const t=G.ecgT%(speed*8);
+  ctx.strokeStyle='rgba(0,201,160,.75)';ctx.lineWidth=1.5;ctx.beginPath();
+  for(let px=0;px<W;px++){
+    const pos=(px+t)%(speed*8);let py=H/2;
+    if(pos<speed*.5)py=H/2;
+    else if(pos<speed*1)py=H/2-H*.75;
+    else if(pos<speed*1.5)py=H/2+H*.5;
+    else if(pos<speed*2)py=H/2-H*.3;
+    else if(pos<speed*2.5)py=H/2;
+    else py=H/2+Math.sin(pos/speed*Math.PI)*H*.1;
+    if(px===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);
+  }
+  ctx.stroke();
+}
+
+function startSceneLoop(){
+  const canvas=document.getElementById('scene-canvas');
+  const area=document.getElementById('scene-wrap')||canvas.parentElement;
+  canvas.width=area.clientWidth;canvas.height=area.clientHeight;
+  if(G.animFrame)cancelAnimationFrame(G.animFrame);
+  const state=G.outcome==='good'?'recovering':G.clues.length>3?'sick':'sick';
+  // Re-render tap zones after canvas resize so positions match
+  renderTapZones();
+  function loop(){
+    const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+    drawRoom(ctx,W,H);
+    drawPatient(ctx,W,H,state);
+    const nurseX=Math.round(W*.82),nurseY=Math.round(H*.75);
+    const bob=Math.sin(Date.now()/900)*2;
+    const emo=G.outcome==='good'?'happy':G.clues.length>2?'worried':'neutral';
+    drawNurse(ctx,nurseX,nurseY+bob,1.1,emo);
+    G.animFrame=requestAnimationFrame(loop);
+  }
+  loop();
+  // ECG
+  if(G.ecgInterval)clearInterval(G.ecgInterval);
+  G.ecgInterval=setInterval(()=>drawECG(document.getElementById('ecg-canvas')),50);
+}
+
+// ─── NAVIGATION ───────────────────────────────────
+function wipeGo(fn){
+  const w=document.getElementById('wipe');
+  w.classList.add('in');
+  setTimeout(()=>{fn();setTimeout(()=>w.classList.remove('in'),350);},350);
+}
+function showScreen(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on'));
+  document.getElementById('scr-'+id).classList.add('on');
+}
+
+// ─── TITLE ────────────────────────────────────────
+function drawTitleChar(){
+  const canvas=document.getElementById('title-char-canvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  ctx.clearRect(0,0,200,220);
+  // Escape-room grid bg
+  ctx.strokeStyle='rgba(42,50,72,.5)';ctx.lineWidth=1;
+  for(let i=0;i<200;i+=20)ctx.strokeRect(i,0,20,220);
+  // Nurse centered, big
+  drawNurse(ctx,100,160,2.8,'neutral','stand');
+  // Glitch lines
+  ctx.strokeStyle='rgba(0,201,160,.08)';ctx.lineWidth=1;
+  [60,90,130,155].forEach(y=>{ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(200,y);ctx.stroke();});
+}
+
+function gotoTitle(){showScreen('title');drawTitleChar();}
+function gotoHandoff(){
+  G.clues=[];G.touchesLeft=3;G.timerSec=180;G.outcome=null;G.o2Device=null;G.handoffSelections=[];G.actionsTaken=[];
+  if(G.animFrame)cancelAnimationFrame(G.animFrame);
+  if(G.ecgInterval)clearInterval(G.ecgInterval);
+  if(G.timerInterval)clearInterval(G.timerInterval);
+  wipeGo(()=>{showScreen('handoff');startHandoff();});
+}
+
+// ─── HANDOFF ──────────────────────────────────────
+function startHandoff(){
+  const chat=document.getElementById('ho-chat');
+  chat.innerHTML='';
+  const msgs=SCENARIO.handoff;
+  let i=0;
+  // Fixed delays between each message (not absolute timestamps)
+  const DELAYS=[600,1800,1200,1200]; // gap between each message
+
+  function showMsg(){
+    if(i>=msgs.length){
+      document.getElementById('ho-vitals').style.display='';
+      document.getElementById('ho-cta-btn').style.display='';
+      document.getElementById('ho-timer-text').textContent='Enter the room when ready.';
+      return;
+    }
+    const m=msgs[i];
+    const nextDelay=DELAYS[i]||1200;
+
+    if(m.alert){
+      const el=document.createElement('div');
+      el.className='chat-bubble bubble-alert';
+      el.innerHTML='<div class="b-icon">⚠</div>'+m.text;
+      chat.appendChild(el);
+      chat.scrollTop=chat.scrollHeight;
+      i++;
+      setTimeout(showMsg, nextDelay);
+      return;
+    }
+
+    // Show typing indicator for non-user messages
+    let typingEl=null;
+    if(!m.you){
+      typingEl=document.createElement('div');
+      typingEl.className='chat-typing';
+      typingEl.innerHTML='<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>';
+      chat.appendChild(typingEl);
+      chat.scrollTop=chat.scrollHeight;
+    }
+
+    setTimeout(()=>{
+      if(typingEl&&typingEl.parentNode)typingEl.parentNode.removeChild(typingEl);
+      const el=document.createElement('div');
+      el.className='chat-bubble '+(m.you?'bubble-you':'bubble-from');
+      if(!m.you)el.innerHTML='<div class="b-name">'+m.from+'</div>'+m.text;
+      else el.textContent=m.text;
+      chat.appendChild(el);
+      chat.scrollTop=chat.scrollHeight;
+      i++;
+      setTimeout(showMsg, nextDelay);
+    }, m.you?300:1000);
+  }
+
+  setTimeout(showMsg, 400);
+}
+
+// ─── INVESTIGATE ──────────────────────────────────
+function gotoInvestigate(){
+  wipeGo(()=>{
+    showScreen('investigate');
+    setTimeout(()=>{
+      startSceneLoop();
+      renderTouchPips();
+      renderTapZones();
+      startTimer();
+    },100);
+  });
+}
+
+function renderTouchPips(){
+  const wrap=document.getElementById('touches-left');if(!wrap)return;
+  wrap.innerHTML='';
+  for(let i=0;i<3;i++){
+    const pip=document.createElement('div');
+    pip.className='touch-pip'+(i>=G.touchesLeft?' gone':'');
+    wrap.appendChild(pip);
+  }
+}
+
+function renderTapZones(){
+  const container=document.getElementById('tap-zones');if(!container)return;
+  const canvas=document.getElementById('scene-canvas');
+  const W=canvas?canvas.width:container.offsetWidth;
+  const H=canvas?canvas.height:container.offsetHeight;
+  container.innerHTML='';
+  SCENARIO.taps.forEach(tap=>{
+    const pct=parseFloat(tap.x)/100;
+    const pctY=parseFloat(tap.y)/100;
+    const px=Math.round(W*pct);
+    const py=Math.round(H*pctY);
+    const div=document.createElement('div');
+    div.className='tap-zone'+(G.clues.includes(tap.id)?' found':'');
+    // position using px so it always matches canvas coordinates
+    div.style.cssText=`position:absolute;left:${px}px;top:${py}px;transform:translate(-50%,-50%);width:72px;height:72px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;pointer-events:all;z-index:20;`;
+    if(tap.wrong){
+      div.innerHTML='<div style="width:52px;height:52px;border-radius:50%;border:1.5px solid rgba(255,255,255,.06);"></div>';
+      div.addEventListener('click',()=>handleWrongTap(tap));
+    } else {
+      const found=G.clues.includes(tap.id);
+      div.innerHTML=`<div style="width:52px;height:52px;border-radius:50%;border:2px solid ${found?'rgba(0,201,160,.8)':'rgba(255,255,255,.28)'};background:${found?'rgba(0,201,160,.14)':'transparent'};display:flex;align-items:center;justify-content:center;transition:all .3s;animation:${found?'none':'tapring 2.5s ease-in-out infinite'};">
+        ${found?'<span style="font-size:13px;color:var(--teal);">✓</span>':''}
+      </div>
+      ${tap.label&&!found?`<div style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:8px;color:rgba(255,255,255,.38);white-space:nowrap;pointer-events:none;letter-spacing:.06em;">${tap.label}</div>`:''}`;
+      if(!found){
+        div.addEventListener('click',()=>handleTap(tap.id));
+      }
+    }
+    container.appendChild(div);
+  });
+}
+
+function handleTap(id){
+  if(G.clues.includes(id))return;// already found
+  if(G.touchesLeft<=0)return;
+  G.touchesLeft--;
+  G.clues.push(id);
+  renderTouchPips();
+  renderTapZones();
+  const tap=SCENARIO.taps.find(t=>t.id===id);
+  if(tap)openDrawer(tap);
+  checkActions();
+  // Mark pip used
+  const pips=document.querySelectorAll('.touch-pip');
+  const usedCount=3-G.touchesLeft;
+  pips.forEach((p,i)=>{ if(i<usedCount)p.classList.add('used'); });
+}
+
+function handleWrongTap(tap){
+  if(G.touchesLeft<=0)return;
+  G.touchesLeft--;
+  renderTouchPips();
+  const pips=document.querySelectorAll('.touch-pip');
+  const usedCount=3-G.touchesLeft;
+  pips.forEach((p,i)=>{ if(i<usedCount)p.classList.add('used'); });
+  // Flash wrong
+  const flash=document.getElementById('wrong-flash');
+  flash.classList.add('show');
+  // Show a brief message in drawer
+  const drawer=document.getElementById('clue-drawer');
+  document.getElementById('cd-title').textContent='No finding';
+  document.getElementById('cd-body').innerHTML=`<div class="cd-finding">
+    <div class="cf-pip pip-neutral" style="margin-top:5px;"></div>
+    <div class="cd-finding-text">${tap.wrongText||'Nothing relevant here. You\'ve used a touch.'}</div>
+  </div>`;
+  drawer.classList.add('open');
+  setTimeout(()=>flash.classList.remove('show'),500);
+  checkActions();
+}
+
+function openDrawer(tap){
+  document.getElementById('cd-title').textContent=tap.label||'Finding';
+  const body=document.getElementById('cd-body');
+  const pipClass={warn:'pip-warn',crit:'pip-crit',ok:'pip-ok',neutral:'pip-neutral'};
+  body.innerHTML=tap.findings.map(f=>`<div class="cd-finding">
+    <div class="cf-pip ${pipClass[f.pip]||'pip-neutral'}"></div>
+    <div class="cd-finding-text ${f.pip==='crit'?'crit':''}">${f.text}</div>
+  </div>`).join('')+(tap.insight?`<div class="cd-insight"><div class="cd-insight-text">"${tap.insight}"</div></div>`:'');
+  document.getElementById('clue-drawer').classList.add('open');
+  document.getElementById('action-bar').style.display='none';
+}
+
+function closeDrawer(){
+  document.getElementById('clue-drawer').classList.remove('open');
+  checkActions();
+}
+
+function checkActions(){
+  const found=G.clues;
+  const bar=document.getElementById('action-bar');
+  const scroll=document.getElementById('action-scroll');
+  if(found.length===0)return;
+  bar.style.display='';
+  const actions=[];
+  const o2Idx=getO2LevelIdx();
+  const o2Label=o2Idx<0?'Apply O2 (nasal prongs)':o2Idx>=O2_LEVELS.length-1?'O2 at max':'Escalate O2: '+(O2_LEVELS[o2Idx+1]?.label||'');
+  const o2Used=o2Idx>=O2_LEVELS.length-1;
+  if(found.length>=1)actions.push({label:o2Label,key:'o2',urgent:false,used:o2Used});
+  if(found.length>=2)actions.push({label:'Reposition patient',key:'position',urgent:false});
+  if(found.length>=3)actions.push({label:'Call physician ↑',key:'call',urgent:true});
+  if(found.length>=2)actions.push({label:'Flag missed meds',key:'flag',urgent:false});
+  scroll.innerHTML='';
+  actions.forEach(a=>{
+    const btn=document.createElement('button');
+    btn.className='act-btn'+(a.urgent?' urgent':'')+(a.used?' used':'');
+    btn.textContent=a.label;
+    btn.dataset.key=a.key;
+    if(!a.used)btn.addEventListener('click',()=>{
+      if(a.key==='call')gotoAction();
+      else doAction(a.key);
+    });
+    scroll.appendChild(btn);
+  });
+}
+
+// O2 escalation levels
+const O2_LEVELS = [
+  {
+    device: "prong",
+    label: "Nasal prongs",
+    flow: "2 L/min",
+    fio2: "~28%",
+    spo2_result: "93%",
+    spo2_state: "warn",
+    msg: "Nasal prongs applied at 2 L/min. SpO2 creeps to 93% — still breathing fast. Supportive, not curative.",
+    escalate_hint: "SpO2 is 93% — still below target of 95%. Consider escalating O2 delivery."
+  },
+  {
+    device: "mask",
+    label: "Simple face mask",
+    flow: "6 L/min",
+    fio2: "~40%",
+    spo2_result: "94%",
+    spo2_state: "warn",
+    msg: "Upgraded to simple face mask at 6 L/min. SpO2 rises to 94%. She remains distressed.",
+    escalate_hint: "Still 94% — for a PE the target is 95% or above. Consider non-rebreather mask."
+  },
+  {
+    device: "nrb",
+    label: "Non-rebreather mask",
+    flow: "15 L/min",
+    fio2: "~80-95%",
+    spo2_result: "96%",
+    spo2_state: "ok",
+    msg: "Non-rebreather mask at 15 L/min. SpO2 reaches 96%. Maximum non-invasive O2 — escalation beyond this needs medical review.",
+    escalate_hint: null
+  }
+]
+
+function getO2LevelIdx() {
+  if (!G.o2Device) return -1;
+  return O2_LEVELS.findIndex(l => l.device === G.o2Device);
+}
+
+function doAction(type){
+  if (type === 'o2') {
+    const currentIdx = getO2LevelIdx();
+    const nextIdx = currentIdx + 1;
+    if (nextIdx >= O2_LEVELS.length) {
+      // Already at max
+      showInDrawer('O2 at maximum', [
+        {pip:'pip-warn', text:'Non-rebreather mask at 15 L/min is already in place — this is the highest flow you can deliver without intubation.'},
+        {pip:'pip-crit', text:'SpO2 is not improving adequately. <em>Call the physician now.</em>'},
+      ], null);
+      return;
+    }
+    const level = O2_LEVELS[nextIdx];
+    G.o2Device = level.device;
+    // Update monitor
+    const spo2El = document.getElementById('mo-spo2');
+    if (spo2El) { spo2El.textContent = level.spo2_result; spo2El.className = 'mo-val val-' + level.spo2_state; }
+    // Build findings for drawer
+    const findings = [
+      {pip:'pip-ok', text:`<em>${level.label}</em> applied — ${level.flow} · FiO₂ ${level.fio2}`},
+      {pip: level.spo2_state === 'ok' ? 'pip-ok' : 'pip-warn', text:`SpO2 → <em>${level.spo2_result}</em>. ${level.msg}`},
+    ];
+    if (level.escalate_hint) findings.push({pip:'pip-warn', text:level.escalate_hint});
+    showInDrawer('O2 therapy', findings, level.escalate_hint ? 'Escalate O2 ↑' : null);
+    // Update action bar button label
+    updateO2ButtonLabel();
+  } else if (type === 'position') {
+    showInDrawer('Patient repositioned', [
+      {pip:'pip-ok', text:'Head of bed elevated to 45°. She breathes a little easier. "Thank you," she whispers.'},
+      {pip:'pip-warn', text:'Upright positioning reduces work of breathing — always do this early.'},
+    ], null);
+  } else if (type === 'flag') {
+    showInDrawer('Missed medication flagged', [
+      {pip:'pip-ok', text:'Enoxaparin 40mg SC missed today — flagged in the system. Pharmacy notified.'},
+      {pip:'pip-warn', text:'Documentation protects the patient and you. This is a mandatory near-miss report.'},
+    ], null);
+  }
+}
+
+function showInDrawer(title, findings, escalateHint) {
+  document.getElementById('cd-title').textContent = title;
+  document.getElementById('cd-body').innerHTML = findings.map(f =>
+    `<div class="cd-finding"><div class="cf-pip ${f.pip}"></div><div class="cd-finding-text">${f.text}</div></div>`
+  ).join('') + (escalateHint ? `<div class="cd-insight"><div class="cd-insight-text">Tip: ${escalateHint}</div></div>` : '');
+  document.getElementById('clue-drawer').classList.add('open');
+  document.getElementById('action-bar').style.display = 'none';
+}
+
+function updateO2ButtonLabel() {
+  const currentIdx = getO2LevelIdx();
+  const scroll = document.getElementById('action-scroll');
+  if (!scroll) return;
+  const btn = [...scroll.querySelectorAll('.act-btn')].find(b => b.dataset.key === 'o2');
+  if (!btn) return;
+  if (currentIdx >= O2_LEVELS.length - 1) {
+    btn.textContent = 'O2 at max';
+    btn.classList.add('used');
+  } else {
+    const next = O2_LEVELS[currentIdx + 1];
+    btn.textContent = `Escalate → ${next.label}`;
+  }
+}
+
+// ─── TIMER ────────────────────────────────────────
+function startTimer(){
+  G.timerActive=true;G.timerSec=180;
+  const ring=document.getElementById('timer-ring-fill');
+  const num=document.getElementById('timer-num');
+  const alarm=document.getElementById('alarm-flash');
+  const circ=100.5;
+  if(G.timerInterval)clearInterval(G.timerInterval);
+  G.timerInterval=setInterval(()=>{
+    G.timerSec--;
+    const m=Math.floor(G.timerSec/60);const s=G.timerSec%60;
+    if(num)num.textContent=`${m}:${s.toString().padStart(2,'0')}`;
+    const pct=G.timerSec/180;
+    if(ring){
+      ring.style.strokeDashoffset=circ*(1-pct);
+      ring.style.stroke=G.timerSec<45?'#ff4444':G.timerSec<90?'#e8a84a':'#00c9a0';
+    }
+    if(num){num.style.color=G.timerSec<45?'#ff4444':G.timerSec<90?'#e8a84a':'#00c9a0';}
+    if(G.timerSec<60&&alarm)alarm.classList.add('show');
+    if(G.timerSec<=0){clearInterval(G.timerInterval);gotoAction();}
+  },1000);
+}
+
+// ─── ACTION / DECISION ────────────────────────────
+function gotoAction(){
+  clearInterval(G.timerInterval);G.timerActive=false;
+  wipeGo(()=>{
+    showScreen('action');
+    renderActionScreen();
+  });
+}
+
+function renderActionScreen(){
+  // Clue tags
+  const tagsEl=document.getElementById('cs-tags');
+  tagsEl.innerHTML=G.clues.map(id=>{
+    const tap=SCENARIO.taps.find(t=>t.id===id);
+    return tap?`<div class="cs-tag active">${tap.clue}</div>`:'';
+  }).join('');
+  if(G.clues.length===0)tagsEl.innerHTML='<div class="cs-tag">No clues collected</div>';
+  // Question
+  document.getElementById('cq-text').textContent=SCENARIO.question;
+  document.getElementById('cq-sub').textContent=SCENARIO.sub;
+  // Choices
+  const wrap=document.getElementById('choices-wrap');
+  wrap.innerHTML=SCENARIO.choices.map((c,i)=>`<button class="choice-btn" id="choice-${i}" onclick="answerChoice(${i})">
+    <div class="choice-key">${c.key}</div>
+    <div class="choice-content">
+      <div class="choice-label">${c.label}</div>
+      <div class="choice-desc">${c.desc}</div>
+    </div>
+  </button>`).join('');
+}
+
+let answered=false;
+function answerChoice(idx){
+  if(answered)return;answered=true;
+  const c=SCENARIO.choices[idx];
+  document.querySelectorAll('.choice-btn').forEach((el,i)=>{
+    el.setAttribute('disabled','');
+    if(i===idx)el.classList.add(c.correct?'correct':'wrong');
+    else if(SCENARIO.choices[i].correct)el.classList.add('reveal');
+  });
+  G.outcome=c.correct?'good':'bad';
+  // Show exp
+  const expDiv=document.createElement('div');
+  expDiv.style.cssText='padding:14px 16px;border-top:1px solid #2a3248;font-family:var(--body);font-size:13px;color:#8090b8;line-height:1.65;font-weight:300;';
+  expDiv.innerHTML=`<span style="font-family:var(--mono);font-size:8px;letter-spacing:.15em;color:${c.correct?'#00c9a0':'#d94040'};text-transform:uppercase;display:block;margin-bottom:5px;">${c.correct?'CORRECT':'INCORRECT'}</span>${c.exp}`;
+  const wrap=document.getElementById('choices-wrap');wrap.appendChild(expDiv);
+  // Continue button
+  const contBtn=document.createElement('button');
+  contBtn.style.cssText='width:100%;padding:14px;background:#00c9a0;color:#0d0f14;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.2em;border:none;cursor:pointer;margin-top:8px;text-transform:uppercase;';
+  contBtn.textContent='SEE OUTCOME →';
+  contBtn.onclick=()=>wipeGo(gotoHandoffScreen);
+  wrap.appendChild(contBtn);
+  wrap.scrollTop=wrap.scrollHeight;
+  // Apply stat deltas
+  const deltas=G.outcome==='good'?SCENARIO.outcome_good.statDeltas:SCENARIO.outcome_bad.statDeltas;
+  Object.entries(deltas).forEach(([k,v])=>{G.stats[k]=Math.max(0,Math.min(100,(G.stats[k]||40)+v));});
+  answered=false;// reset for retry
+}
+
+// ─── OUTCOME ──────────────────────────────────────
+function gotoOutcome(){
+  showScreen('outcome');
+  const oc=G.outcome==='good'?SCENARIO.outcome_good:SCENARIO.outcome_bad;
+  document.getElementById('out-headline').textContent=oc.headline;
+  document.getElementById('out-story').textContent=oc.story;
+  document.getElementById('out-today').textContent=oc.today;
+  const badge=document.getElementById('out-badge');
+  badge.textContent=G.outcome==='good'?'PATIENT STABLE':'DETERIORATION';
+  badge.className='out-status-badge '+(G.outcome==='good'?'badge-good':'badge-bad');
+  // Draw outcome canvas
+  const canvas=document.getElementById('out-canvas');
+  const top=document.querySelector('.out-top');
+  canvas.width=top.clientWidth;canvas.height=top.clientHeight;
+  drawOutcomeScene(canvas);
+  // Stats
+  const statsEl=document.getElementById('out-stats');
+  const statList=[
+    {k:'judgment',label:'Clinical Judgment',color:'#00c9a0'},
+    {k:'confidence',label:'Confidence',color:'#4a8fd4'},
+    {k:'communication',label:'Communication',color:'#e8a84a'},
+    {k:'resilience',label:'Resilience',color:'#5ab87a'},
+    {k:'fatigue',label:'Fatigue',color:'#d94040'},
+  ];
+  statsEl.innerHTML=statList.map(s=>`<div class="stat-box">
+    <div class="sb-label">${s.label}</div>
+    <div class="sb-bar"><div class="sb-fill" id="sbf-${s.k}" style="width:0%;background:${s.color};"></div></div>
+    <div class="sb-val" style="color:${s.color};">${G.stats[s.k]||40}%</div>
+  </div>`).join('');
+  setTimeout(()=>{
+    statList.forEach(s=>{const el=document.getElementById('sbf-'+s.k);if(el)el.style.width=(G.stats[s.k]||40)+'%';});
+  },100);
+}
+
+function drawOutcomeScene(canvas){
+  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;
+  const state=G.outcome==='good'?'recovering':'critical';
+  drawRoom(ctx,W,H);
+  drawPatient(ctx,W,H,state);
+  drawNurse(ctx,Math.round(W*.82),Math.round(H*.78),1.05,G.outcome==='good'?'happy':'worried','stand');
+  // Outcome text on canvas
+  if(G.outcome==='good'){
+    ctx.fillStyle='rgba(0,201,160,.06)';ctx.fillRect(0,0,W,H);
+  } else {
+    ctx.fillStyle='rgba(217,64,64,.06)';ctx.fillRect(0,0,W,H);
+    // alarm lines
+    ctx.strokeStyle='rgba(217,64,64,.12)';ctx.lineWidth=1;
+    [H*.1,H*.3,H*.5,H*.7,H*.9].forEach(y=>{ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();});
+  }
+}
+
+
+// ─── HANDOFF DATA ─────────────────────────────────
+const HANDOFF_ITEMS=[
+  {id:"h1",text:"Mrs. Delgado, Bay 4 — suspected PE. CT-PA ordered. Heparin infusion started. Monitor closely overnight.",important:true},
+  {id:"h2",text:"SpO2 stabilised on O2 therapy. Current device in place — do not remove without physician review.",important:true},
+  {id:"h3",text:"Enoxaparin missed today — flagged to pharmacy. Morning team to review anticoagulation plan.",important:true},
+  {id:"h4",text:"Watch for biphasic reaction — PE symptoms can return 4-8 hours after initial treatment. Hourly obs.",important:true},
+  {id:"h5",text:"Patient requested extra blanket. Daughter at bedside — anxious but calm. Good family support.",important:false},
+  {id:"h6",text:"Ate approximately half of evening meal. Tolerating oral fluids.",important:false},
+  {id:"h7",text:"Patient mobilised briefly with physio — refused further ambulation. Document refusal.",important:false},
+]
+
+// Badges definition
+const BADGES_DEF=[
+  {id:"first_escalation",icon:"📞",name:"First Escalation",
+    desc:"Called the physician with a full SBAR on your very first shift.",
+    condition:()=>G.outcome==="good"},
+  {id:"pattern_detective",icon:"🕵️",name:"Pattern Detective",
+    desc:"Found all available clues before making your decision.",
+    condition:()=>G.clues.filter(id=>!SCENARIO.taps.find(t=>t.id===id)?.wrong).length>=5},
+  {id:"good_samaritan",icon:"🤝",name:"Good Judgment",
+    desc:"Asked for help at the right moment.",
+    condition:()=>G.actionsTaken.includes("help")},
+  {id:"o2_escalation",icon:"🫁",name:"O2 Escalation",
+    desc:"Escalated oxygen delivery appropriately.",
+    condition:()=>!!G.o2Device},
+]
+
+// Tips library
+const TIPS_DEF=[
+  {id:"tip_pe",scenario:"Day 1",
+    main:"Post-op day 2 + swollen calf + sudden SOB = PE until proven otherwise.",
+    sub:"Missed anticoagulation and immobility are the two biggest modifiable risk factors. When the picture fits — call early. Time is lung.",
+    src:"Canadian Cardiovascular Society / BTS PE Guidelines"},
+  {id:"tip_sbar",scenario:"Day 1",
+    main:"When calling the physician: Situation, Background, Assessment, Recommendation.",
+    sub:"Lead with the problem, not the patient. Say what you think is happening. Be direct. The call is always worth making.",
+    src:"Institute for Healthcare Improvement — SBAR Tool"},
+]
+
+function gotoHandoffScreen(){
+  // Reset handoff selections
+  G.handoffSelections=[];
+  const list=document.getElementById('ho2-list');
+  list.innerHTML='';
+  // Shuffle: put important items first, mix in non-important
+  const items=[...HANDOFF_ITEMS].sort(()=>Math.random()-.5);
+  items.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='ho2-item';
+    div.dataset.id=item.id;
+    div.innerHTML=`<div class="ho2-check"></div><div class="ho2-text">${item.text}</div>`;
+    div.addEventListener('click',()=>toggleHandoffItem(div,item));
+    list.appendChild(div);
+  });
+  updateHandoffFeedback();
+  wipeGo(()=>showScreen('handoff2'));
+}
+
+function toggleHandoffItem(div,item){
+  div.classList.toggle('on');
+  const check=div.querySelector('.ho2-check');
+  check.textContent=div.classList.contains('on')?'✓':'';
+  const idx=G.handoffSelections.indexOf(item.id);
+  if(idx>=0)G.handoffSelections.splice(idx,1);
+  else G.handoffSelections.push(item.id);
+  updateHandoffFeedback();
+}
+
+function updateHandoffFeedback(){
+  const selected=G.handoffSelections.length;
+  const importantSelected=HANDOFF_ITEMS.filter(i=>i.important&&G.handoffSelections.includes(i.id)).length;
+  const importantTotal=HANDOFF_ITEMS.filter(i=>i.important).length;
+  const fb=document.getElementById('ho2-feedback');
+  if(selected===0){fb.style.color='var(--muted)';fb.textContent='Select the items your next nurse needs to act on.';}
+  else if(importantSelected<2){fb.style.color='var(--alarm)';fb.textContent='Missing critical items — your next nurse may not be safe.';}
+  else if(importantSelected===importantTotal&&selected<=importantTotal+1){fb.style.color='var(--teal)';fb.textContent='Good handoff — focused on what matters.';}
+  else if(selected>5){fb.style.color='var(--amber)';fb.textContent='Too much selected — good handoff means choosing what matters, not everything.';}
+  else{fb.style.color='var(--teal)';fb.textContent=selected+' items — solid handoff.';}
+}
+
+function confirmHandoff(){
+  // Score the handoff
+  const importantSelected=HANDOFF_ITEMS.filter(i=>i.important&&G.handoffSelections.includes(i.id)).length;
+  const importantTotal=HANDOFF_ITEMS.filter(i=>i.important).length;
+  let handoffBonus=0;
+  if(importantSelected>=3)handoffBonus=80;
+  else if(importantSelected>=2)handoffBonus=40;
+  G.xp+=handoffBonus;
+  wipeGo(()=>{showScreen('endshift');buildEndShift(handoffBonus);});
+}
+
+function buildEndShift(handoffBonus){
+  // Title
+  document.getElementById('es-title').textContent=G.outcome==='good'?"She's going to be okay.":"A difficult shift.";
+
+  // ── Stats ──────────────────────────────────────
+  const oc=G.outcome==='good'?SCENARIO.outcome_good:SCENARIO.outcome_bad;
+  const deltas=oc.statDeltas;
+  const statList=[
+    {k:'judgment',label:'Clinical Judgment',color:'#00c9a0'},
+    {k:'confidence',label:'Confidence',color:'#4a8fd4'},
+    {k:'communication',label:'Communication',color:'#e8a84a'},
+    {k:'resilience',label:'Resilience',color:'#5ab87a'},
+    {k:'fatigue',label:'Fatigue',color:'#d94040'},
+  ];
+  const statsEl=document.getElementById('es-stats');
+  statsEl.innerHTML=statList.map(s=>{
+    const delta=deltas[s.k]||0;
+    const sign=delta>0?'+':'';
+    const cls=s.k==='fatigue'?(delta>0?'delta-neg':'delta-pos'):(delta>0?'delta-pos':'delta-neg');
+    return `<div class="es-stat-row">
+      <span class="es-stat-name">${s.label}</span>
+      <div class="es-stat-bar"><div class="es-stat-fill" id="esf-${s.k}" style="width:0%;background:${s.color};"></div></div>
+      <span class="es-stat-delta ${cls}">${sign}${delta}</span>
+    </div>`;
+  }).join('');
+  setTimeout(()=>{
+    statList.forEach(s=>{
+      const el=document.getElementById('esf-'+s.k);
+      if(el)el.style.width=Math.max(4,Math.min(100,G.stats[s.k]||40))+'%';
+    });
+  },120);
+
+  // ── XP calculation ─────────────────────────────
+  let xpBase=G.outcome==='good'?120:60;
+  let xpClues=G.clues.filter(id=>!SCENARIO.taps.find(t=>t.id===id)?.wrong).length*20;
+  let xpO2=G.o2Device?30:0;
+  let xpFlag=G.actionsTaken.includes('flag_meds')?25:0;
+  let xpTotal=xpBase+xpClues+xpO2+xpFlag+handoffBonus;
+  G.xp+=xpTotal;
+
+  // Animate score
+  const scoreEl=document.getElementById('es-xp-score');
+  let displayed=0;
+  const step=Math.ceil(xpTotal/30);
+  const iv=setInterval(()=>{
+    displayed=Math.min(displayed+step,xpTotal);
+    scoreEl.textContent=displayed;
+    if(displayed>=xpTotal)clearInterval(iv);
+  },40);
+
+  document.getElementById('es-xp-breakdown').innerHTML=
+    `+${xpBase} correct action &nbsp;·&nbsp; +${xpClues} clues found &nbsp;·&nbsp;`+
+    (xpO2?` +${xpO2} O2 escalation &nbsp;·&nbsp;`:'')+
+    (xpFlag?` +${xpFlag} meds flagged &nbsp;·&nbsp;`:'')+
+    (handoffBonus?` +${handoffBonus} handoff`:'');
+
+  // XP bar
+  const xpNeeded=1000;
+  const xpFill=Math.min(100,(G.xp%xpNeeded)/xpNeeded*100);
+  setTimeout(()=>{const el=document.getElementById('es-xp-fill');if(el)el.style.width=xpFill+'%';},200);
+  document.getElementById('es-level-label').textContent='Level '+(G.level+1)+' — New Grad';
+  document.getElementById('es-xp-label').textContent=Math.min(G.xp,xpNeeded)+' / '+xpNeeded+' XP';
+
+  // ── Badge ──────────────────────────────────────
+  const earnedBadge=BADGES_DEF.find(b=>!G.badges.includes(b.id)&&b.condition());
+  const badgeEl=document.getElementById('es-badge');
+  if(earnedBadge){
+    G.badges.push(earnedBadge.id);
+    badgeEl.style.display='flex';
+    badgeEl.innerHTML=`<div class="es-badge-icon">${earnedBadge.icon}</div>
+    <div>
+      <div class="es-badge-name">${earnedBadge.name} <span class="es-badge-new">NEW</span></div>
+      <div class="es-badge-desc">${earnedBadge.desc}</div>
+    </div>`;
+  } else {
+    badgeEl.style.display='none';
+  }
+
+  // ── Tip ────────────────────────────────────────
+  const tip=TIPS_DEF[0];
+  if(!G.tipsUnlocked.includes(tip.id))G.tipsUnlocked.push(tip.id);
+  document.getElementById('es-tip').innerHTML=`
+    <div class="es-tip-label">📌 tip saved to your library</div>
+    <div class="es-tip-main">${tip.main}</div>
+    <div class="es-tip-sub">${tip.sub}</div>
+    <div class="es-tip-src">${tip.src}</div>
+    <div class="es-tip-saved">Saved · pull this up anytime in a future shift</div>`;
+
+  // ── Save to localStorage ───────────────────────
+  saveProgress();
+}
+
+// ─── SAVE / LOAD ──────────────────────────────────
+function saveProgress(){
+  try{
+    localStorage.setItem('nurse30_save',JSON.stringify({
+      stats:G.stats,xp:G.xp,level:G.level,
+      badges:G.badges,tipsUnlocked:G.tipsUnlocked,
+      day:1,savedAt:Date.now()
+    }));
+  }catch(e){}
+}
+function loadProgress(){
+  try{
+    const raw=localStorage.getItem('nurse30_save');
+    if(!raw)return;
+    const save=JSON.parse(raw);
+    if(save.stats)Object.assign(G.stats,save.stats);
+    if(save.xp)G.xp=save.xp;
+    if(save.level)G.level=save.level;
+    if(save.badges)G.badges=save.badges;
+    if(save.tipsUnlocked)G.tipsUnlocked=save.tipsUnlocked;
+  }catch(e){}
+}
+
+// ─── INIT ─────────────────────────────────────────
+loadProgress();
+drawTitleChar();
+</script>
+</body>
+</html>
