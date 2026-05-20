@@ -28,6 +28,14 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 @keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
 @keyframes scan{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+@keyframes vignette-pulse{0%,100%{opacity:.55;}50%{opacity:.85;}}
+@keyframes txt-shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-2px);}40%{transform:translateX(2px);}60%{transform:translateX(-1px);}80%{transform:translateX(1px);}}
+/* TIMER VIGNETTE */
+#timer-vignette{position:fixed;inset:0;pointer-events:none;z-index:90;opacity:0;transition:opacity 1.2s ease;border-radius:0;}
+#timer-vignette.phase2{opacity:1;background:radial-gradient(ellipse at center,transparent 45%,rgba(20,10,60,.55) 100%);}
+#timer-vignette.phase3{opacity:1;background:radial-gradient(ellipse at center,transparent 35%,rgba(140,10,10,.6) 100%);animation:vignette-pulse 2s ease-in-out infinite;}
+#timer-vignette.phase4{opacity:1;background:radial-gradient(ellipse at center,transparent 25%,rgba(180,0,0,.75) 100%);animation:vignette-pulse .8s ease-in-out infinite;}
+.timer.shake{animation:txt-shake .18s ease-in-out infinite;}
 @keyframes phonering{0%{box-shadow:0 0 0 0 rgba(232,168,74,.4);}100%{box-shadow:0 0 0 10px rgba(232,168,74,0);}}
 /* TITLE */
 #scr-title{background:var(--ink);justify-content:center;}
@@ -355,6 +363,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 <div id="app">
 <div id="wipe"></div>
 <div id="wrong-flash"></div>
+<div id="timer-vignette"></div>
 
 <!-- TITLE -->
 <div id="scr-title" class="scr on">
@@ -1802,16 +1811,62 @@ function gotoInvestigate(){
 }
 
 // === TIMER ===
+function updateTimerPressure(sec){
+  const vig=document.getElementById('timer-vignette');
+  const el=document.getElementById('timer');
+  // Phase 1: 600–300 (10:00–5:00) — normal
+  // Phase 2: 300–180 (5:00–3:00) — cool vignette, UI shift
+  // Phase 3: 180–60  (3:00–1:00) — red vignette pulse
+  // Phase 4: <60     (<1:00)     — intense red + timer shake
+  if(sec>300){
+    if(vig)vig.className='';
+    if(el)el.classList.remove('shake');
+    document.documentElement.style.setProperty('--ink','#080d18');
+    document.documentElement.style.setProperty('--wire','rgba(255,255,255,.07)');
+  }else if(sec>180){
+    if(vig)vig.className='phase2';
+    if(el)el.classList.remove('shake');
+    // Slightly colder/darker ink
+    document.documentElement.style.setProperty('--ink','#060b16');
+    document.documentElement.style.setProperty('--wire','rgba(255,255,255,.09)');
+  }else if(sec>60){
+    if(vig)vig.className='phase3';
+    if(el)el.classList.remove('shake');
+    document.documentElement.style.setProperty('--ink','#080610');
+    document.documentElement.style.setProperty('--wire','rgba(255,100,100,.1)');
+  }else{
+    if(vig)vig.className='phase4';
+    if(el)el.classList.add('shake');
+    document.documentElement.style.setProperty('--ink','#0a0408');
+    document.documentElement.style.setProperty('--wire','rgba(255,60,60,.14)');
+  }
+}
+function resetTimerPressure(){
+  const vig=document.getElementById('timer-vignette');
+  if(vig)vig.className='';
+  const el=document.getElementById('timer');if(el)el.classList.remove('shake');
+  document.documentElement.style.setProperty('--ink','#080d18');
+  document.documentElement.style.setProperty('--wire','rgba(255,255,255,.07)');
+}
 function startTimer(resume=false){
-  if(!resume)G.timerSec=600;
+  if(!resume){G.timerSec=600;resetTimerPressure();}
   if(G.timerIv)clearInterval(G.timerIv);
   G.timerIv=setInterval(()=>{
     G.timerSec--;const m=Math.floor(G.timerSec/60),s=G.timerSec%60;
-    const el=document.getElementById('timer');if(el){el.textContent=m+':'+(s<10?'0':'')+s;el.className='timer'+(G.timerSec<120?' urgent':'')+(G.timerSec<60?' critical':'');}
+    const el=document.getElementById('timer');
+    if(el){
+      el.textContent=m+':'+(s<10?'0':'')+s;
+      el.className='timer'+(G.timerSec<120?' urgent':'')+(G.timerSec<60?' critical':'');
+      if(G.timerSec<60)el.classList.add('shake');
+    }
+    updateTimerPressure(G.timerSec);
+    // Phase transitions — one-time SFX triggers
+    if(G.timerSec===300){SFX.init();SFX.pagerBuzz();}
+    if(G.timerSec===180){SFX.init();SFX.deterioration();}
     if(G.timerSec===90){SFX.init();SFX.urgentAlarm();}
     if(G.timerSec%10===0)tickVisualDeterioration();
     if(G.currentDay===2&&G.timerSec===180&&!G.actionsTaken.includes('fluids')){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
-    if(G.timerSec<=0){clearInterval(G.timerIv);stopScene();gotoAction();}
+    if(G.timerSec<=0){clearInterval(G.timerIv);resetTimerPressure();stopScene();gotoAction();}
   },1000);
 }
 function showCodeBlueWarning(){
@@ -2197,7 +2252,7 @@ function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'c
 
 // === SBAR ===
 function gotoSBAR(){
-  if(G.timerIv)clearInterval(G.timerIv);SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
+  if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
   wipeGo(()=>{showScreen('sbar');renderSBAR();});
 }
@@ -2267,7 +2322,7 @@ function goBackToInvestigate(){
 
 // === ACTION SCREEN ===
 let _answered=false;
-function gotoAction(){_answered=false;if(G.timerIv)clearInterval(G.timerIv);stopScene();wipeGo(()=>{showScreen('action');renderActionScreen();});}
+function gotoAction(){_answered=false;if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();stopScene();wipeGo(()=>{showScreen('action');renderActionScreen();});}
 function renderActionScreen(){
   _answered=false;
   const row=document.getElementById('ct-row');if(row)row.innerHTML=getSC().taps.filter(t=>!t.wrong&&t.clue).map(t=>`<div class="cttag ${G.clues.includes(t.id)?'':'off'}">${t.clue}</div>`).join('');
