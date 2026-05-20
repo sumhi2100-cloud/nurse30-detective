@@ -881,6 +881,80 @@ SCENARIOS[3]={
   iv:{main:{name:'0.9% NaCl',vol:'75 mL/hr',rate:'75 mL/hr',state:'ok',note:'Maintenance rate'},abx:null},
 };
 
+SCENARIOS[4]={
+  handoff:[
+    {delay:500,from:'Triage Nurse Ortiz',txt:'Bay 2 -- Jamie Chen, 21F. Walked in 5 minutes ago after a bee sting in the parking lot. She says her throat feels tight and she cannot swallow properly.'},
+    {delay:1700,from:'Nurse Ortiz',txt:'Hives spreading across her chest and arms. She is scared. BP was 92/60 on triage -- I am watching it drop. HR 128. She has a bee allergy but did not bring her EpiPen today.'},
+    {delay:2800,from:'You',txt:'On my way.',you:true},
+    {delay:3400,alert:true,txt:'Bay 2 -- BP dropping -- SpO2 93% -- Stridor -- Anaphylaxis suspected'},
+  ],
+  taps:[
+    {id:'face',lbl:'Observe',x:'38%',y:'28%',
+     finds:[
+       {p:'c',t:'Lip swelling -- angioedema developing. Throat visibly tightening. She is drooling slightly -- cannot swallow.'},
+       {p:'c',t:'She grabs your arm: <em>"My throat is closing. I cannot breathe properly."</em> Eyes wide. Terrified.'},
+       {p:'w',t:'Audible stridor on inspiration. Wheeze without stethoscope. The airway is narrowing RIGHT NOW.'},
+     ],
+     insight:'Stridor + angioedema + bee sting = anaphylaxis with airway compromise. This airway can close completely within minutes. Move.',
+     clue:'Stridor + lip swelling + angioedema'},
+    {id:'chest',lbl:'Auscultate',x:'38%',y:'45%',
+     finds:[
+       {p:'c',t:'Bilateral wheeze. Prolonged expiratory phase. <strong>Bronchospasm.</strong>'},
+       {p:'w',t:'SpO2 93% on room air. RR 26 and climbing. She is working to breathe.'},
+       {p:'w',t:'Short phrases only between breaths: <em>"Help me."</em> She knows this is serious.'},
+     ],
+     insight:'Bronchospasm + wheeze + falling SpO2. Lower airway involvement confirms systemic anaphylaxis. Not just hives.',
+     clue:'SpO2 93% -- bilateral wheeze -- bronchospasm'},
+    {id:'skin',lbl:'Skin',x:'55%',y:'55%',
+     finds:[
+       {p:'c',t:'Urticaria spreading rapidly -- neck, chest, both arms. Raised, red wheals. Growing as you watch.'},
+       {p:'c',t:'Face flushed. Skin warm and dry. Cap refill 3 seconds.'},
+       {p:'w',t:'She says: <em>"It started on my arm and just kept spreading."</em> Systemic mast cell release.'},
+     ],
+     insight:'Rapidly spreading urticaria + flushing = massive histamine release. This is not a local reaction -- it is systemic.',
+     clue:'Urticaria spreading -- systemic histamine release'},
+    {id:'iv',lbl:'IV & Meds',x:'82%',y:'24%',
+     finds:[
+       {p:'c',t:'<strong>No IV access in place.</strong> Triage did not establish access -- patient moved too fast.'},
+       {p:'c',t:'Medication history: <strong>Bee allergy documented. EpiPen prescribed. NOT with her today.</strong>'},
+       {p:'w',t:'No IV means no route for emergency meds -- but epinephrine IM does not wait for IV. Outer thigh. Now.'},
+     ],
+     insight:'No IV, no EpiPen, BP dropping. Epinephrine 0.3mg IM to the outer thigh. It goes in before the IV is established.',
+     clue:'No IV access -- no EpiPen -- allergy documented'},
+    {id:'monitor',lbl:'Monitor',x:'80%',y:'38%',
+     finds:[
+       {p:'c',t:'BP: 84/52 mmHg. Was 92/60 on triage 5 minutes ago. <strong>Still dropping.</strong>'},
+       {p:'c',t:'HR: 128 bpm -- compensatory tachycardia. Heart is trying to maintain perfusion.'},
+       {p:'c',t:'SpO2 93% and trending down. RR 26. Every 30 seconds without epinephrine moves her closer to arrest.'},
+     ],
+     insight:'BP dropping + HR rising + SpO2 falling = anaphylactic shock. The clock is running.',
+     clue:'BP 84/52 dropping -- HR 128 -- distributive shock'},
+    {id:'bag',x:'15%',y:'80%',wrong:true,wrongTxt:'Personal belongings -- no clinical value. Your patient needs you now.'},
+    {id:'door',x:'8%',y:'20%',wrong:true,wrongTxt:'The door is not a clinical cue. Stay with your patient.'},
+  ],
+  question:'Jamie, 21F, ER Bay 2. Bee sting 15 minutes ago. Stridor, angioedema, urticaria spreading. SpO2 93%, BP 84/52 dropping, HR 128. She is in anaphylactic shock.',
+  sub:'What is your first action?',
+  choices:[
+    {key:'A',lbl:'Epinephrine 0.3mg IM to the outer thigh -- immediately',desc:'No IV needed. IM epinephrine saves lives. It goes in now.',correct:true,
+     exp:'Correct. Epinephrine IM is the only first-line treatment for anaphylaxis. The outer thigh (vastus lateralis) -- faster absorption than deltoid. 0.3mg for adults. It goes in before IV access, before antihistamines, before anything else. Every minute of delay increases cardiac arrest risk.'},
+    {key:'B',lbl:'Give diphenhydramine 50mg IV first -- antihistamine controls the reaction',desc:'Antihistamine is the standard for allergic reactions.',correct:false,
+     exp:'Antihistamines treat the symptom -- histamine. They do NOT reverse airway oedema, bronchospasm, or haemodynamic collapse. Epinephrine does. Antihistamines are adjunct therapy -- they come after epinephrine. Never before.'},
+    {key:'C',lbl:'Call the physician for orders before giving any medication',desc:'You need an order before administering epinephrine.',correct:false,
+     exp:'Anaphylaxis has standing nursing protocols for epinephrine administration in emergency settings. Waiting for a physician order in anaphylactic shock causes preventable deaths. Act within your scope. Epinephrine first. Call simultaneously.'},
+    {key:'D',lbl:'Start IV access and fluid bolus first -- hypotension needs fluids',desc:'Establish IV before giving medications.',correct:false,
+     exp:'IV fluids help distributive shock -- but they do not reverse bronchospasm, angioedema, or vasoplegia. Epinephrine IM goes in without IV access. A second nurse establishes IV simultaneously. Fluids come after -- not before -- the epinephrine.'},
+  ],
+  outcomeGood:{statDeltas:{judgment:14,confidence:13,communication:10,resilience:8,fatigue:8},
+    headline:'Airway secured. Jamie is breathing.',
+    story:'Epinephrine reversed the bronchospasm within 3 minutes. BP climbed to 100/68. Stridor resolved. Jamie looked at you: "I thought I was going to die." She did not -- because you acted immediately and correctly.'},
+  outcomeBad:{statDeltas:{judgment:7,confidence:-4,communication:5,resilience:6,fatigue:12},
+    headline:'The delay mattered. Remember this.',
+    story:'The antihistamine helped the hives. It did not help the airway. By the time epinephrine was given, SpO2 had dropped to 88% and the team was preparing for intubation. She recovered -- but the window was narrower than it needed to be. Epinephrine first. Always.'},
+  patient:{name:'Jamie Chen',age:'21F',dx:'Anaphylaxis -- bee sting',room:'ER Bay 2'},
+  vitals:{spo2:{val:'93%',state:'warn'},hr:{val:'128',state:'crit'},rr:{val:'26',state:'crit'},bp:{val:'84/52',state:'crit'},temp:{val:'37.0C',state:'ok'},gcs:{val:'14',state:'warn'},uo:null,lac:null},
+  iv:{main:{name:'No IV access',vol:'--',rate:'--',state:'crit',note:'Large bore IV needed -- urgent'}},
+};
+
 const SBAR_DATA={
   1:{doctor:'Dr. Okonkwo',role:'Responsible Medical Officer',phone:'ext. 4421',
     cards:[
@@ -926,6 +1000,21 @@ const SBAR_DATA={
     md_response:{delay:1800,
       text:'"Hold the morphine. Stat abdominal ultrasound. IV wide open. I am on my way -- 8 minutes. Good call."',
       followup:'Dr. Martinez on the way. Stat ultrasound ordered. You caught it early.'},
+  },
+  4:{doctor:'Dr. Kowalski',role:'ER Physician',phone:'ext. 2201',
+    cards:[
+      {id:'s4',zone:'s',text:'I am calling about Jamie Chen in ER Bay 2. I am concerned she is in anaphylactic shock following a bee sting.'},
+      {id:'b4',zone:'b',text:'21-year-old female. Documented bee allergy. EpiPen prescribed but not brought today. No IV access on arrival. Reaction started approximately 15 minutes ago.'},
+      {id:'a4',zone:'a',text:'BP 84/52 and dropping. HR 128. SpO2 93% trending down. Audible stridor. Angioedema. Urticaria spreading across chest and arms. Bronchospasm on auscultation.'},
+      {id:'r4',zone:'r',text:'Epinephrine 0.3mg IM given to outer thigh. O2 15L NRB applied. Large bore IV establishing. I need standing epinephrine IV orders and antihistamine orders urgently.'},
+    ],
+    s:{title:'Situation',hint:'What is happening right now?'},
+    b:{title:'Background',hint:'What put her at risk?'},
+    a:{title:'Assessment',hint:'What do the vitals and examination show?'},
+    r:{title:'Recommendation',hint:'What do you need ordered?'},
+    md_response:{delay:1600,
+      text:'"Good -- epi IM was the right call. Repeat in 5 minutes if no improvement. I am on my way now -- 2 minutes. Order epi drip on standby and get airway trolley to the bay."',
+      followup:'Dr. Kowalski on the way. Epinephrine IM working. Stridor resolving. You moved fast enough.'},
   },
 };
 
@@ -1085,9 +1174,61 @@ const ACTS_D3=[
    done:()=>G.actionsTaken.includes('chart_d3'),unlock:3,need:null},
 ];
 
+const ACTS_D4=[
+  {key:'epi_im',pri:1,sec:'Immediate -- Epinephrine',
+   getL:()=>G.actionsTaken.includes('epi_im')?'Epinephrine 0.3mg IM given':'Give Epinephrine 0.3mg IM -- outer thigh NOW',
+   desc:'Anaphylaxis. Epinephrine IM is the only first-line treatment. Outer thigh (vastus lateralis) -- fastest absorption. 0.3mg adult dose. Does not wait for IV. Does not wait for a physician order. Goes in now.',
+   done:()=>G.actionsTaken.includes('epi_im'),unlock:1,need:null},
+  {key:'o2_d4',pri:1,sec:'Immediate -- O2 Therapy',
+   getL:()=>G.actionsTaken.includes('o2_d4')?'O2 15L NRB applied -- SpO2 improving':'Apply O2 -- 15L Non-Rebreather Mask',
+   desc:'SpO2 93% and dropping. Bronchospasm + stridor. Apply NRB 15L/min immediately. Do NOT start at NC -- anaphylaxis warrants maximum O2 from the start.',
+   done:()=>G.actionsTaken.includes('o2_d4'),unlock:1,need:null},
+  {key:'position_d4',pri:1,sec:'Immediate -- Positioning',
+   getL:()=>G.actionsTaken.includes('position_d4')?'Supine position -- legs elevated':'Position supine -- legs elevated (shock)',
+   desc:'Anaphylactic shock -- do NOT sit up. Supine with legs elevated (Trendelenburg if tolerated) increases venous return and supports BP. Exception: if severe respiratory distress, semi-recumbent.',
+   done:()=>G.actionsTaken.includes('position_d4'),unlock:1,need:null},
+  {key:'iv_d4',pri:1,sec:'Immediate -- IV Access',
+   getL:()=>G.actionsTaken.includes('iv_d4')?'Large bore IV x2 established':'Establish large bore IV x2 -- 16G or larger',
+   desc:'No IV access in place. Insert 16G or larger, preferably antecubital. Two sites -- one for fluids, one for emergency medications. This runs in parallel with the epinephrine, not before it.',
+   done:()=>G.actionsTaken.includes('iv_d4'),unlock:1,need:null},
+  {key:'call_d4',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Physician called':'Call Dr. Kowalski -- anaphylactic shock',
+   desc:'Anaphylactic shock with airway compromise. Physician needs to be at bedside now. Call simultaneously with epinephrine -- not after.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'fluids_d4',pri:2,sec:'Urgent -- Circulation',
+   getL:()=>G.actionsTaken.includes('fluids_d4')?'IV fluid bolus running':'IV fluid bolus -- 0.9% NaCl 1L',
+   desc:'BP 84/52 and dropping. Distributive shock from vasoplegia. Run 1L NaCl 0.9% wide open after IV access established. Fluids support BP while epinephrine reverses the vasodilation.',
+   done:()=>G.actionsTaken.includes('fluids_d4'),unlock:2,need:'iv_d4'},
+  {key:'vfreq_d4',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('vfreq_d4')?'Monitoring q5min active':'Continuous monitoring -- q5min BP',
+   desc:'Anaphylaxis monitoring: BP q5min minimum, continuous SpO2 and HR. Alert thresholds: SpO2 <90%, SBP <80, HR >140 or falling below 60. Observe for biphasic reaction within 4 hours.',
+   done:()=>G.actionsTaken.includes('vfreq_d4'),unlock:2,need:null},
+  {key:'airway_ready_d4',pri:2,sec:'Urgent -- Preparation',
+   getL:()=>G.actionsTaken.includes('airway_ready_d4')?'Airway trolley at bedside':'Bring airway trolley -- stridor risk',
+   desc:'Audible stridor = narrowing airway. If epinephrine does not reverse angioedema, she will need intubation. Bring airway trolley to the bay now. RSI setup ready before you need it.',
+   done:()=>G.actionsTaken.includes('airway_ready_d4'),unlock:2,need:null},
+  {key:'antihistamine_d4',pri:3,sec:'Adjunct Treatment',
+   getL:()=>G.actionsTaken.includes('antihistamine_d4')?'Diphenhydramine 50mg IV given':'Give Diphenhydramine 50mg IV -- adjunct',
+   desc:'Antihistamines are ADJUNCT therapy in anaphylaxis -- not first line. Diphenhydramine reduces histamine-mediated symptoms but does not reverse airway oedema or haemodynamic collapse. Give after epinephrine.',
+   done:()=>G.actionsTaken.includes('antihistamine_d4'),unlock:3,need:null},
+  {key:'steroid_d4',pri:3,sec:'Adjunct Treatment',
+   getL:()=>G.actionsTaken.includes('steroid_d4')?'Hydrocortisone 200mg IV given':'Give Hydrocortisone 200mg IV -- adjunct',
+   desc:'IV steroids reduce biphasic reaction risk and ongoing inflammation. Onset is hours -- not minutes. Give after epinephrine and IV access. Dexamethasone 8mg IV is an alternative.',
+   done:()=>G.actionsTaken.includes('steroid_d4'),unlock:3,need:null},
+  {key:'family_d4',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('family_d4')?'Family updated':'Update family -- anaphylaxis',
+   desc:'"Jamie is having a serious allergic reaction. We have given emergency medication and the doctor is on the way. She is being monitored closely." Honest, calm, no speculation.',
+   done:()=>G.actionsTaken.includes('family_d4'),unlock:2,need:null},
+  {key:'chart_d4',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d4')?'Nursing note written':'Document assessment and interventions',
+   desc:'Time-stamp: arrival time, epinephrine given at [TIME], BP at each check, response to treatment, physician notified at [TIME].',
+   done:()=>G.actionsTaken.includes('chart_d4'),unlock:3,need:null},
+];
+
 function getACTS(){
   if(G.currentDay===2)return ACTS_D2;
   if(G.currentDay===3)return ACTS_D3;
+  if(G.currentDay===4)return ACTS_D4;
   return ACTS;
 }
 function getSC(){return SCENARIOS[G.currentDay]||SCENARIOS[1];}
@@ -1126,6 +1267,7 @@ function resetVSForDay(day){
   Object.assign(VS,getVSForDay(day));
   if(day===1&&SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='150 mL/hr';SCENARIOS[1].iv.main.state='crit';SCENARIOS[1].iv.main.note='Prescribed 80 mL/hr -- running too fast';}
   if(SCENARIOS[2]&&SCENARIOS[2].vitals){SCENARIOS[2].vitals.lac=null;}
+  if(day===4&&SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='No IV access';SCENARIOS[4].iv.main.vol='--';SCENARIOS[4].iv.main.rate='--';SCENARIOS[4].iv.main.state='crit';SCENARIOS[4].iv.main.note='Large bore IV needed -- urgent';}
   renderIVPanel(day);
 }
 function updateVitals(chg={}){
@@ -1149,7 +1291,7 @@ function updateVitals(chg={}){
     if(scv.gcs){const ge=document.getElementById('mo-gcs');if(ge){ge.textContent=scv.gcs.val;ge.className='monval '+scv.gcs.state;}}
   }else{
     const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
-    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':'Monitor Bay 4';
+    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':G.currentDay===4?'Monitor ER Bay 2':'Monitor Bay 4';
     const sc1v=(SCENARIOS[1]||{}).vitals||{};
     if(sc1v.temp){const te=document.getElementById('mo-temp-d1');if(te){te.textContent=sc1v.temp.val;te.className='monval '+sc1v.temp.state;}}
     if(sc1v.gcs){const ge=document.getElementById('mo-gcs-d1');if(ge){ge.textContent=sc1v.gcs.val;ge.className='monval '+sc1v.gcs.state;}}
@@ -1210,6 +1352,11 @@ function initVisualState(day){
     G.patientState='deteriorating';G.o2Saturation=97;
     G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0.1;G.confusion=false;G.ecgChaos=0.1;
     // Day 3: pale skin, slightly clammy, restless -- not dramatic
+  }
+  else if(day===4){
+    G.patientState='deteriorating';G.o2Saturation=93;
+    G.skinFlush=0.9;G.diaphoresis=0.2;G.mottle=0.2;G.confusion=false;G.ecgChaos=0.2;
+    // Day 4: anaphylaxis -- flushed, urticaria, tachycardic, hypotensive
   }
   else{G.patientState='deteriorating';G.o2Saturation=91;G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0;G.confusion=false;G.ecgChaos=0.15;}
 }
@@ -1492,10 +1639,11 @@ function gotoHandoff(){
 }
 function startHandoff(){
   const chat=document.getElementById('ho-chat');if(chat)chat.innerHTML='';
-  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':'Day 1 Bay 4 23:42';
+  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':G.currentDay===4?'Day 4 ER Bay 2 14:05':'Day 1 Bay 4 23:42';
   const lbl=document.getElementById('ho-vitals-lbl');const grid=document.getElementById('ho-vitals-grid');
   if(G.currentDay===2){if(lbl)lbl.textContent='Last recorded vitals 30 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>';}
   else if(G.currentDay===3){if(lbl)lbl.textContent='Last recorded vitals -- trending';if(grid)grid.innerHTML='<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">35mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>';}
+  else if(G.currentDay===4){if(lbl)lbl.textContent='Triage vitals -- 5 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">84/52</div></div><div><div class="vcl">HR</div><div class="vcv crit">128</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">93%</div></div><div><div class="vcl">RR</div><div class="vcv crit">26</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.0C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
   else{if(lbl)lbl.textContent='Last recorded vitals';if(grid)grid.innerHTML='<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
   const vc=document.getElementById('ho-vitals');if(vc)vc.style.display='none';
   const sc=getSC();let i=0;
@@ -1507,8 +1655,8 @@ function startHandoff(){
   }next();
 }
 function gotoInvestigate(){
-  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':'Day 1 Bay 4';
-  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':'Mrs. Delgado, 58F';
+  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':G.currentDay===4?'Day 4 ER Bay 2':'Day 1 Bay 4';
+  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':G.currentDay===4?'Jamie Chen, 21F':'Mrs. Delgado, 58F';
   const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=dayHud;if(pe)pe.textContent=ptHud;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
   wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);},100);});
@@ -1747,9 +1895,99 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Tyler 45M Room 214. Post-op Day 1 lap chole.\nAbdomen distended, firm, guarding RUQ, rebound. Right shoulder tip pain. JP drain 35mL dark red in 4h (12mL prior 4h). Skin pale, cool, clammy.\nHR trending 88-98 over 6h. BP trending 128/84-118/76.\nMorphine withheld. IV fluid challenge 250mL. Type & crossmatch ordered. Dr. Martinez notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  // === DAY 4 ===
+  }else if(type==='epi_im'){
+    if(!G.actionsTaken.includes('epi_im'))G.actionsTaken.push('epi_im');
+    applyVC({bp:{val:'100/68',state:'warn'}},3);applyVC({hr:{val:'110',state:'warn'}},4);applyVC({spo2:{val:'96%',state:'ok'}},5);
+    SFX.init();SFX.tapFind();
+    openDrawer('Epinephrine 0.3mg IM -- outer thigh',[
+      {p:'c',t:'Epinephrine 0.3mg IM into the vastus lateralis. Injected correctly and immediately.'},
+      {p:'o',t:'Onset 8-10 minutes IM. Reverses vasoplegia, reduces bronchospasm, reduces angioedema.'},
+      {p:'o',t:'Jamie: <em>"My throat feels a little less tight."</em> Stridor decreasing. BP climbing.'},
+      {p:'w',t:'Monitor for biphasic reaction for at least 4 hours. A second dose may be needed at 5 minutes if no response.'},
+    ],'Epinephrine IM is the only first-line treatment for anaphylaxis. Every minute of delay increases cardiac arrest risk.');
+    setTimeout(checkActions,200);
+  }else if(type==='o2_d4'){
+    if(!G.actionsTaken.includes('o2_d4'))G.actionsTaken.push('o2_d4');applyVC({spo2:{val:'96%',state:'ok'},rr:{val:'22',state:'warn'}},2);SFX.init();SFX.o2Flow();
+    openDrawer('O2 15L/min Non-Rebreather Mask',[
+      {p:'o',t:'NRB applied. SpO2 climbing to 96%. FiO2 up to 90% -- maximum non-invasive delivery.'},
+      {p:'w',t:'Bronchospasm ongoing -- continue NRB until wheeze resolves and SpO2 consistently >94%.'},
+      {p:'c',t:'If SpO2 fails to improve or stridor worsens -- prepare for intubation. Get airway trolley now.'},
+    ],'In anaphylaxis, start at the ceiling. NC is not enough for this patient.');
+    setTimeout(checkActions,200);
+  }else if(type==='position_d4'){
+    if(!G.actionsTaken.includes('position_d4'))G.actionsTaken.push('position_d4');applyVC({bp:{val:'88/56',state:'crit'}},1);
+    openDrawer('Supine -- legs elevated',[
+      {p:'o',t:'Supine with legs elevated. Improves venous return. Supports BP during distributive shock.'},
+      {p:'w',t:'Do NOT raise the head of bed in anaphylactic shock unless respiratory distress is severe.'},
+      {p:'c',t:'Positional change alone gives a transient fluid-equivalent effect. Combined with IV fluids -- better response.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='iv_d4'){
+    if(!G.actionsTaken.includes('iv_d4'))G.actionsTaken.push('iv_d4');
+    if(SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='16G IV x2';SCENARIOS[4].iv.main.vol='';SCENARIOS[4].iv.main.rate='KVO';SCENARIOS[4].iv.main.state='ok';SCENARIOS[4].iv.main.note='Large bore x2 -- antecubital';}
+    renderIVPanel(G.currentDay);SFX.init();SFX.tapFind();
+    openDrawer('Large bore IV x2 established',[
+      {p:'o',t:'16G IV established bilateral antecubital. Fluids and medications can run.'},
+      {p:'c',t:'IV access enables: IV epinephrine if IM fails, IV fluids, antihistamines, steroids.'},
+      {p:'w',t:'IM epinephrine does not wait for IV. The IV is now running in parallel.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='call_d4'){gotoSBAR();
+  }else if(type==='fluids_d4'){
+    if(!G.actionsTaken.includes('iv_d4')){openDrawer('IV access needed first',[{p:'c',t:'Establish IV access before starting fluids.'}],null);SFX.init();SFX.tapWrong();return;}
+    if(!G.actionsTaken.includes('fluids_d4'))G.actionsTaken.push('fluids_d4');
+    G.fluidRunning=true;G.fluidMl=0;G.fluidRate='WIDE OPEN';
+    if(SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.rate='WIDE OPEN';SCENARIOS[4].iv.main.vol='1000 mL';SCENARIOS[4].iv.main.state='ok';SCENARIOS[4].iv.main.note='Anaphylaxis fluid resuscitation';}
+    renderIVPanel(G.currentDay);SFX.init();SFX.o2Flow();
+    applyVC({bp:{val:'96/62',state:'warn'}},3);applyVC({bp:{val:'104/70',state:'warn'}},6);
+    openDrawer('IV fluid bolus -- 0.9% NaCl 1L',[
+      {p:'o',t:'1 litre NaCl 0.9% running wide open. Target: SBP >100.'},
+      {p:'w',t:'Anaphylaxis causes massive vasodilation -- the tank is full but the pipes are too wide. Fluids help while epinephrine reverses the vasoplegia.'},
+      {p:'c',t:'If BP does not respond after 2L -- IV epinephrine infusion may be needed.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='vfreq_d4'){
+    if(!G.actionsTaken.includes('vfreq_d4'))G.actionsTaken.push('vfreq_d4');
+    openDrawer('Monitoring q5min active',[
+      {p:'o',t:'BP q5min. Continuous SpO2 and HR. GCS q15min.'},
+      {p:'c',t:'Alert: SpO2 <90%, SBP <80, HR >140 or <60. Any worsening stridor -- call STAT.'},
+      {p:'w',t:'Biphasic reaction: 20% of anaphylaxis patients deteriorate again 1-72 hours after initial recovery. Observe minimum 4 hours.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='airway_ready_d4'){
+    if(!G.actionsTaken.includes('airway_ready_d4'))G.actionsTaken.push('airway_ready_d4');SFX.init();SFX.tapFind();
+    openDrawer('Airway trolley at Bay 2',[
+      {p:'c',t:'Airway trolley confirmed: ETT sizes 6.5/7.0/7.5, laryngoscope, BVM, suction on. Anaesthetics notified to stand by.'},
+      {p:'w',t:'Angioedema makes intubation harder with time. The window is NOW -- before the airway closes further.'},
+      {p:'o',t:'If SpO2 falls below 90% on NRB or stridor worsens -- escalate to anaesthetics immediately.'},
+    ],'Prepare for the worst while treating for the best. Airway trolley at bedside is not pessimistic -- it is professional.');
+    setTimeout(checkActions,200);
+  }else if(type==='antihistamine_d4'){
+    if(!G.actionsTaken.includes('antihistamine_d4'))G.actionsTaken.push('antihistamine_d4');SFX.init();SFX.tapFind();
+    openDrawer('Diphenhydramine 50mg IV',[
+      {p:'o',t:'Diphenhydramine 50mg IV given. Antihistamine adjunct -- reduces histamine-mediated itch, urticaria, and flushing.'},
+      {p:'w',t:'This does NOT reverse airway oedema, bronchospasm, or haemodynamic collapse. Epinephrine does.'},
+      {p:'c',t:'Antihistamines are adjunct -- never first-line. If given before epinephrine, they create a false sense of control while the reaction progresses.'},
+    ],'Antihistamines make the patient feel better. Epinephrine keeps the patient alive.');
+    setTimeout(checkActions,200);
+  }else if(type==='steroid_d4'){
+    if(!G.actionsTaken.includes('steroid_d4'))G.actionsTaken.push('steroid_d4');SFX.init();SFX.tapFind();
+    openDrawer('Hydrocortisone 200mg IV',[
+      {p:'o',t:'Hydrocortisone 200mg IV given. Onset 4-6 hours -- will not help the acute phase.'},
+      {p:'w',t:'Steroids reduce biphasic reaction risk and ongoing inflammation. Important but not immediate.'},
+      {p:'o',t:'Alternative: methylprednisolone 125mg IV or dexamethasone 8mg IV.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='family_d4'){
+    if(!G.actionsTaken.includes('family_d4'))G.actionsTaken.push('family_d4');SFX.init();SFX.chime();
+    openDrawer('Family updated',[
+      {p:'o',t:'"Jamie is having a serious allergic reaction to a bee sting. We have given emergency medication and the doctor is on the way."'},
+      {p:'w',t:'Ask if family has an EpiPen. Ask about previous anaphylaxis history.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='chart_d4'){
+    if(!G.actionsTaken.includes('chart_d4'))G.actionsTaken.push('chart_d4');
+    document.getElementById('cd-title').textContent='Write nursing note -- Anaphylaxis';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Jamie Chen 21F ER Bay 2. Bee sting parking lot. Documented bee allergy. EpiPen not with patient.\nStridor, angioedema, urticaria spreading. BP 84/52 dropping. HR 128. SpO2 93% trending down.\nInterventions: Epi 0.3mg IM right outer thigh [TIME]. O2 15L NRB. Supine legs elevated. 16G IV x2 antecubital.\nFluids 0.9% NaCl 1L wide open. Diphenhydramine 50mg IV. Hydrocortisone 200mg IV.\nDr. Kowalski notified [TIME]. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }
 }
-function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'chart_d3':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
+function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'chart_d3':G.currentDay===4?'chart_d4':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
 
 // === SBAR ===
 function gotoSBAR(){
@@ -1854,6 +2092,7 @@ const HO2_ITEMS={
   1:['Patient: Mrs. Delgado, 58F, Bay 4 -- suspected PE, post-op Day 2 hip replacement','SpO2 91% trending -- O2 applied, targeting >94%','Physician called -- CT-PA and heparin pending','Missed enoxaparin today -- DVT history, high risk','IV rate corrected 150 to 80 mL/hr','Right calf swollen and tender -- DVT source likely','Monitoring q15min','Family aware'],
   2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- IDC inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
   3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- distension, guarding, shoulder tip pain','JP drain output tripled -- 35 mL dark red in 4h','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern','IV fluid challenge 250 mL. Type and crossmatch ordered','Dr. Martinez notified -- may return to theatre','Family aware'],
+  4:['Patient: Jamie Chen, 21F, ER Bay 2 -- anaphylaxis, bee sting','Epinephrine 0.3mg IM given outer thigh -- response observed','BP 84/52 on arrival -- trending up after epi and fluids','SpO2 93% on arrival -- improved on 15L NRB','Stridor and angioedema -- reducing. Airway trolley at bedside','IV access 16G x2 -- IV fluids 0.9% NaCl 1L running','Dr. Kowalski notified and on the way','Diphenhydramine and hydrocortisone given -- adjunct therapy','Biphasic reaction monitoring required -- observe minimum 4 hours','Family aware -- EpiPen prescription to be reviewed at discharge'],
 };
 function buildHandoff2(){
   const items=HO2_ITEMS[G.currentDay]||HO2_ITEMS[1];G.handoffSel=[];
@@ -1873,8 +2112,8 @@ function buildEndShift(){
   if(statsEl&&deltas){statsEl.innerHTML=Object.entries(deltas).map(([k,v])=>{const pct=Math.min(100,Math.max(0,(G.stats[k]||40)+v));const col=k==='fatigue'?'var(--amber)':'var(--teal)';return '<div class="essbar"><div class="essname">'+k+'</div><div class="essbarbg"><div class="essfill" style="width:'+pct+'%;background:'+col+'"></div></div><div class="essval">'+(v>0?'+'+v:v)+'</div></div>';}).join('');Object.entries(deltas).forEach(([k,v])=>{if(G.stats[k]!==undefined)G.stats[k]=Math.max(0,Math.min(100,(G.stats[k]||40)+v));});}
   const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
-  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'}};
-  const srcs={1:'BTS PE Guidelines 2017 / Wells DVT Score',2:'Surviving Sepsis Campaign 2021 / Kumar et al. Crit Care Med 2006',3:'Post-op Haemorrhage Recognition / ATLS Haemorrhagic Shock Classification'};
+  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'}};
+  const srcs={1:'BTS PE Guidelines 2017 / Wells DVT Score',2:'Surviving Sepsis Campaign 2021 / Kumar et al. Crit Care Med 2006',3:'Post-op Haemorrhage Recognition / ATLS Haemorrhagic Shock Classification',4:'WAO Anaphylaxis Guidelines 2020 / ASCIA Anaphylaxis Management Plan'};
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
   if(good&&G.currentDay>=G.highestDay)G.highestDay=Math.min(30,G.currentDay+1);
