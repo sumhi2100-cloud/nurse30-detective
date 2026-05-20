@@ -1851,7 +1851,7 @@ function doAction(type){
       {p:'o',t:'SpO2 96%. NRB with reservoir bag -- up to 90% FiO2. This is maximum non-invasive O2.'},
       {p:'c',t:'She says: "I can breathe a little better." NRB is working.'},
       {p:'w',t:'If SpO2 drops below 90% on NRB -- this patient needs intubation. Call physician if not already done.'},
-      {p:'o',t:'Reference: Perez-Nieto et al., Frontiers in Medicine 2023.'},
+      {p:'o',t:'Ref: ACCP CHEST 2021 O2 Targets / O\'Driscoll et al. thorax 2017 -- NRB for high-acuity hypoxia.'},
     ],'NRB is the ceiling before intubation.');setTimeout(checkActions,200);
   }else if(type==='o2'){
     const ni=getO2I()+1;if(ni>=O2L.length){openDrawer('Maximum O2 applied',[{p:'o',t:'NRB mask is maximum before intubation.'}],null);return;}
@@ -2320,7 +2320,14 @@ function buildEndShift(){
   const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
   const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'}};
-  const srcs={1:'BTS PE Guidelines 2017 / Wells DVT Score',2:'Surviving Sepsis Campaign 2021 / Kumar et al. Crit Care Med 2006',3:'Post-op Haemorrhage Recognition / ATLS Haemorrhagic Shock Classification',4:'WAO Anaphylaxis Guidelines 2020 / ASCIA Anaphylaxis Management Plan',5:'ADA Standards of Diabetes Care 2023 / Cryer PE -- Hypoglycemia in Diabetes'};
+  // References: always use current Canadian/North American sources (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC)
+  const srcs={
+    1:'ACCP CHEST Guidelines 2021 (VTE) / Wells PS, Lancet 1997 / CTS Venous Thromboembolism Management',
+    2:'Surviving Sepsis Campaign 2021 / Kumar et al., Crit Care Med 2006 / CAEP Sepsis Management Guidelines',
+    3:'ACS-ATLS 10th Ed. Hemorrhagic Shock / CAGS Post-operative Complications Framework / RNAO BPG: Assessment & Management of Pain',
+    4:'WAO Anaphylaxis Guidelines 2020 / CSACI Anaphylaxis Position Statement / Anaphylaxis Canada Clinical Resource',
+    5:'Diabetes Canada Clinical Practice Guidelines 2023 / Cryer PE, NEJM 2013 / RNAO BPG: Diabetes Management'
+  };
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
   if(good&&G.currentDay>=G.highestDay)G.highestDay=Math.min(30,G.currentDay+1);
