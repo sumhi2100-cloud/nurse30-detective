@@ -182,13 +182,27 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 #cd-close{background:transparent;border:none;color:var(--muted);font-size:16px;cursor:pointer;}
 #cd-body{overflow-y:auto;scrollbar-width:none;flex:1;}
 #cd-body::-webkit-scrollbar{display:none;}
-.cdfind{display:flex;gap:8px;padding:6px 14px;border-bottom:1px solid var(--wire);}
+.cdfind{display:flex;gap:8px;padding:6px 14px;border-bottom:1px solid var(--wire);border-left:2px solid transparent;}
 .cfpip{width:6px;height:6px;border-radius:50%;margin-top:5px;flex-shrink:0;}
 .cfpip.pc{background:var(--alarm);}.cfpip.pw{background:var(--amber);}.cfpip.po{background:var(--teal);}
 .cftxt{font-family:var(--body);font-size:12px;color:var(--muted2);line-height:1.6;font-weight:300;}
 .cftxt strong{color:var(--text);font-weight:500;}.cftxt em{color:var(--amber);font-style:normal;font-weight:500;}
-.cdinsight{padding:8px 14px;background:rgba(0,201,160,.05);border-top:1px solid rgba(0,201,160,.15);}
-.cditxt{font-family:var(--body);font-size:11px;color:rgba(0,201,160,.8);line-height:1.6;font-weight:300;font-style:italic;}
+/* Critical (red) rows */
+.cdfind:has(.cfpip.pc){background:rgba(217,64,64,.06);border-left-color:rgba(255,68,68,.45);}
+.cfpip.pc+.cftxt{color:rgba(245,205,205,.92);}
+.cfpip.pc+.cftxt strong{color:var(--alarm);text-shadow:0 0 8px rgba(255,68,68,.4);font-weight:600;}
+.cfpip.pc+.cftxt em{color:#ff9a9a;font-style:italic;}
+/* Warning (amber) rows */
+.cdfind:has(.cfpip.pw){background:rgba(232,168,74,.05);border-left-color:rgba(232,168,74,.4);}
+.cfpip.pw+.cftxt{color:rgba(240,222,180,.92);}
+.cfpip.pw+.cftxt strong{color:var(--amber);font-weight:600;}
+.cfpip.pw+.cftxt em{color:#ffc87a;font-style:italic;}
+/* Observation (teal) rows */
+.cfpip.po+.cftxt strong{color:var(--teal);font-weight:600;}
+.cfpip.po+.cftxt em{color:rgba(0,201,160,.9);font-style:italic;}
+/* Insight box */
+.cdinsight{padding:8px 12px 8px 14px;background:rgba(0,201,160,.07);border-top:1px solid rgba(0,201,160,.2);border-left:3px solid var(--teal);}
+.cditxt{font-family:var(--mono);font-size:10px;color:rgba(0,220,170,.92);line-height:1.7;font-weight:400;font-style:normal;letter-spacing:.02em;}
 #pp-panel{position:absolute;bottom:60px;left:0;right:0;background:var(--ink2);border-top:1px solid var(--amber);z-index:50;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);max-height:78vh;display:flex;flex-direction:column;}
 #pp-panel.open{transform:translateY(0);}
 .pphdr{padding:8px 14px 6px;border-bottom:1px solid var(--wire);flex-shrink:0;display:flex;justify-content:space-between;align-items:center;}
@@ -1021,6 +1035,10 @@ const ACTS_D2=[
    getL:()=>G.actionsTaken.includes('chart_d2')?'Nursing note written':'Write nursing assessment note',
    desc:'Document: confusion, GCS, vitals trend, lactate, wound findings, bundle started.',
    done:()=>G.actionsTaken.includes('chart_d2'),unlock:2,need:null},
+  {key:'tylenol_d2',pri:3,sec:'Comfort & Safety',
+   getL:()=>G.actionsTaken.includes('tylenol_d2')?'Paracetamol 1g IV given':'Give Paracetamol 1g IV -- Temp 39.1C',
+   desc:'Temp 39.1C. IV paracetamol reduces metabolic demand and fever distress. Does not treat infection -- antibiotics do. Give both.',
+   done:()=>G.actionsTaken.includes('tylenol_d2'),unlock:1,need:null},
 ];
 
 
@@ -1672,6 +1690,16 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note -- Sepsis';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="5">[TIME] Mr. Chen Bed 3. New confusion GCS 13. Febrile 39.1C. BP 86/50 MAP 62 trending. HR 118. SpO2 95% on 2L. Lactate 3.2. UO 18mL/hr. Wound erythema, cloudy drain, abdomen guarded.\nInterventions: O2 6L SM. Fluid bolus 500mL. Blood cultures x2. Pip-Tazo 3.375g IV. IDC. Repeat lactate x2h.\nDr. Yuen notified. Charge Park notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  }else if(type==='tylenol_d2'){
+    if(!G.actionsTaken.includes('tylenol_d2'))G.actionsTaken.push('tylenol_d2');
+    applyVC({temp:{val:'38.3C',state:'warn'}},20);SFX.init();SFX.tapFind();
+    openDrawer('Paracetamol 1g IV given',[
+      {p:'o',t:'Paracetamol 1g IV infused over 15 minutes. IV route -- patient confused, RR 22, oral unsafe.'},
+      {p:'o',t:'Temp: 39.1C → expect 38.3C within 30-40 minutes. Reducing fever lowers O2 demand.'},
+      {p:'w',t:'Fever increases metabolic demand by ~10% per degree. Every degree counts when perfusion is already compromised.'},
+      {p:'c',t:'Paracetamol treats the <em>symptom</em>. <strong>Antibiotics treat the cause.</strong> Both must happen -- this does not replace the sepsis bundle.'},
+    ],'Fever in sepsis is not just discomfort -- it increases O2 consumption, worsens confusion, and strains an already-failing cardiovascular system. Treat it.');
+    setTimeout(checkActions,200);
   // === DAY 3 ===
   }else if(type==='assess_abd'){
     if(!G.actionsTaken.includes('assess_abd'))G.actionsTaken.push('assess_abd');SFX.init();SFX.tapFind();
