@@ -29,6 +29,18 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 @keyframes scan{0%{transform:translateY(-100%);}100%{transform:translateY(100%);}}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
 @keyframes vignette-pulse{0%,100%{opacity:.55;}50%{opacity:.85;}}
+@keyframes int-slide{from{transform:translateY(100%);opacity:0;}to{transform:translateY(0);opacity:1;}}
+/* INTERRUPT OVERLAY */
+#interrupt-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:480;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(2px);}
+#interrupt-overlay.show{display:flex;}
+#interrupt-box{background:var(--ink2);border:1px solid var(--amber);border-bottom:none;width:100%;max-width:414px;padding:18px 16px 24px;animation:int-slide .28s ease;}
+.int-tag{font-family:var(--mono);font-size:7px;color:var(--amber);letter-spacing:.18em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.int-tag::before{content:'';display:block;width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;}
+.int-quote{font-family:var(--body);font-size:14px;color:#fff;line-height:1.6;margin-bottom:16px;border-left:2px solid var(--amber);padding-left:12px;font-style:italic;}
+.int-sub{font-family:var(--mono);font-size:8px;color:var(--muted2);letter-spacing:.08em;margin-bottom:10px;text-transform:uppercase;}
+.int-choice{width:100%;padding:11px 14px;background:transparent;border:1px solid var(--wire2);color:var(--text);font-family:var(--body);font-size:12px;text-align:left;cursor:pointer;margin-bottom:7px;border-radius:2px;line-height:1.5;transition:background .15s,border-color .15s;}
+.int-choice:hover{background:rgba(255,255,255,.05);border-color:var(--wire);}
+.int-skip{width:100%;padding:8px;background:transparent;border:none;color:var(--muted);font-family:var(--mono);font-size:8px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;margin-top:2px;}
 @keyframes txt-shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-2px);}40%{transform:translateX(2px);}60%{transform:translateX(-1px);}80%{transform:translateX(1px);}}
 /* TIMER VIGNETTE */
 #timer-vignette{position:fixed;inset:0;pointer-events:none;z-index:90;opacity:0;transition:opacity 1.2s ease;border-radius:0;}
@@ -364,6 +376,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 <div id="wipe"></div>
 <div id="wrong-flash"></div>
 <div id="timer-vignette"></div>
+<div id="interrupt-overlay"><div id="interrupt-box"></div></div>
 
 <!-- TITLE -->
 <div id="scr-title" class="scr on">
@@ -574,7 +587,7 @@ const G={
   highestDay:1,dayResults:{},
   fluidRunning:false,fluidMl:0,fluidRate:'KVO',fluidName:'0.9% NaCl 1L',
   abxRunning:false,abxProgress:0,abxName:'',codeBluePending:false,
-  labsDrawn:false,
+  labsDrawn:false,interruptFired:false,interruptChoice:null,
   patientState:'deteriorating',o2Saturation:91,skinFlush:0,
   diaphoresis:0.3,mottle:0,confusion:false,ecgChaos:0.15,
   timerIv:null,animFrame:null,ecgT:0,
@@ -892,19 +905,20 @@ SCENARIOS[3]={
 
 SCENARIOS[6]={
   handoff:[
-    {delay:500,from:'Charge Nurse Patel',txt:'312A -- Mrs. Rivera, 71F. Post-op Day 3 after colorectal resection with colostomy. Her daughter has been here all day and is getting loud. Says nobody has checked on her mother in 3 hours.'},
-    {delay:1900,from:'Night Nurse Sanders',txt:'Patient said she felt cold earlier but vitals were okay at 22:00 -- 38.1 and BP was still 118. She has been quiet all shift. I assumed she was just tired post-op.'},
-    {delay:3100,from:'You',txt:'On my way to 312A now.',you:true},
-    {delay:3800,alert:true,txt:'312A -- Family escalation -- Daughter requesting manager -- Patient appears pale'},
+    {delay:500,from:'Charge Nurse Patel',txt:'312A -- Mrs. Rivera, 71F. Post-op Day 3 colorectal resection. Her daughter Ana has been here since 06:00. She is loud and upset. But listen -- she said her mom seems different today. That part is worth hearing.'},
+    {delay:1900,from:'Night Nurse Sanders',txt:'I did check her at 22:00. She was 38.1. I put it down to post-op inflammation. The daughter asked me twice to call the doctor and I said I would monitor. I did not call.'},
+    {delay:3200,from:'Charge Nurse Patel',txt:'Ana is not unreasonable -- she is scared. Her mom has cancer and this is Day 3. She has been watching her mom get quieter all morning and nobody has explained anything. Keep that in mind when you walk in.'},
+    {delay:4300,from:'You',txt:'Understood. On my way.',you:true},
+    {delay:5000,alert:true,txt:'312A -- Daughter requesting manager -- "Nobody is listening to me"'},
   ],
   taps:[
     {id:'face',lbl:'Observe',x:'38%',y:'28%',
      finds:[
-       {p:'c',t:'Mrs. Rivera is pale. Skin slightly cool and clammy. She is quiet -- not distressed, just flat.'},
-       {p:'w',t:'She says: <em>"I just feel off. A bit cold. Dizzy when I tried to sit up."</em> She is not complaining loudly. She is telling you anyway.'},
-       {p:'w',t:'GCS 15. Oriented. But subdued -- not her baseline per daughter. <em>"She is usually chatty. This is not her."</em>'},
+       {p:'c',t:'Mrs. Rivera is pale. Skin slightly cool and clammy. Quiet -- not in distress, just flat.'},
+       {p:'w',t:'She meets your eyes and says softly: <em>"I just feel off. Cold. A bit dizzy when I tried to sit up earlier."</em> She is not dramatic. She is just telling you.'},
+       {p:'w',t:'GCS 15. Oriented. But subdued. The daughter says: <em>"She is chatty normally. She has barely spoken to me all morning. That is NOT her."</em> Daughters know their mothers.'},
      ],
-     insight:'Pallor + cool clammy skin + orthostatic symptoms in a post-op Day 3 patient = early warning. Quiet patients can be the sickest.',
+     insight:'Pallor + cool clammy skin + orthostatic dizziness in post-op Day 3 = early warning. Quiet patients can be the sickest. The daughter noticed before the chart did.',
      clue:'Pallor -- cool clammy -- orthostatic dizziness'},
     {id:'vitals',lbl:'Monitor',x:'80%',y:'38%',
      finds:[
@@ -938,27 +952,27 @@ SCENARIOS[6]={
      ],
      insight:'Completed antibiotic course + deteriorating since then = post-antibiotic window. Surgical site infection now uncontained. Escalation was overdue 6 hours ago.',
      clue:'Antibiotic course completed 48h ago -- V/S trend not escalated -- penicillin allergy'},
-    {id:'daughter',x:'20%',y:'35%',wrong:true,wrongTxt:'The daughter needs to be acknowledged -- but not before you assess. Brief empathic response first, then focus on Mrs. Rivera. Every second of clinical delay matters here.'},
-    {id:'phone',x:'82%',y:'75%',wrong:true,wrongTxt:'The phone is not your first action. Your patient is in front of you. Assess first -- call after.'},
+    {id:'daughter',x:'20%',y:'35%',wrong:true,wrongTxt:'The daughter needs to be acknowledged -- but not before you assess. She is scared, not unreasonable. A five-second acknowledgment first, then immediately to the patient. Both matter. In that order.'},
+    {id:'phone',x:'82%',y:'75%',wrong:true,wrongTxt:'Calling before assessing leaves you with nothing to say. Assess first. Then you call with numbers, with a plan, with confidence.'},
   ],
-  question:'You enter 312A. Mrs. Rivera\'s daughter steps in front of you: "FINALLY. I have been here THREE HOURS. Nobody tells me anything. Is she being discharged today?" Behind her, Mrs. Rivera is pale and quiet.',
-  sub:'What do you do first?',
+  question:'You walk into 312A. Ana, the daughter, moves directly into your path. Her voice is loud but her eyes are wet: <em>"FINALLY. THREE HOURS. Nobody tells me ANYTHING. Is she dying? What is HAPPENING?"</em> Behind her, Mrs. Rivera watches quietly from the bed.',
+  sub:'How do you approach this?',
   choices:[
-    {key:'A',lbl:'"I hear you -- I am going to check on your mother right now. Two minutes, then I am all yours."',desc:'Brief acknowledgment, then immediate patient assessment.',correct:true,
-     exp:'Correct. This response does three things in five seconds: validates the daughter\'s frustration, sets a clear expectation, and preserves your clinical priority. You do not ignore her. You do not engage fully. You acknowledge and move. This is the standard for professional prioritization under family pressure. RNAO: therapeutic communication does not require time -- it requires intent.'},
-    {key:'B',lbl:'Stop and fully address all of the daughter\'s concerns before assessing Mrs. Rivera.',desc:'The family deserves full answers.',correct:false,
-     exp:'Mrs. Rivera\'s BP has been falling for 8 hours. Every minute spent on administration while she deteriorates is a clinical risk. The daughter\'s frustration is valid -- but a full family meeting before assessment delayed care by 7 minutes in this scenario. That 7 minutes matters in early sepsis.'},
-    {key:'C',lbl:'"I need you to step outside while I do this assessment."',desc:'Reduce distraction by removing the family.',correct:false,
-     exp:'Asking the family to leave is confrontational and often escalates the situation. The daughter was already upset -- this would have made it worse. Family members can also provide useful clinical information. A brief acknowledgment is less disruptive and more effective than removal.'},
-    {key:'D',lbl:'Call the charge nurse to deal with the family before you assess.',desc:'This is a charge nurse situation.',correct:false,
-     exp:'The charge nurse can help -- but not before you assess. Delegating the family before touching your patient delays clinical assessment. You can call the charge nurse after your 60-second primary survey. Mrs. Rivera cannot wait for an administrative chain of command before someone checks her BP.'},
+    {key:'A',lbl:'Step toward Ana -- not back. Lower your voice, hold eye contact: "I can see you\'re scared for her. I\'m going to check on her right now. Stay with me -- two minutes."',desc:'Move closer, name the fear, set the expectation, then assess.',correct:true,
+     exp:'Correct -- and the details matter. Moving TOWARD an upset person (not backward) signals confidence and care, not threat. "Scared" names the real emotion -- not "frustrated," not "upset." Naming the right emotion is the NURSE mnemonic: Name it. This de-escalates faster than any apology. "Stay with me" includes her in the process instead of pushing her out. You said two minutes -- now you have to mean it. (CPI Non-Violent Crisis Intervention / RNAO Therapeutic Communication 2020)'},
+    {key:'B',lbl:'"I understand your frustration, but I need to assess the patient before I can answer your questions."',desc:'Professional boundary -- assessment comes first.',correct:false,
+     exp:'"But" erases everything before it. The moment you say "but," Ana heard: "your feelings don\'t matter." Stepping back while saying it -- even slightly -- signals defensiveness. "Frustration" misnames fear. She is not frustrated about a coffee order. She is terrified her mother is dying. Naming the wrong emotion feels dismissive. The words were almost right. The structure was not. (Motivational Interviewing: rolling with resistance, not opposing it)'},
+    {key:'C',lbl:'"I\'m so sorry you\'ve been waiting -- that\'s really not okay. Let me find out what\'s been happening and get you all the answers you deserve."',desc:'Full empathy -- validate her experience completely.',correct:false,
+     exp:'"I\'m sorry you\'ve been waiting" sounds kind but implies the system failed -- which invites Ana to agree loudly. "That\'s not okay" is an apology on behalf of every nurse who came before you, and it opens the door to an accountability conversation you cannot have right now. You have now spent 45 seconds on a promise to explain everything, and Mrs. Rivera has not been touched. Over-empathising without action is not therapeutic -- it is avoidance. (CAMH Trauma-Informed Care: validation requires follow-through, not just words)'},
+    {key:'D',lbl:'In a calm, measured tone: "Mrs. Rivera was assessed at 22:00 and her vitals were stable. These things take time. I\'ll update you once I\'ve finished."',desc:'Factual and professional -- reassure with clinical information.',correct:false,
+     exp:'Every word of this response makes things worse. "She was stable at 22:00" is misleading -- she is NOT stable now. "These things take time" is patronising. A calm tone without empathy reads as cold, not professional. You have now dismissed Ana\'s fear with outdated information and a phrase that sounds like you are reading from a script. She will ask for the manager again. Louder. (CPI: tone of voice is 38% of communication -- calm without warmth escalates)'},
   ],
-  outcomeGood:{statDeltas:{judgment:13,confidence:12,communication:11,resilience:9,fatigue:8},
-    headline:'Infection caught. Family heard.',
-    story:'You acknowledged the daughter in five seconds and moved to the bed. You found the trending vitals, the wound, the oliguria. You called the surgeon. By the time Dr. Osei arrived, blood cultures were drawn and fluids were running. Mrs. Rivera looked at her daughter: "See? She came." The daughter stopped asking for the manager.'},
-  outcomeBad:{statDeltas:{judgment:6,confidence:-2,communication:7,resilience:7,fatigue:12},
-    headline:'The delay was real. The numbers prove it.',
-    story:'The family conversation took 9 minutes. When you finally assessed Mrs. Rivera, her BP had dropped to 96/60. The surgeon was called urgently. She recovered -- but the ICU transfer that followed was, in part, a consequence of the delay. Angry families are emotional pressure. Unstable patients are clinical risk. When both are present, you assess first, always.'},
+  outcomeGood:{statDeltas:{judgment:13,confidence:12,communication:14,resilience:9,fatigue:7},
+    headline:'Two patients. Both heard.',
+    story:'You stepped toward Ana, not back. You named what she was feeling -- scared, not just upset -- and she heard the difference. Two minutes later you had the BP trend, the wound, the oliguria. You called Dr. Osei. While fluids were running, you went back to Ana: "Here is what I found and what is happening." She reached for your hand. "Thank you for actually listening." Mrs. Rivera looked at her daughter: "See? She came." The charge nurse never needed to come.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-2,communication:4,resilience:7,fatigue:13},
+    headline:'She needed two things. She only got one.',
+    story:'The clinical outcome was okay -- you found the infection, the surgeon came. But Ana escalated twice more during your assessment. The charge nurse was called. The manager was called. Mrs. Rivera spent the next hour listening to her daughter cry in the hallway instead of resting. The words you used felt professional. But Ana did not feel heard. That gap -- between being technically correct and being actually present -- is where trust is lost. It takes one shift to lose it and months to rebuild.'},
   patient:{name:'Mrs. Rivera',age:'71F',dx:'Post-op Day 3 colorectal -- surgical site infection',room:'Room 312A'},
   vitals:{spo2:{val:'96%',state:'warn'},hr:{val:'92',state:'warn'},rr:{val:'20',state:'warn'},bp:{val:'104/68',state:'crit'},temp:{val:'38.2C',state:'warn'},gcs:{val:'15',state:'ok'},uo:{val:'7mL/hr',state:'crit'},lac:null},
   iv:{main:{name:'Hartmann\'s 1L',vol:'1L',rate:'80 mL/hr',state:'warn',note:'Review rate -- UO declining'}},
@@ -1367,8 +1381,8 @@ const ACTS_D6=[
    desc:'Before engaging the family, complete your primary survey. 60 seconds. Airway, breathing, circulation, disability. You can speak to the daughter after you know your patient is safe.',
    done:()=>G.actionsTaken.includes('assess_rvs'),unlock:1,need:null},
   {key:'brief_ack',pri:1,sec:'Immediate -- Communication',
-   getL:()=>G.actionsTaken.includes('brief_ack')?'Family acknowledged -- boundary set':'Brief acknowledgment -- set expectation with daughter',
-   desc:'"I hear you. I am going to check on your mother right now -- two minutes, then I am all yours." Five seconds. Validates frustration. Preserves clinical priority. Prevents escalation.',
+   getL:()=>G.actionsTaken.includes('brief_ack')?'Ana acknowledged -- de-escalated':'Acknowledge Ana -- name the fear, not the anger',
+   desc:'Step toward Ana, not back. Lower your voice -- do not match her volume. Name what she is actually feeling: "I can see you\'re scared for her." Not "frustrated." Not "upset." Scared. Then: "Two minutes -- stay with me." Include her. Set the expectation. Deliver on it.',
    done:()=>G.actionsTaken.includes('brief_ack'),unlock:1,need:null},
   {key:'fluids_d6',pri:1,sec:'Immediate -- Circulation',
    getL:()=>G.actionsTaken.includes('fluids_d6')?'IV rate increased -- fluid challenge':'Increase IV rate -- BP trending down',
@@ -1778,6 +1792,12 @@ function handleTap(tap){
   G.touchesLeft--;G.clues.push(tap.id);renderPips();SFX.init();SFX.tapFind();
   const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft+' of '+getTouchLimit()+' touches left';
   openDrawer(tap.lbl||'Finding',tap.finds.slice(0,3),tap.insight);checkActions();
+  // Day 6 interrupt: daughter speaks mid-assessment after 2nd valid clue
+  const validSoFar=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
+  if(G.currentDay===6&&validSoFar.length===2&&!G.interruptFired){
+    G.interruptFired=true;
+    setTimeout(()=>showInterrupt(),1200);
+  }
 }
 function handleWrongTap(tap){
   G.touchesLeft--;renderPips();SFX.init();SFX.tapWrong();
@@ -1790,6 +1810,67 @@ function renderPips(){
   const total=getTouchLimit();const used=total-G.touchesLeft;
   row.innerHTML='';for(let i=0;i<total;i++){const pip=document.createElement('div');pip.className='pip'+(i<used?' used':G.touchesLeft===0?' gone':'');row.appendChild(pip);}
   const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft===0?'No touches left':G.touchesLeft+' of '+total+' touches left';
+}
+
+// === INTERRUPT SYSTEM ===
+const INTERRUPTS={
+  6:{
+    tag:'Ana Rivera — daughter',
+    quote:'"You\'re not saying anything. Is something WRONG? Why do you keep looking at the monitor like that? WHAT ARE YOU SEEING?"',
+    sub:'How do you respond -- right now, mid-assessment?',
+    choices:[
+      {key:'A',lbl:'Brief eye contact, steady voice: "I\'m paying close attention to a few things. Almost done -- stay right here with me."',
+       result:'good',
+       fb:'Good. You did not lie. You did not dismiss her. You included her -- "stay with me" -- without stopping the assessment. Honest + calm + present. Ana takes a breath. The room drops one degree of tension.',
+       clue:'Family -- acknowledged mid-assessment'},
+      {key:'B',lbl:'"I can\'t share clinical observations until my assessment is complete. I\'ll give you a full update when I\'m done."',
+       result:'neutral',
+       fb:'Technically correct. Clinically cold. "Clinical observations" is jargon -- it pushes Ana further away. You completed the assessment, but the room got tenser. She felt processed, not seen. The information was right. The humanity was missing.',
+       clue:'Family -- clinical deflection noted'},
+      {key:'C',lbl:'"Everything looks okay so far -- I just want to be thorough." [Continue assessing without looking up]',
+       result:'bad',
+       fb:'Two problems. First: you lied. Things do NOT look okay. When the truth comes out -- and it will -- Ana will remember you said "okay" and lost trust completely. Second: not looking up while speaking signals dismissal. False reassurance is one of the most damaging things a nurse can say to a scared family. (CAMH: false reassurance breaks therapeutic trust)',
+       clue:'Family -- false reassurance given'},
+    ],
+  },
+};
+function showInterrupt(){
+  const int=INTERRUPTS[G.currentDay];if(!int)return;
+  const ov=document.getElementById('interrupt-overlay');
+  const box=document.getElementById('interrupt-box');
+  if(!ov||!box)return;
+  SFX.init();SFX.pagerBuzz();
+  box.innerHTML=`
+    <div class="int-tag">${int.tag}</div>
+    <div class="int-quote">${int.quote}</div>
+    <div class="int-sub">${int.sub}</div>
+    ${int.choices.map((c,i)=>`<button class="int-choice" onclick="resolveInterrupt(${i})">${c.lbl}</button>`).join('')}
+    <button class="int-skip" onclick="resolveInterrupt(-1)">Say nothing -- continue assessing</button>
+  `;
+  ov.classList.add('show');
+}
+function resolveInterrupt(idx){
+  const ov=document.getElementById('interrupt-overlay');if(ov)ov.classList.remove('show');
+  const int=INTERRUPTS[G.currentDay];if(!int)return;
+  if(idx===-1){
+    // Said nothing -- treated as bad
+    G.interruptChoice='silent';
+    openDrawer('You said nothing',[
+      {p:'c',t:'Ana stared at you. Her jaw tightened. She stepped back -- not because she was calmer. Because she gave up trying.'},
+      {p:'w',t:'Silence mid-assessment is not neutral. To a scared family member it reads as: "I am too busy for you." That reading stays.'},
+      {p:'c',t:'(CPI: ignoring escalated affect does not reduce it -- it redirects it outward, toward charge nurses and managers)'},
+    ],null);
+    return;
+  }
+  const choice=int.choices[idx];if(!choice)return;
+  G.interruptChoice=choice.result;
+  if(choice.clue)G.clues.push('interrupt_'+choice.result);
+  SFX.init();
+  if(choice.result==='good')SFX.chime();
+  else if(choice.result==='bad'){SFX.tapWrong();const fl=document.getElementById('wrong-flash');if(fl){fl.classList.add('show');setTimeout(()=>fl.classList.remove('show'),500);}}
+  openDrawer('Mid-assessment response',[
+    {p:(choice.result==='good'?'o':choice.result==='neutral'?'w':'c'),t:choice.fb},
+  ],null);
 }
 
 // === DRAWERS ===
@@ -1920,7 +2001,7 @@ function gotoHandoff(){
   G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;
   G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];
   G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.fluidName='0.9% NaCl 1L';
-  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;
+  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;G.interruptFired=false;G.interruptChoice=null;
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;G._phoneRing=null;
   stopScene();if(G.timerIv)clearInterval(G.timerIv);
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
@@ -2591,7 +2672,7 @@ function buildEndShift(){
   if(statsEl&&deltas){statsEl.innerHTML=Object.entries(deltas).map(([k,v])=>{const pct=Math.min(100,Math.max(0,(G.stats[k]||40)+v));const col=k==='fatigue'?'var(--amber)':'var(--teal)';return '<div class="essbar"><div class="essname">'+k+'</div><div class="essbarbg"><div class="essfill" style="width:'+pct+'%;background:'+col+'"></div></div><div class="essval">'+(v>0?'+'+v:v)+'</div></div>';}).join('');Object.entries(deltas).forEach(([k,v])=>{if(G.stats[k]!==undefined)G.stats[k]=Math.max(0,Math.min(100,(G.stats[k]||40)+v));});}
   const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
-  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'},6:{good:'An angry family is emotional pressure. An unstable patient is clinical risk. Five-second acknowledgment + immediate assessment. That is the sequence.',bad:'Every minute spent on family administration before touching the patient is a clinical delay. Acknowledgment takes 5 seconds. The assessment cannot wait.'}};
+  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'},6:{good:'She was not angry. She was scared. Naming the right emotion -- "scared," not "frustrated" -- is what changed the room. Moving toward her, not back, is what made her trust you. Words matter. Posture matters.',bad:'The assessment happened. The communication did not. When families feel unheard, they escalate -- not because they are difficult, but because they are terrified and no one has named it yet.'}};
   // References: always use current Canadian/North American sources (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC, CCS) (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC)
   const srcs={
     1:'ACCP CHEST Guidelines 2021 (VTE) / Wells PS, Lancet 1997 / CTS Venous Thromboembolism Management',
@@ -2599,7 +2680,7 @@ function buildEndShift(){
     3:'ACS-ATLS 10th Ed. Hemorrhagic Shock / CAGS Post-operative Complications Framework / RNAO BPG: Assessment & Management of Pain',
     4:'WAO Anaphylaxis Guidelines 2020 / CSACI Anaphylaxis Position Statement / Anaphylaxis Canada Clinical Resource',
     5:'Diabetes Canada Clinical Practice Guidelines 2023 / Cryer PE, NEJM 2013 / RNAO BPG: Diabetes Management',
-    6:'RNAO BPG: Therapeutic Communication 2020 / SSC 2021 Post-op Sepsis / CAEP Family Presence Guidelines / ISMP Canada Surgical Safety'
+    6:'RNAO BPG: Therapeutic Communication 2020 / CPI Non-Violent Crisis Intervention / CAMH Trauma-Informed Care / SSC 2021 Post-op Sepsis'
   };
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
