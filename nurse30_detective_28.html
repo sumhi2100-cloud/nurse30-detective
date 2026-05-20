@@ -1812,7 +1812,7 @@ function deliverSBAR(){
     typing.remove();const resp=document.createElement('div');resp.className='md-response';resp.innerHTML='<div class="md-name">'+sd.doctor+' responds</div><div class="md-text">'+sd.md_response.text+'</div>';body.appendChild(resp);
     const fu=document.createElement('div');fu.style.cssText='padding:8px 12px 4px;font-family:var(--mono);font-size:9px;color:var(--teal);border-top:1px solid var(--wire);';fu.textContent='OK -- '+sd.md_response.followup;body.appendChild(fu);body.scrollTop=body.scrollHeight;SFX.init();SFX.resolve();
     setTimeout(()=>{
-      const actArea=document.getElementById('sbar-actions');if(actArea){actArea.innerHTML='';const cont=document.createElement('button');cont.className='btn-sbar-call';cont.style.background='var(--teal)';cont.textContent='Continue shift';cont.onclick=()=>wipeGo(()=>{showScreen('action');renderActionScreen();});actArea.appendChild(cont);}
+      const actArea=document.getElementById('sbar-actions');if(actArea){actArea.innerHTML='';const cont=document.createElement('button');cont.className='btn-sbar-call';cont.style.background='var(--teal)';cont.textContent='Continue shift';cont.onclick=()=>{_answered=false;wipeGo(()=>{showScreen('action');renderActionScreen();});};actArea.appendChild(cont);}
     },1500);
   },sd.md_response.delay);
 }
@@ -1825,6 +1825,7 @@ function goBackToInvestigate(){
 let _answered=false;
 function gotoAction(){_answered=false;if(G.timerIv)clearInterval(G.timerIv);stopScene();wipeGo(()=>{showScreen('action');renderActionScreen();});}
 function renderActionScreen(){
+  _answered=false;
   const row=document.getElementById('ct-row');if(row)row.innerHTML=getSC().taps.filter(t=>!t.wrong&&t.clue).map(t=>`<div class="cttag ${G.clues.includes(t.id)?'':'off'}">${t.clue}</div>`).join('');
   document.getElementById('aq-text').textContent=getSC().question;document.getElementById('aq-sub').textContent=getSC().sub;
   document.getElementById('choices-wrap').innerHTML=getSC().choices.map((ch,i)=>`<button class="choicebtn" onclick="answerChoice(${i})"><div class="ckey">${ch.key}</div><div class="clbl">${ch.lbl}</div><div class="cdesc">${ch.desc}</div></button>`).join('');
