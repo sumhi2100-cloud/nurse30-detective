@@ -881,6 +881,80 @@ SCENARIOS[3]={
   iv:{main:{name:'0.9% NaCl',vol:'75 mL/hr',rate:'75 mL/hr',state:'ok',note:'Maintenance rate'},abx:null},
 };
 
+SCENARIOS[5]={
+  handoff:[
+    {delay:500,from:'Night Aide Kim',txt:'Room 305 -- Mr. Park, 62M. I went to check on him at 02:30 and he was very sweaty and could not answer me properly. He is a diabetic.'},
+    {delay:1700,from:'Aide Kim',txt:'He had insulin tonight but his family left before dinner was served. I do not think he ate. He keeps mumbling but I cannot understand him.'},
+    {delay:2900,from:'You',txt:'On my way. Do not give him anything by mouth.',you:true},
+    {delay:3600,alert:true,txt:'Room 305 -- Altered consciousness -- Diabetic -- Possible hypoglycemia'},
+  ],
+  taps:[
+    {id:'face',lbl:'Observe',x:'38%',y:'28%',
+     finds:[
+       {p:'c',t:'Diaphoresis -- shirt soaked. Skin pale, cold and clammy. Fine hand tremor.'},
+       {p:'c',t:'GCS 10 -- eyes open to voice, confused speech, localises pain. <strong>Cannot follow commands. Cannot swallow safely.</strong>'},
+       {p:'w',t:'No fruity acetone breath. No Kussmaul breathing. RR 18 and regular. This is NOT DKA.'},
+     ],
+     insight:'Diaphoresis + pallor + cold clammy skin + tremor = classic sympathetic response to hypoglycemia. The body is screaming for glucose.',
+     clue:'Diaphoresis -- pallor -- GCS 10 -- no Kussmaul'},
+    {id:'chart',lbl:'Chart/Meds',x:'82%',y:'24%',
+     finds:[
+       {p:'c',t:'Type 2 DM -- 8 years. Insulin Glargine 20 units SC given 22:00. Metformin 500mg BD.'},
+       {p:'c',t:'Last documented BGL: <strong>12.0 mmol/L at 22:00.</strong> Dinner not charted. Family left at 20:30.'},
+       {p:'w',t:'Insulin Glargine peaks at 4-6 hours. With no food intake -- glucose consumption without replacement. Classic setup.'},
+     ],
+     insight:'Insulin given. Meal missed. 4-hour gap. This is insulin-induced hypoglycemia until proven otherwise.',
+     clue:'Insulin Glargine given -- dinner missed -- 4-hour gap'},
+    {id:'glucose',lbl:'BGL Meter',x:'55%',y:'55%',
+     finds:[
+       {p:'c',t:'<strong>BGL: 2.1 mmol/L.</strong> Normal: 4.0-7.8 mmol/L fasting. Severe hypoglycemia: below 3.0.'},
+       {p:'c',t:'Repeat fingerstick confirms: 2.1 mmol/L. This is not an error.'},
+       {p:'w',t:'At 2.1 mmol/L the brain is glucose-starved. Sustained levels below 2.0 cause seizures and permanent neurological damage.'},
+     ],
+     insight:'BGL 2.1 mmol/L with altered consciousness = severe hypoglycemia. Treatment is not optional. Every minute counts.',
+     clue:'BGL 2.1 mmol/L -- severe hypoglycemia confirmed'},
+    {id:'iv',lbl:'IV Access',x:'80%',y:'48%',
+     finds:[
+       {p:'o',t:'20G IV cannula, right forearm, antecubital fossa. Inserted 20:00. Patent -- flushes freely.'},
+       {p:'o',t:'Running: 0.9% NaCl at KVO rate. IV line in good condition.'},
+       {p:'w',t:'IV access is patent. D50W can be given immediately without establishing new access.'},
+     ],
+     insight:'Patent IV access = fastest route to glucose delivery. D50W 50mL over 1-2 minutes. Do not wait.',
+     clue:'IV patent -- 20G right forearm -- D50 route available'},
+    {id:'monitor',lbl:'Monitor',x:'80%',y:'36%',
+     finds:[
+       {p:'w',t:'HR: 106 bpm -- tachycardia. Catecholamine response to hypoglycemia.'},
+       {p:'o',t:'BP: 124/78 mmHg. SpO2: 98% on room air. Temp: 36.9C.'},
+       {p:'o',t:'RR: 18 -- normal rate and pattern. No deep laboured breathing. No Kussmaul.'},
+     ],
+     insight:'Tachycardia + stable BP + normal RR + warm SpO2. Haemodynamically stable. The brain is the problem -- not the heart.',
+     clue:'HR 106 tachycardia -- haemodynamically stable -- no Kussmaul breathing'},
+    {id:'window',x:'8%',y:'25%',wrong:true,wrongTxt:'The window tells you nothing. Your patient needs a glucose check, not a view.'},
+    {id:'phone',x:'15%',y:'75%',wrong:true,wrongTxt:'Do not call before assessing. You need the BGL first.'},
+  ],
+  question:'Mr. Park, 62M, Room 305. BGL 2.1 mmol/L. GCS 10 -- eyes open, confused speech, cannot follow commands. Insulin Glargine given 4 hours ago. Dinner missed. IV patent.',
+  sub:'What is your immediate intervention?',
+  choices:[
+    {key:'A',lbl:'D50W 50mL IV push -- immediately',desc:'IV glucose for severe hypoglycemia with altered consciousness.',correct:true,
+     exp:'Correct. GCS 10 means he cannot swallow safely -- oral glucose risks aspiration. IV access is patent -- D50W (50% dextrose) 50mL gives rapid glucose delivery directly into the bloodstream. Onset within 1-2 minutes. This is the standard of care for severe hypoglycemia with IV access.'},
+    {key:'B',lbl:'Orange juice 150mL orally -- fastest oral route',desc:'Oral glucose is fast and easy.',correct:false,
+     exp:'GCS 10 is too low for safe swallowing. Giving oral fluids to a patient who cannot follow commands and cannot protect their airway risks aspiration pneumonia. Never give oral glucose to an altered patient. IV or intramuscular only.'},
+    {key:'C',lbl:'Glucagon 1mg IM -- no need to confirm IV',desc:'Glucagon reverses hypoglycemia without IV.',correct:false,
+     exp:'Glucagon 1mg IM is the correct treatment when there is NO IV access. But IV access is patent here -- D50W IV is faster, more reliable, and immediately effective. Glucagon also requires glycogen stores (depleted in fasting patients). With IV access, D50W is preferred.'},
+    {key:'D',lbl:'Check urine ketones before treating -- rule out DKA first',desc:'Confirm it is not DKA before giving glucose.',correct:false,
+     exp:'The BGL is 2.1 mmol/L. DKA presents with HIGH glucose (>14 mmol/L) and ketones -- not hypoglycemia. There is no clinical basis for DKA here: no fruity breath, no Kussmaul breathing, no hyperglycemia. Delaying treatment while checking ketones is dangerous. Treat the confirmed hypoglycemia now.'},
+  ],
+  outcomeGood:{statDeltas:{judgment:13,confidence:12,communication:9,resilience:7,fatigue:7},
+    headline:'Mr. Park is awake and talking.',
+    story:'D50W pushed through the IV. Within 90 seconds his eyes focused. Within 3 minutes he was answering questions. BGL 6.8 at 15-minute check. He looked at you: "What happened?" You told him calmly. He nodded. You caught it before the brain paid the price.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-3,communication:5,resilience:6,fatigue:11},
+    headline:'The airway risk was real.',
+    story:'The orange juice made it partway down before he coughed and aspirated. The team was called. He recovered -- but he spent three extra days on the ward with aspiration pneumonia. GCS 10 means the swallow reflex is not reliable. Oral glucose is for conscious patients only.'},
+  patient:{name:'Mr. Park',age:'62M',dx:'Severe hypoglycemia -- Type 2 DM',room:'Room 305'},
+  vitals:{spo2:{val:'98%',state:'ok'},hr:{val:'106',state:'warn'},rr:{val:'18',state:'ok'},bp:{val:'124/78',state:'ok'},temp:{val:'36.9C',state:'ok'},gcs:{val:'10',state:'crit'},uo:null,lac:null},
+  iv:{main:{name:'0.9% NaCl',vol:'1L',rate:'KVO',state:'ok',note:'20G right forearm -- patent'}},
+};
+
 SCENARIOS[4]={
   handoff:[
     {delay:500,from:'Triage Nurse Ortiz',txt:'Bay 2 -- Jamie Chen, 21F. Walked in 5 minutes ago after a bee sting in the parking lot. She says her throat feels tight and she cannot swallow properly.'},
@@ -1000,6 +1074,21 @@ const SBAR_DATA={
     md_response:{delay:1800,
       text:'"Hold the morphine. Stat abdominal ultrasound. IV wide open. I am on my way -- 8 minutes. Good call."',
       followup:'Dr. Martinez on the way. Stat ultrasound ordered. You caught it early.'},
+  },
+  5:{doctor:'Dr. Abara',role:'Medicine Registrar',phone:'ext. 5502',
+    cards:[
+      {id:'s5',zone:'s',text:'I am calling about Mr. Park in Room 305. I am concerned he is having severe hypoglycemia with altered consciousness.'},
+      {id:'b5',zone:'b',text:'62-year-old male. Type 2 DM. Insulin Glargine 20 units given at 22:00. Dinner was not eaten -- family left early. Last BGL 12.0 at 22:00.'},
+      {id:'a5',zone:'a',text:'BGL now 2.1 mmol/L confirmed on repeat. GCS 10 -- eyes open to voice, confused, cannot follow commands. HR 106. SpO2 98%. No Kussmaul breathing, no fruity breath.'},
+      {id:'r5',zone:'r',text:'D50W 50mL IV given. Positioning lateral. Holding all insulin. Repeat BGL in 15 minutes. I need insulin review orders and a plan to prevent recurrence.'},
+    ],
+    s:{title:'Situation',hint:'What are you concerned about?'},
+    b:{title:'Background',hint:'Why did this happen?'},
+    a:{title:'Assessment',hint:'BGL and consciousness level?'},
+    r:{title:'Recommendation',hint:'What have you done and what do you need?'},
+    md_response:{delay:1800,
+      text:'"Good. Target BGL 6-10. If repeat BGL is still below 4, give another 50mL D50W. Hold ALL insulin until he is eating. I will review at 06:00 and adjust the Glargine dose."',
+      followup:'Dr. Abara notified. Insulin suspended. Repeat BGL in 15 minutes. Well managed.'},
   },
   4:{doctor:'Dr. Kowalski',role:'ER Physician',phone:'ext. 2201',
     cards:[
@@ -1174,6 +1263,49 @@ const ACTS_D3=[
    done:()=>G.actionsTaken.includes('chart_d3'),unlock:3,need:null},
 ];
 
+const ACTS_D5=[
+  {key:'d50_iv',pri:1,sec:'Immediate -- Glucose Replacement',
+   getL:()=>G.actionsTaken.includes('d50_iv')?'D50W 50mL IV given -- BGL rising':'Give D50W 50mL IV push -- BGL 2.1',
+   desc:'BGL 2.1 mmol/L + GCS 10 = severe hypoglycemia. Cannot swallow safely. Push D50W (50% dextrose) 50mL IV over 1-2 minutes. Onset within seconds. This is the fastest and safest route with patent IV.',
+   done:()=>G.actionsTaken.includes('d50_iv'),unlock:2,need:'glucose'},
+  {key:'nil_oral_d5',pri:1,sec:'Immediate -- Safety',
+   getL:()=>G.actionsTaken.includes('nil_oral_d5')?'NPO confirmed -- oral route unsafe':'NPO -- do NOT give anything by mouth',
+   desc:'GCS 10: cannot follow commands, swallow reflex unreliable. Giving oral glucose or fluids risks aspiration. NPO until GCS returns to 15 and patient can follow commands.',
+   done:()=>G.actionsTaken.includes('nil_oral_d5'),unlock:1,need:'face'},
+  {key:'hold_insulin_d5',pri:1,sec:'Immediate -- Medication Safety',
+   getL:()=>G.actionsTaken.includes('hold_insulin_d5')?'All insulin held -- prescriber alerted':'HOLD all insulin -- flag for review',
+   desc:'Hold Glargine and Metformin immediately. Flag for prescriber review. Do NOT restart insulin until BGL is stable, patient is eating, and physician has reviewed the dose.',
+   done:()=>G.actionsTaken.includes('hold_insulin_d5'),unlock:1,need:'chart'},
+  {key:'safety_d5',pri:1,sec:'Immediate -- Positioning',
+   getL:()=>G.actionsTaken.includes('safety_d5')?'Lateral position -- aspiration precautions':'Position lateral -- vomiting/aspiration risk',
+   desc:'GCS 10 -- lateral position protects the airway if he vomits. Remove any food or oral items from reach. Side rails up. Call bell in reach of family if present.',
+   done:()=>G.actionsTaken.includes('safety_d5'),unlock:1,need:null},
+  {key:'call_d5',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Dr. Abara notified':'Call Dr. Abara -- severe hypoglycemia',
+   desc:'BGL 2.1, GCS 10. Physician must be notified. Insulin dose review required. You can push the D50W before the call -- do both.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'repeat_bgl_d5',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('repeat_bgl_d5')?'Repeat BGL scheduled -- 15 min':'Repeat BGL in 15 minutes post-D50',
+   desc:'Recheck BGL 15 minutes after D50W. Target: above 4.0 mmol/L. If still below 4.0 -- repeat D50W 50mL. If above 4.0 and conscious -- light snack when safe to swallow.',
+   done:()=>G.actionsTaken.includes('repeat_bgl_d5'),unlock:3,need:'glucose'},
+  {key:'vfreq_d5',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('vfreq_d5')?'Q15min BGL monitoring active':'BGL monitoring -- q15min until stable',
+   desc:'Hypoglycemia can recur especially with long-acting insulin. Monitor BGL q15min for the first hour, then q1h x4 hours. Alert if BGL drops below 4.0 again.',
+   done:()=>G.actionsTaken.includes('vfreq_d5'),unlock:2,need:null},
+  {key:'charge_d5',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('charge_d5')?'Charge nurse notified':'Notify charge nurse',
+   desc:'Room 305, Mr. Park. Severe hypoglycemia, BGL 2.1, D50W given. Physician called. Insulin suspended.',
+   done:()=>G.actionsTaken.includes('charge_d5'),unlock:2,need:null},
+  {key:'family_d5',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('family_d5')?'Family notified':'Notify family -- explain missed meal',
+   desc:'"Mr. Park had a low blood sugar because his insulin was given but he did not eat dinner. We treated it. He is improving. Please always ensure he eats when insulin is given."',
+   done:()=>G.actionsTaken.includes('family_d5'),unlock:2,need:null},
+  {key:'chart_d5',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d5')?'Nursing note written':'Document hypoglycemia episode and treatment',
+   desc:'Time-stamp: when found, BGL result, interventions, response, physician notified, insulin held. This is a medication-related adverse event -- full documentation required.',
+   done:()=>G.actionsTaken.includes('chart_d5'),unlock:3,need:null},
+];
+
 const ACTS_D4=[
   {key:'epi_im',pri:1,sec:'Immediate -- Epinephrine',
    getL:()=>G.actionsTaken.includes('epi_im')?'Epinephrine 0.3mg IM given':'Give Epinephrine 0.3mg IM -- outer thigh NOW',
@@ -1229,6 +1361,7 @@ function getACTS(){
   if(G.currentDay===2)return ACTS_D2;
   if(G.currentDay===3)return ACTS_D3;
   if(G.currentDay===4)return ACTS_D4;
+  if(G.currentDay===5)return ACTS_D5;
   return ACTS;
 }
 function getSC(){return SCENARIOS[G.currentDay]||SCENARIOS[1];}
@@ -1291,7 +1424,7 @@ function updateVitals(chg={}){
     if(scv.gcs){const ge=document.getElementById('mo-gcs');if(ge){ge.textContent=scv.gcs.val;ge.className='monval '+scv.gcs.state;}}
   }else{
     const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
-    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':G.currentDay===4?'Monitor ER Bay 2':'Monitor Bay 4';
+    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':G.currentDay===4?'Monitor ER Bay 2':G.currentDay===5?'Monitor Room 305':'Monitor Bay 4';
     const sc1v=(SCENARIOS[1]||{}).vitals||{};
     if(sc1v.temp){const te=document.getElementById('mo-temp-d1');if(te){te.textContent=sc1v.temp.val;te.className='monval '+sc1v.temp.state;}}
     if(sc1v.gcs){const ge=document.getElementById('mo-gcs-d1');if(ge){ge.textContent=sc1v.gcs.val;ge.className='monval '+sc1v.gcs.state;}}
@@ -1357,6 +1490,11 @@ function initVisualState(day){
     G.patientState='deteriorating';G.o2Saturation=93;
     G.skinFlush=0.9;G.diaphoresis=0.2;G.mottle=0.2;G.confusion=false;G.ecgChaos=0.2;
     // Day 4: anaphylaxis -- flushed, urticaria, tachycardic, hypotensive
+  }
+  else if(day===5){
+    G.patientState='deteriorating';G.o2Saturation=98;
+    G.skinFlush=0;G.diaphoresis=0.8;G.mottle=0.1;G.confusion=true;G.ecgChaos=0.1;
+    // Day 5: hypoglycemia -- diaphoretic, pale, confused but stable SpO2
   }
   else{G.patientState='deteriorating';G.o2Saturation=91;G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0;G.confusion=false;G.ecgChaos=0.15;}
 }
@@ -1639,11 +1777,12 @@ function gotoHandoff(){
 }
 function startHandoff(){
   const chat=document.getElementById('ho-chat');if(chat)chat.innerHTML='';
-  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':G.currentDay===4?'Day 4 ER Bay 2 14:05':'Day 1 Bay 4 23:42';
+  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':G.currentDay===4?'Day 4 ER Bay 2 14:05':G.currentDay===5?'Day 5 Room 305 02:30':'Day 1 Bay 4 23:42';
   const lbl=document.getElementById('ho-vitals-lbl');const grid=document.getElementById('ho-vitals-grid');
   if(G.currentDay===2){if(lbl)lbl.textContent='Last recorded vitals 30 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>';}
   else if(G.currentDay===3){if(lbl)lbl.textContent='Last recorded vitals -- trending';if(grid)grid.innerHTML='<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">35mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>';}
   else if(G.currentDay===4){if(lbl)lbl.textContent='Triage vitals -- 5 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">84/52</div></div><div><div class="vcl">HR</div><div class="vcv crit">128</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">93%</div></div><div><div class="vcl">RR</div><div class="vcv crit">26</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.0C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
+  else if(G.currentDay===5){if(lbl)lbl.textContent='Vitals taken by aide 02:30';if(grid)grid.innerHTML='<div><div class="vcl">BGL</div><div class="vcv crit">2.1 mmol</div></div><div><div class="vcl">GCS</div><div class="vcv crit">10</div></div><div><div class="vcl">HR</div><div class="vcv warn">106</div></div><div><div class="vcl">BP</div><div class="vcv ok">124/78</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">98%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div>';}
   else{if(lbl)lbl.textContent='Last recorded vitals';if(grid)grid.innerHTML='<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
   const vc=document.getElementById('ho-vitals');if(vc)vc.style.display='none';
   const sc=getSC();let i=0;
@@ -1655,8 +1794,8 @@ function startHandoff(){
   }next();
 }
 function gotoInvestigate(){
-  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':G.currentDay===4?'Day 4 ER Bay 2':'Day 1 Bay 4';
-  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':G.currentDay===4?'Jamie Chen, 21F':'Mrs. Delgado, 58F';
+  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':G.currentDay===4?'Day 4 ER Bay 2':G.currentDay===5?'Day 5 Room 305':'Day 1 Bay 4';
+  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':G.currentDay===4?'Jamie Chen, 21F':G.currentDay===5?'Mr. Park, 62M':'Mrs. Delgado, 58F';
   const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=dayHud;if(pe)pe.textContent=ptHud;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
   wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);},100);});
@@ -1895,6 +2034,73 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Tyler 45M Room 214. Post-op Day 1 lap chole.\nAbdomen distended, firm, guarding RUQ, rebound. Right shoulder tip pain. JP drain 35mL dark red in 4h (12mL prior 4h). Skin pale, cool, clammy.\nHR trending 88-98 over 6h. BP trending 128/84-118/76.\nMorphine withheld. IV fluid challenge 250mL. Type & crossmatch ordered. Dr. Martinez notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  // === DAY 5 ===
+  }else if(type==='d50_iv'){
+    if(!G.actionsTaken.includes('d50_iv'))G.actionsTaken.push('d50_iv');
+    applyVC({hr:{val:'98',state:'warn'}},2);applyVC({hr:{val:'88',state:'ok'}},5);
+    SFX.init();SFX.o2Flow();
+    openDrawer('D50W 50mL IV -- pushed',[
+      {p:'c',t:'50% dextrose 50mL pushed IV over 90 seconds. Glucose entering bloodstream immediately.'},
+      {p:'o',t:'Within 60 seconds: eyes more focused. Within 3 minutes: following commands. Colour improving.'},
+      {p:'o',t:'Catecholamine response settling -- tachycardia resolving as BGL normalises.'},
+      {p:'w',t:'Recheck BGL at 15 minutes. Target >4.0 mmol/L. If still low -- repeat D50W.'},
+    ],'D50W + patent IV = fastest glucose delivery possible. You did not wait and his brain is intact because of it.');
+    setTimeout(checkActions,200);
+  }else if(type==='nil_oral_d5'){
+    if(!G.actionsTaken.includes('nil_oral_d5'))G.actionsTaken.push('nil_oral_d5');
+    openDrawer('NPO -- oral route unsafe',[
+      {p:'c',t:'GCS 10 -- swallow reflex not reliable. No oral intake of any kind until GCS 15 and commands followed.'},
+      {p:'w',t:'Orange juice, glucose gel, food -- all contraindicated at this GCS. Aspiration risk is real.'},
+      {p:'o',t:'Document: NPO -- altered consciousness. Oral route resumed when GCS returns to 15 and patient demonstrates safe swallow.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='hold_insulin_d5'){
+    if(!G.actionsTaken.includes('hold_insulin_d5'))G.actionsTaken.push('hold_insulin_d5');
+    openDrawer('Insulin held -- prescriber alerted',[
+      {p:'c',t:'Glargine 20u nocte -- WITHHELD. Metformin -- WITHHELD. Flagged for physician review.'},
+      {p:'w',t:'Do not restart any insulin until: BGL stable >6.0, patient eating, physician has reviewed and adjusted the dose.'},
+      {p:'o',t:'Document rationale: insulin withheld due to BGL 2.1 + altered consciousness, pending physician review.'},
+    ],'A missed meal is a contraindication to the next insulin dose. This should have been flagged at 22:00 when dinner was not served.');
+    setTimeout(checkActions,200);
+  }else if(type==='safety_d5'){
+    if(!G.actionsTaken.includes('safety_d5'))G.actionsTaken.push('safety_d5');
+    openDrawer('Lateral position -- aspiration precautions',[
+      {p:'o',t:'Recovery position. Airway protected. Side rails up. Call bell accessible.'},
+      {p:'w',t:'If vomiting occurs -- clear airway, suction if needed. Do NOT leave the room.'},
+      {p:'o',t:'Hypoglycemia can cause nausea on recovery. Lateral position protects until GCS returns to 15.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='call_d5'){gotoSBAR();
+  }else if(type==='repeat_bgl_d5'){
+    if(!G.actionsTaken.includes('repeat_bgl_d5'))G.actionsTaken.push('repeat_bgl_d5');
+    setTimeout(()=>{addLabResult('BGL 15min','6.8 mmol/L','ok',true);SFX.init();SFX.tapFind();},2000);
+    openDrawer('Repeat BGL in 15 minutes',[
+      {p:'o',t:'BGL repeat scheduled at 15-minute mark. Result will confirm treatment response.'},
+      {p:'o',t:'Expected result: 6-10 mmol/L. If below 4.0 -- repeat D50W 50mL.'},
+      {p:'c',t:'Result returning... BGL 6.8 mmol/L. On target. Continue monitoring q15min x1hr.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='vfreq_d5'){
+    if(!G.actionsTaken.includes('vfreq_d5'))G.actionsTaken.push('vfreq_d5');
+    openDrawer('BGL monitoring q15min',[
+      {p:'o',t:'BGL q15min x4 checks, then q1h x4 hours. Continuous HR and SpO2.'},
+      {p:'w',t:'Long-acting insulin (Glargine) has a duration of 20-24 hours. Recurrence risk is high.'},
+      {p:'c',t:'Alert thresholds: BGL <4.0 -- treat again. BGL >15.0 -- check for rebound hyperglycemia.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='charge_d5'){
+    if(!G.actionsTaken.includes('charge_d5'))G.actionsTaken.push('charge_d5');SFX.init();SFX.chime();
+    openDrawer('Charge nurse notified',[
+      {p:'o',t:'Room 305, Mr. Park. Severe hypoglycemia. D50W given. BGL rising. Insulin suspended. Dr. Abara notified.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='family_d5'){
+    if(!G.actionsTaken.includes('family_d5'))G.actionsTaken.push('family_d5');SFX.init();SFX.chime();
+    openDrawer('Family notified',[
+      {p:'o',t:'"Mr. Park had a dangerously low blood sugar because he did not eat after his insulin. We treated it and he is improving."'},
+      {p:'w',t:'Educate: insulin MUST be followed by a meal. If he cannot eat, the insulin dose must be withheld and the nurse must be told.'},
+      {p:'o',t:'This is a teachable moment for the family -- they have a role in preventing recurrence at home.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='chart_d5'){
+    if(!G.actionsTaken.includes('chart_d5'))G.actionsTaken.push('chart_d5');
+    document.getElementById('cd-title').textContent='Write nursing note -- Hypoglycemia';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Mr. Park 62M Room 305. Type 2 DM.\n02:30 found by aide -- diaphoretic, altered, GCS 10. BGL 2.1 mmol/L confirmed x2.\nNo Kussmaul breathing, no fruity breath.\nActions: NPO. Lateral position. D50W 50mL IV push [TIME]. Insulin Glargine withheld. Metformin withheld.\nDr. Abara notified [TIME]. Charge nurse notified. Family notified.\nBGL repeat at 15 min: 6.8 mmol/L. Monitoring q15min active.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   // === DAY 4 ===
   }else if(type==='epi_im'){
     if(!G.actionsTaken.includes('epi_im'))G.actionsTaken.push('epi_im');
@@ -1987,7 +2193,7 @@ function doAction(type){
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }
 }
-function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'chart_d3':G.currentDay===4?'chart_d4':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
+function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'chart_d3':G.currentDay===4?'chart_d4':G.currentDay===5?'chart_d5':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
 
 // === SBAR ===
 function gotoSBAR(){
@@ -2092,6 +2298,7 @@ const HO2_ITEMS={
   1:['Patient: Mrs. Delgado, 58F, Bay 4 -- suspected PE, post-op Day 2 hip replacement','SpO2 91% trending -- O2 applied, targeting >94%','Physician called -- CT-PA and heparin pending','Missed enoxaparin today -- DVT history, high risk','IV rate corrected 150 to 80 mL/hr','Right calf swollen and tender -- DVT source likely','Monitoring q15min','Family aware'],
   2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- IDC inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
   3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- distension, guarding, shoulder tip pain','JP drain output tripled -- 35 mL dark red in 4h','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern','IV fluid challenge 250 mL. Type and crossmatch ordered','Dr. Martinez notified -- may return to theatre','Family aware'],
+  5:['Patient: Mr. Park, 62M, Room 305 -- severe hypoglycemia, Type 2 DM','BGL 2.1 mmol/L on arrival -- D50W 50mL IV given, BGL now 6.8','GCS 10 on arrival -- improving, now GCS 14','Insulin Glargine withheld -- pending physician dose review','NPO until GCS 15 and safe swallow confirmed','Monitoring BGL q15min -- next check due','Dr. Abara notified -- reviewing insulin regimen at 06:00','Family educated -- insulin and meal timing explained','Aspiration precautions in place -- lateral positioning','Medication incident form to be completed -- missed meal + insulin given'],
   4:['Patient: Jamie Chen, 21F, ER Bay 2 -- anaphylaxis, bee sting','Epinephrine 0.3mg IM given outer thigh -- response observed','BP 84/52 on arrival -- trending up after epi and fluids','SpO2 93% on arrival -- improved on 15L NRB','Stridor and angioedema -- reducing. Airway trolley at bedside','IV access 16G x2 -- IV fluids 0.9% NaCl 1L running','Dr. Kowalski notified and on the way','Diphenhydramine and hydrocortisone given -- adjunct therapy','Biphasic reaction monitoring required -- observe minimum 4 hours','Family aware -- EpiPen prescription to be reviewed at discharge'],
 };
 function buildHandoff2(){
@@ -2112,8 +2319,8 @@ function buildEndShift(){
   if(statsEl&&deltas){statsEl.innerHTML=Object.entries(deltas).map(([k,v])=>{const pct=Math.min(100,Math.max(0,(G.stats[k]||40)+v));const col=k==='fatigue'?'var(--amber)':'var(--teal)';return '<div class="essbar"><div class="essname">'+k+'</div><div class="essbarbg"><div class="essfill" style="width:'+pct+'%;background:'+col+'"></div></div><div class="essval">'+(v>0?'+'+v:v)+'</div></div>';}).join('');Object.entries(deltas).forEach(([k,v])=>{if(G.stats[k]!==undefined)G.stats[k]=Math.max(0,Math.min(100,(G.stats[k]||40)+v));});}
   const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
-  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'}};
-  const srcs={1:'BTS PE Guidelines 2017 / Wells DVT Score',2:'Surviving Sepsis Campaign 2021 / Kumar et al. Crit Care Med 2006',3:'Post-op Haemorrhage Recognition / ATLS Haemorrhagic Shock Classification',4:'WAO Anaphylaxis Guidelines 2020 / ASCIA Anaphylaxis Management Plan'};
+  const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'}};
+  const srcs={1:'BTS PE Guidelines 2017 / Wells DVT Score',2:'Surviving Sepsis Campaign 2021 / Kumar et al. Crit Care Med 2006',3:'Post-op Haemorrhage Recognition / ATLS Haemorrhagic Shock Classification',4:'WAO Anaphylaxis Guidelines 2020 / ASCIA Anaphylaxis Management Plan',5:'ADA Standards of Diabetes Care 2023 / Cryer PE -- Hypoglycemia in Diabetes'};
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
   if(good&&G.currentDay>=G.highestDay)G.highestDay=Math.min(30,G.currentDay+1);
