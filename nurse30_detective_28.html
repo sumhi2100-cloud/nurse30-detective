@@ -831,12 +831,12 @@ SCENARIOS[2]={
   question:'Mr. Chen has septic shock -- MAP 62, qSOFA 3/3, new confusion, surgical source. The 1-hour bundle has not been started.',
   sub:'What is the single most important first action right now?',
   choices:[
-    {key:'A',lbl:'Simultaneously: start fluid bolus + draw blood cultures + call physician',desc:'Initiate the sepsis bundle in parallel. Not one at a time -- all at once.',correct:true,
-     exp:'Correct. The 1-hour bundle runs simultaneously, not sequentially. Fluid bolus for MAP below 65. Blood cultures before antibiotics -- takes 2 minutes, never skip. Physician call for vasopressor and antibiotic orders.'},
-    {key:'B',lbl:'Give the overdue antibiotic dose immediately',desc:'Pip-Tazo is 6 hours overdue. Give it now.',correct:false,
+    {key:'A',lbl:'Give the overdue antibiotic dose immediately',desc:'Pip-Tazo is 6 hours overdue. Give it now.',correct:false,
      exp:'Antibiotics are critical -- but blood cultures must come first. Drawing cultures takes 2 minutes. Giving antibiotics before cultures sterilises the blood and may prevent identifying the organism.'},
-    {key:'C',lbl:'Wait for the physician to arrive before initiating anything',desc:'The physician needs to assess and give orders first.',correct:false,
+    {key:'B',lbl:'Wait for the physician to arrive before initiating anything',desc:'The physician needs to assess and give orders first.',correct:false,
      exp:'You have standing orders and nursing protocols. In septic shock, every minute without resuscitation worsens outcomes. Start O2, begin fluid bolus, draw cultures -- these are within your scope. Waiting wastes irreversible time.'},
+    {key:'C',lbl:'Simultaneously: start fluid bolus + draw blood cultures + call physician',desc:'Initiate the sepsis bundle in parallel. Not one at a time -- all at once.',correct:true,
+     exp:'Correct. The 1-hour bundle runs simultaneously, not sequentially. Fluid bolus for MAP below 65. Blood cultures before antibiotics -- takes 2 minutes, never skip. Physician call for vasopressor and antibiotic orders.'},
     {key:'D',lbl:'Reposition flat and increase monitoring frequency',desc:'Improve venous return and observe more closely.',correct:false,
      exp:'Repositioning provides marginal benefit. With MAP 62, this patient needs active resuscitation immediately, not closer watching. Observation does not treat shock.'},
   ],
@@ -922,10 +922,10 @@ SCENARIOS[3]={
   question:'Tyler: post-op Day 1 cholecystectomy, HR trending up 88 to 98, BP trending down 128 to 118 over 6 hours, new abdominal distension, guarding, shoulder tip pain, drain output tripled and dark. He is asking for morphine.',
   sub:'What is the most important first action right now?',
   choices:[
-    {key:'A',lbl:'Complete full assessment, hold morphine, call Dr. Martinez urgently',desc:'Finish the picture before giving anything. The surgeon needs to know now.',correct:true,
-     exp:'Correct. Assessment first, always. Morphine would mask the pain that is telling you something is wrong, and cause vasodilation in a patient who cannot afford it. Dr. Martinez needs the full picture: trending vitals, distension, drain output, shoulder tip pain. This is a surgical emergency that has been developing for 6 hours.'},
-    {key:'B',lbl:'Give morphine 2mg IV as ordered -- he is clearly in pain',desc:'The PRN order exists. His pain score is high. Relieve his suffering.',correct:false,
+    {key:'A',lbl:'Give morphine 2mg IV as ordered -- he is clearly in pain',desc:'The PRN order exists. His pain score is high. Relieve his suffering.',correct:false,
      exp:'The morphine order exists, but orders are not automatic authorisation. A nurse assesses before medicating. Morphine masks abdominal pain -- the primary symptom of internal bleeding. It also causes vasodilation, reducing preload in a patient whose BP is already trending down. Giving it now could cause haemodynamic collapse and delay recognition of a surgical emergency.'},
+    {key:'B',lbl:'Complete full assessment, hold morphine, call Dr. Martinez urgently',desc:'Finish the picture before giving anything. The surgeon needs to know now.',correct:true,
+     exp:'Correct. Assessment first, always. Morphine would mask the pain that is telling you something is wrong, and cause vasodilation in a patient who cannot afford it. Dr. Martinez needs the full picture: trending vitals, distension, drain output, shoulder tip pain. This is a surgical emergency that has been developing for 6 hours.'},
     {key:'C',lbl:'Reassure him, increase monitoring to q30min, wait for the next set of vitals',desc:'He is within normal range. Observe for now.',correct:false,
      exp:'Individual vitals are normal -- but trend is not. Six-hour trends showing HR rising and BP falling are haemodynamic compensation. Waiting for the next set of vitals while a patient compensates for internal bleeding is how a Class I haemorrhage becomes a Class III. The time to act is during compensation, not after.'},
     {key:'D',lbl:'Call MET immediately without doing the physical assessment first',desc:'Something is clearly wrong -- escalate now.',correct:false,
@@ -996,14 +996,14 @@ SCENARIOS[7]={
   question:'You have confirmed: Amoxicillin = penicillin class. Mr. Kowalski has a documented penicillin → anaphylaxis allergy -- wristband, chart, and his own words. Dr. Chen wrote this order 10 minutes ago and is currently treating a patient in Bay 3.',
   sub:'What do you do?',
   choices:[
-    {key:'A',lbl:'Hold the amoxicillin. Walk to Bay 3: "Dr. Chen, I need a moment -- Mr. Kowalski in Bay 6 has a penicillin allergy, anaphylaxis history. The amoxicillin order -- can we review this together?"',desc:'Hold the medication, then approach the physician directly.',correct:true,
-     exp:'Correct -- and the structure matters. Hold FIRST. Then speak. You do not give and then ask. The medication never reaches the patient until the order is verified safe. The language matters too: "Can we review this together" is collaborative, not accusatory. You are not telling Dr. Chen they are wrong -- you are flagging a safety concern and inviting review. This is ISMP Canada speak-up culture: confident, specific, non-confrontational. Will it feel uncomfortable? Possibly. That discomfort is smaller than an anaphylaxis code.'},
-    {key:'B',lbl:'Give the medication as ordered -- Dr. Chen reviewed the chart and must have had a reason to override the allergy alert.',desc:'Trust the prescriber\'s clinical judgment.',correct:false,
+    {key:'A',lbl:'Give the medication as ordered -- Dr. Chen reviewed the chart and must have had a reason to override the allergy alert.',desc:'Trust the prescriber\'s clinical judgment.',correct:false,
      exp:'The prescriber overrode an automated alert -- those are overridden dozens of times a day, sometimes appropriately, sometimes by accident. Overriding an alert is not the same as making a deliberate clinical decision. You cannot assume intent. The nurse\'s role in the 5 Rights is not "verify the doctor checked" -- it is "verify it is safe before it goes into the patient." You are the last check. ISMP Canada: medication errors most often reach the patient when the nurse defers to the prescriber without independent verification.'},
-    {key:'C',lbl:'Call pharmacy and ask them to review the order before you approach the physician.',desc:'Pharmacy is the medication safety expert -- let them handle it.',correct:false,
+    {key:'B',lbl:'Call pharmacy and ask them to review the order before you approach the physician.',desc:'Pharmacy is the medication safety expert -- let them handle it.',correct:false,
      exp:'Pharmacy is a valuable safety partner -- but this is not a complex interaction query. This is a clear contraindication. Routing it to pharmacy adds 10-20 minutes of delay while Mr. Kowalski\'s cellulitis progresses without treatment. The physician is 10 metres away. Go directly. Pharmacy can be looped in after the order is corrected to update the medication record and flag the near-miss.'},
-    {key:'D',lbl:'Add a note to the chart flagging the allergy concern and leave it for Dr. Chen to review at their next available moment.',desc:'Document the concern and let the physician address it.',correct:false,
+    {key:'C',lbl:'Add a note to the chart flagging the allergy concern and leave it for Dr. Chen to review at their next available moment.',desc:'Document the concern and let the physician address it.',correct:false,
      exp:'The medication is due in 13 minutes. A chart note does not stop the next nurse from giving it. Documentation is not a safety intervention -- it is a record. The intervention is holding the medication and speaking directly to the prescriber. Chart notes are for after the safety action, not instead of it. (ISMP Canada: verbal escalation is required when documentation alone cannot prevent harm in time)'},
+    {key:'D',lbl:'Hold the amoxicillin. Walk to Bay 3: "Dr. Chen, I need a moment -- Mr. Kowalski in Bay 6 has a penicillin allergy, anaphylaxis history. The amoxicillin order -- can we review this together?"',desc:'Hold the medication, then approach the physician directly.',correct:true,
+     exp:'Correct -- and the structure matters. Hold FIRST. Then speak. You do not give and then ask. The medication never reaches the patient until the order is verified safe. The language matters too: "Can we review this together" is collaborative, not accusatory. You are not telling Dr. Chen they are wrong -- you are flagging a safety concern and inviting review. This is ISMP Canada speak-up culture: confident, specific, non-confrontational. Will it feel uncomfortable? Possibly. That discomfort is smaller than an anaphylaxis code.'},
   ],
   outcomeGood:{statDeltas:{judgment:14,confidence:15,communication:12,resilience:10,fatigue:7},
     headline:'You were the last check. You caught it.',
@@ -1071,10 +1071,10 @@ SCENARIOS[6]={
   question:'You walk into 312A. Ana, the daughter, moves directly into your path. Her voice is loud but her eyes are wet: <em>"FINALLY. THREE HOURS. Nobody tells me ANYTHING. Is she dying? What is HAPPENING?"</em> Behind her, Mrs. Rivera watches quietly from the bed.',
   sub:'How do you approach this?',
   choices:[
-    {key:'A',lbl:'Step toward Ana -- not back. Lower your voice, hold eye contact: "I can see you\'re scared for her. I\'m going to check on her right now. Stay with me -- two minutes."',desc:'Move closer, name the fear, set the expectation, then assess.',correct:true,
-     exp:'Correct -- and the details matter. Moving TOWARD an upset person (not backward) signals confidence and care, not threat. "Scared" names the real emotion -- not "frustrated," not "upset." Naming the right emotion is the NURSE mnemonic: Name it. This de-escalates faster than any apology. "Stay with me" includes her in the process instead of pushing her out. You said two minutes -- now you have to mean it. (CPI Non-Violent Crisis Intervention / RNAO Therapeutic Communication 2020)'},
-    {key:'B',lbl:'"I understand your frustration, but I need to assess the patient before I can answer your questions."',desc:'Professional boundary -- assessment comes first.',correct:false,
+    {key:'A',lbl:'"I understand your frustration, but I need to assess the patient before I can answer your questions."',desc:'Professional boundary -- assessment comes first.',correct:false,
      exp:'"But" erases everything before it. The moment you say "but," Ana heard: "your feelings don\'t matter." Stepping back while saying it -- even slightly -- signals defensiveness. "Frustration" misnames fear. She is not frustrated about a coffee order. She is terrified her mother is dying. Naming the wrong emotion feels dismissive. The words were almost right. The structure was not. (Motivational Interviewing: rolling with resistance, not opposing it)'},
+    {key:'B',lbl:'Step toward Ana -- not back. Lower your voice, hold eye contact: "I can see you\'re scared for her. I\'m going to check on her right now. Stay with me -- two minutes."',desc:'Move closer, name the fear, set the expectation, then assess.',correct:true,
+     exp:'Correct -- and the details matter. Moving TOWARD an upset person (not backward) signals confidence and care, not threat. "Scared" names the real emotion -- not "frustrated," not "upset." Naming the right emotion is the NURSE mnemonic: Name it. This de-escalates faster than any apology. "Stay with me" includes her in the process instead of pushing her out. You said two minutes -- now you have to mean it. (CPI Non-Violent Crisis Intervention / RNAO Therapeutic Communication 2020)'},
     {key:'C',lbl:'"I\'m so sorry you\'ve been waiting -- that\'s really not okay. Let me find out what\'s been happening and get you all the answers you deserve."',desc:'Full empathy -- validate her experience completely.',correct:false,
      exp:'"I\'m sorry you\'ve been waiting" sounds kind but implies the system failed -- which invites Ana to agree loudly. "That\'s not okay" is an apology on behalf of every nurse who came before you, and it opens the door to an accountability conversation you cannot have right now. You have now spent 45 seconds on a promise to explain everything, and Mrs. Rivera has not been touched. Over-empathising without action is not therapeutic -- it is avoidance. (CAMH Trauma-Informed Care: validation requires follow-through, not just words)'},
     {key:'D',lbl:'In a calm, measured tone: "Mrs. Rivera was assessed at 22:00 and her vitals were stable. These things take time. I\'ll update you once I\'ve finished."',desc:'Factual and professional -- reassure with clinical information.',correct:false,
@@ -1145,12 +1145,12 @@ SCENARIOS[5]={
   question:'Mr. Park, 62M, Room 305. BGL 2.1 mmol/L. GCS 10 -- eyes open, confused speech, cannot follow commands. Insulin Glargine given 4 hours ago. Dinner missed. IV patent.',
   sub:'What is your immediate intervention?',
   choices:[
-    {key:'A',lbl:'D50W 50mL IV push -- immediately',desc:'IV glucose for severe hypoglycemia with altered consciousness.',correct:true,
-     exp:'Correct. GCS 10 means he cannot swallow safely -- oral glucose risks aspiration. IV access is patent -- D50W (50% dextrose) 50mL gives rapid glucose delivery directly into the bloodstream. Onset within 1-2 minutes. This is the standard of care for severe hypoglycemia with IV access.'},
-    {key:'B',lbl:'Orange juice 150mL orally -- fastest oral route',desc:'Oral glucose is fast and easy.',correct:false,
+    {key:'A',lbl:'Orange juice 150mL orally -- fastest oral route',desc:'Oral glucose is fast and easy.',correct:false,
      exp:'GCS 10 is too low for safe swallowing. Giving oral fluids to a patient who cannot follow commands and cannot protect their airway risks aspiration pneumonia. Never give oral glucose to an altered patient. IV or intramuscular only.'},
-    {key:'C',lbl:'Glucagon 1mg IM -- no need to confirm IV',desc:'Glucagon reverses hypoglycemia without IV.',correct:false,
+    {key:'B',lbl:'Glucagon 1mg IM -- no need to confirm IV',desc:'Glucagon reverses hypoglycemia without IV.',correct:false,
      exp:'Glucagon 1mg IM is the correct treatment when there is NO IV access. But IV access is patent here -- D50W IV is faster, more reliable, and immediately effective. Glucagon also requires glycogen stores (depleted in fasting patients). With IV access, D50W is preferred.'},
+    {key:'C',lbl:'D50W 50mL IV push -- immediately',desc:'IV glucose for severe hypoglycemia with altered consciousness.',correct:true,
+     exp:'Correct. GCS 10 means he cannot swallow safely -- oral glucose risks aspiration. IV access is patent -- D50W (50% dextrose) 50mL gives rapid glucose delivery directly into the bloodstream. Onset within 1-2 minutes. This is the standard of care for severe hypoglycemia with IV access.'},
     {key:'D',lbl:'Check urine ketones before treating -- rule out DKA first',desc:'Confirm it is not DKA before giving glucose.',correct:false,
      exp:'The BGL is 2.1 mmol/L. DKA presents with HIGH glucose (>14 mmol/L) and ketones -- not hypoglycemia. There is no clinical basis for DKA here: no fruity breath, no Kussmaul breathing, no hyperglycemia. Delaying treatment while checking ketones is dangerous. Treat the confirmed hypoglycemia now.'},
   ],
@@ -1219,10 +1219,10 @@ SCENARIOS[4]={
   question:'Jamie, 21F, ER Bay 2. Bee sting 15 minutes ago. Stridor, angioedema, urticaria spreading. SpO2 93%, BP 84/52 dropping, HR 128. She is in anaphylactic shock.',
   sub:'What is your first action?',
   choices:[
-    {key:'A',lbl:'Epinephrine 0.3mg IM to the outer thigh -- immediately',desc:'No IV needed. IM epinephrine saves lives. It goes in now.',correct:true,
-     exp:'Correct. Epinephrine IM is the only first-line treatment for anaphylaxis. The outer thigh (vastus lateralis) -- faster absorption than deltoid. 0.3mg for adults. It goes in before IV access, before antihistamines, before anything else. Every minute of delay increases cardiac arrest risk.'},
-    {key:'B',lbl:'Give diphenhydramine 50mg IV first -- antihistamine controls the reaction',desc:'Antihistamine is the standard for allergic reactions.',correct:false,
+    {key:'A',lbl:'Give diphenhydramine 50mg IV first -- antihistamine controls the reaction',desc:'Antihistamine is the standard for allergic reactions.',correct:false,
      exp:'Antihistamines treat the symptom -- histamine. They do NOT reverse airway oedema, bronchospasm, or haemodynamic collapse. Epinephrine does. Antihistamines are adjunct therapy -- they come after epinephrine. Never before.'},
+    {key:'B',lbl:'Epinephrine 0.3mg IM to the outer thigh -- immediately',desc:'No IV needed. IM epinephrine saves lives. It goes in now.',correct:true,
+     exp:'Correct. Epinephrine IM is the only first-line treatment for anaphylaxis. The outer thigh (vastus lateralis) -- faster absorption than deltoid. 0.3mg for adults. It goes in before IV access, before antihistamines, before anything else. Every minute of delay increases cardiac arrest risk.'},
     {key:'C',lbl:'Call the physician for orders before giving any medication',desc:'You need an order before administering epinephrine.',correct:false,
      exp:'Anaphylaxis has standing nursing protocols for epinephrine administration in emergency settings. Waiting for a physician order in anaphylactic shock causes preventable deaths. Act within your scope. Epinephrine first. Call simultaneously.'},
     {key:'D',lbl:'Start IV access and fluid bolus first -- hypotension needs fluids',desc:'Establish IV before giving medications.',correct:false,
@@ -1593,7 +1593,11 @@ const ACTS_D5=[
   {key:'d50_iv',pri:1,sec:'Immediate -- Glucose Replacement',
    getL:()=>G.actionsTaken.includes('d50_iv')?'D50W 50mL IV given -- BGL rising':'Give D50W 50mL IV push -- BGL 2.1',
    desc:'BGL 2.1 mmol/L + GCS 10 = severe hypoglycemia. Cannot swallow safely. Push D50W (50% dextrose) 50mL IV over 1-2 minutes. Onset within seconds. This is the fastest and safest route with patent IV.',
-   done:()=>G.actionsTaken.includes('d50_iv'),unlock:2,need:'glucose'},
+   done:()=>G.actionsTaken.includes('d50_iv'),unlock:1,need:'glucose'},
+  {key:'juice_d5',pri:1,sec:'Immediate -- Glucose Replacement',
+   getL:()=>G.actionsTaken.includes('juice_d5')?'Oral glucose -- STOPPED (aspiration risk)':'Give orange juice / oral glucose',
+   desc:'⚠ GCS 10 -- swallow reflex unreliable. Oral glucose risks aspiration pneumonia. Use IV D50W instead.',
+   done:()=>G.actionsTaken.includes('juice_d5'),unlock:1,need:'glucose'},
   {key:'nil_oral_d5',pri:1,sec:'Immediate -- Safety',
    getL:()=>G.actionsTaken.includes('nil_oral_d5')?'NPO confirmed -- oral route unsafe':'NPO -- do NOT give anything by mouth',
    desc:'GCS 10: cannot follow commands, swallow reflex unreliable. Giving oral glucose or fluids risks aspiration. NPO until GCS returns to 15 and patient can follow commands.',
@@ -1731,6 +1735,8 @@ function resetVSForDay(day){
   if(day===6&&SCENARIOS[6]&&SCENARIOS[6].iv&&SCENARIOS[6].iv.main){SCENARIOS[6].iv.main.rate='80 mL/hr';SCENARIOS[6].iv.main.state='warn';SCENARIOS[6].iv.main.note='Review rate -- UO declining';}
   if(day===4&&SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='No IV access';SCENARIOS[4].iv.main.vol='--';SCENARIOS[4].iv.main.rate='--';SCENARIOS[4].iv.main.state='crit';SCENARIOS[4].iv.main.note='Large bore IV needed -- urgent';}
   renderIVPanel(day);
+  const labRows=document.getElementById('lab-rows');if(labRows)labRows.innerHTML='';
+  const labsPanel=document.getElementById('labs-panel');if(labsPanel)labsPanel.classList.remove('show');
 }
 function updateVitals(chg={}){
   if(chg.spo2)Object.assign(VS.spo2,chg.spo2);if(chg.hr)Object.assign(VS.hr,chg.hr);
@@ -1965,6 +1971,8 @@ function handleTap(tap){
   G.touchesLeft--;G.clues.push(tap.id);renderPips();SFX.init();SFX.tapFind();
   const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft+' of '+getTouchLimit()+' touches left';
   openDrawer(tap.lbl||'Finding',tap.finds.slice(0,3),tap.insight);checkActions();
+  // Day 5: BGL tap → immediately show result in labs panel
+  if(G.currentDay===5&&tap.id==='glucose'){addLabResult('BGL','2.1 mmol/L','crit',true);SFX.init();SFX.urgentAlarm();}
   // Day 6 interrupt: daughter speaks mid-assessment after 2nd valid clue
   const validSoFar=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
   if(G.currentDay===6&&validSoFar.length===2&&!G.interruptFired){
@@ -2632,6 +2640,16 @@ function doAction(type){
       {p:'o',t:'Catecholamine response settling -- tachycardia resolving as BGL normalises.'},
       {p:'w',t:'Recheck BGL at 15 minutes. Target >4.0 mmol/L. If still low -- repeat D50W.'},
     ],'D50W + patent IV = fastest glucose delivery possible. You did not wait and his brain is intact because of it.');
+    setTimeout(checkActions,200);
+  }else if(type==='juice_d5'){
+    if(!G.actionsTaken.includes('juice_d5'))G.actionsTaken.push('juice_d5');
+    SFX.init();SFX.flatline();
+    openDrawer('⚠ Oral glucose -- unsafe at GCS 10',[
+      {p:'w',t:'GCS 10 means he cannot follow commands and swallow reflex is unreliable.'},
+      {p:'w',t:'Orange juice or glucose gel by mouth at this level of consciousness = aspiration risk.'},
+      {p:'c',t:'Rule: oral route is only safe when patient is conscious, alert, and able to swallow on command (GCS 15).'},
+      {p:'o',t:'IV access is patent. Use D50W 50mL IV push -- faster, safer, more reliable.'},
+    ],'Oral glucose in an altered patient causes aspiration pneumonia. The IV route is always preferred when access is available.');
     setTimeout(checkActions,200);
   }else if(type==='nil_oral_d5'){
     if(!G.actionsTaken.includes('nil_oral_d5'))G.actionsTaken.push('nil_oral_d5');
