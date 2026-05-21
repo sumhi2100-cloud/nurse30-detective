@@ -120,6 +120,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .hochat-msg.you{align-items:flex-end;}
 .hochat-from{font-family:var(--mono);font-size:8px;color:var(--muted);}
 .hochat-bubble{max-width:88%;padding:8px 12px;font-family:var(--body);font-size:13px;font-weight:300;line-height:1.65;background:var(--ink2);border:1px solid var(--wire);}
+.hk{color:var(--amber);font-weight:500;border-bottom:1px solid rgba(232,168,74,.4);}
 .hochat-msg.you .hochat-bubble{background:var(--teal-bg);border-color:rgba(0,201,160,.3);color:var(--teal);}
 .alert-bar{margin:4px 16px;padding:7px 12px;background:rgba(217,64,64,.08);border-left:2px solid var(--red);font-family:var(--mono);font-size:9px;color:var(--alarm);display:none;}
 .vccard{margin:6px 16px;border:1px solid var(--wire2);background:var(--ink2);padding:8px 12px;}
@@ -655,8 +656,8 @@ const LEVEL_COLORS=['','#00c9a0','#e8a84a','#f57c4a','#d94040','#4a8fd4','#9b59b
 const SCENARIOS={};
 SCENARIOS[1]={
   handoff:[
-    {delay:500,from:'Charge Nurse Kim',txt:'Bay 4 -- Mrs. Delgado, 58F. Post-op day 2 after a right hip replacement. She has been saying she cannot catch her breath. Started about 30 minutes ago.'},
-    {delay:1600,from:'Charge Kim',txt:'SpO2 just dropped to 91% on room air. HR 104. She looks anxious. She has a history of DVT 4 years ago and her enoxaparin was missed this morning.'},
+    {delay:500,from:'Charge Nurse Kim',txt:'Bay 4 -- Mrs. Delgado, 58F. <span class="hk">Post-op Day 2</span> after a right hip replacement. She has been saying she <span class="hk">cannot catch her breath</span>. Started about 30 minutes ago.'},
+    {delay:1600,from:'Charge Kim',txt:'SpO2 just dropped to <span class="hk">91%</span> on room air. HR <span class="hk">104</span>. She looks anxious. She has a <span class="hk">history of DVT 4 years ago</span> and her <span class="hk">enoxaparin was missed</span> this morning.'},
     {delay:2600,from:'You',txt:'On my way.',you:true},
     {delay:3300,alert:true,txt:'Patient status change -- Bay 4 -- SpO2 91% -- HR 104 -- Sudden SOB'},
   ],
@@ -740,8 +741,8 @@ SCENARIOS[1]={
 
 SCENARIOS[2]={
   handoff:[
-    {delay:500,from:'Charge Nurse Park',txt:'Bed 3 -- Mr. Chen, 67M. Post-op Day 1 after bowel resection for perforated diverticulitis. He was stable at midnight but the night nurse flagged he was looking off. Temp has been climbing since 02:00.'},
-    {delay:1700,from:'Charge Park',txt:'Last vitals 30 minutes ago: Temp 39.1C, BP 88/52, HR 118, RR 22, SpO2 95% on 2L NC. New confusion -- he was GCS 15 on admission. Lactate elevated an hour ago. UO last hour was 18 mL.'},
+    {delay:500,from:'Charge Nurse Park',txt:'Bed 3 -- Mr. Chen, 67M. <span class="hk">Post-op Day 1</span> after bowel resection for perforated diverticulitis. He was stable at midnight but the night nurse flagged he was looking off. <span class="hk">Temp has been climbing since 02:00.</span>'},
+    {delay:1700,from:'Charge Park',txt:'Last vitals 30 minutes ago: Temp <span class="hk">39.1C</span>, BP <span class="hk">88/52</span>, HR <span class="hk">118</span>, RR <span class="hk">22</span>, SpO2 <span class="hk">95%</span> on 2L NC. <span class="hk">New confusion</span> -- he was GCS 15 on admission. <span class="hk">Lactate elevated</span> an hour ago. UO last hour was <span class="hk">18 mL</span>.'},
     {delay:2800,from:'You',txt:'Going in now.',you:true},
     {delay:3600,alert:true,txt:'Patient status change -- Bed 3 -- BP down -- MAP 62 -- Temp up -- New confusion'},
   ],
@@ -823,10 +824,10 @@ SCENARIOS[2]={
 // === SBAR DATA ===
 SCENARIOS[3]={
   handoff:[
-    {delay:500,from:'Charge Nurse Ramos',txt:'Room 214 -- Tyler, 45M. Post-op Day 1 after laparoscopic cholecystectomy for acute cholecystitis. Surgery was yesterday at 18:30 -- about 11 hours ago. Went smoothly per Dr. Martinez. He has been on the call bell twice in the last hour saying he is in pain.'},
-    {delay:1700,from:'Charge Ramos',txt:'Night nurse gave him morphine 2mg IV at 02:00 and again at 04:00. Pain score was 7 and 6. He is asking for more. PRN order is there.'},
+    {delay:500,from:'Charge Nurse Ramos',txt:'Room 214 -- Tyler, 45M. <span class="hk">Post-op Day 1</span> after laparoscopic cholecystectomy for acute cholecystitis. Surgery was <span class="hk">yesterday at 18:30</span> -- about 11 hours ago. Went smoothly per Dr. Martinez. He has been on the <span class="hk">call bell twice in the last hour</span> saying he is in pain.'},
+    {delay:1700,from:'Charge Ramos',txt:'Night nurse gave him <span class="hk">morphine 2mg IV at 02:00 and again at 04:00</span>. Pain score was 7 and 6. He is asking for more. PRN order is there.'},
     {delay:2800,from:'You',txt:'Got it. Going in.',you:true},
-    {delay:3500,from:'Charge Ramos',txt:'One more thing -- he seems a bit restless. Night nurse thought it was just anxiety. Just keep an eye.'},
+    {delay:3500,from:'Charge Ramos',txt:'One more thing -- he seems <span class="hk">restless</span>. Night nurse thought it was just anxiety. Just keep an eye.'},
     {delay:4400,alert:true,txt:'Patient request -- Room 214 -- Pain -- Tyler, 45M -- Post-op Day 1 Cholecystectomy'},
   ],
   taps:[
@@ -913,8 +914,8 @@ SCENARIOS[3]={
 
 SCENARIOS[7]={
   handoff:[
-    {delay:500,from:'Nurse Tran',txt:'Bay 6 -- Mr. Kowalski, 54M. Cellulitis right lower leg, spreading. Came in 2 hours ago. Dr. Chen just put in antibiotic orders and moved on to Bay 3. MAR is ready for you to action.'},
-    {delay:1900,from:'Nurse Tran',txt:'He mentioned something about a penicillin allergy when I triaged him. I logged it but did not flag it to Dr. Chen -- I assumed the system would catch it.'},
+    {delay:500,from:'Nurse Tran',txt:'Bay 6 -- Mr. Kowalski, 54M. <span class="hk">Cellulitis right lower leg, spreading.</span> Came in 2 hours ago. Dr. Chen just put in <span class="hk">antibiotic orders</span> and moved on to Bay 3. MAR is ready for you to action.'},
+    {delay:1900,from:'Nurse Tran',txt:'He mentioned something about a <span class="hk">penicillin allergy</span> when I triaged him. I logged it but <span class="hk">did not flag it to Dr. Chen</span> -- I assumed the system would catch it.'},
     {delay:3100,from:'You',txt:'Okay. I will review before I give anything.',you:true},
     {delay:3800,alert:true,txt:'Bay 6 -- New antibiotic order -- Action required -- Verify before administration'},
   ],
@@ -987,8 +988,8 @@ SCENARIOS[7]={
 
 SCENARIOS[6]={
   handoff:[
-    {delay:500,from:'Charge Nurse Patel',txt:'312A -- Mrs. Rivera, 71F. Post-op Day 3 colorectal resection. Her daughter Ana has been here since 06:00. She is loud and upset. But listen -- she said her mom seems different today. That part is worth hearing.'},
-    {delay:1900,from:'Night Nurse Sanders',txt:'I did check her at 22:00. She was 38.1. I put it down to post-op inflammation. The daughter asked me twice to call the doctor and I said I would monitor. I did not call.'},
+    {delay:500,from:'Charge Nurse Patel',txt:'312A -- Mrs. Rivera, 71F. <span class="hk">Post-op Day 3</span> colorectal resection. Her daughter Ana has been here since 06:00. She is upset. But listen -- she said <span class="hk">her mom seems different today</span>. That part is worth hearing.'},
+    {delay:1900,from:'Night Nurse Sanders',txt:'I did check her at 22:00. She was <span class="hk">38.1C</span>. I put it down to post-op inflammation. The daughter <span class="hk">asked me twice to call the doctor</span> and I said I would monitor. <span class="hk">I did not call.</span>'},
     {delay:3200,from:'Charge Nurse Patel',txt:'Ana is not unreasonable -- she is scared. Her mom has cancer and this is Day 3. She has been watching her mom get quieter all morning and nobody has explained anything. Keep that in mind when you walk in.'},
     {delay:4300,from:'You',txt:'Understood. On my way.',you:true},
     {delay:5000,alert:true,txt:'312A -- Daughter requesting manager -- "Nobody is listening to me"'},
@@ -1062,8 +1063,8 @@ SCENARIOS[6]={
 
 SCENARIOS[5]={
   handoff:[
-    {delay:500,from:'Night Aide Kim',txt:'Room 305 -- Mr. Park, 62M. I went to check on him at 02:30 and he was very sweaty and could not answer me properly. He is a diabetic.'},
-    {delay:1700,from:'Aide Kim',txt:'He had insulin tonight but his family left before dinner was served. I do not think he ate. He keeps mumbling but I cannot understand him.'},
+    {delay:500,from:'Night Aide Kim',txt:'Room 305 -- Mr. Park, 62M. I went to check on him at 02:30 and he was <span class="hk">very sweaty</span> and <span class="hk">could not answer me properly</span>. He is a <span class="hk">diabetic</span>.'},
+    {delay:1700,from:'Aide Kim',txt:'He <span class="hk">had insulin tonight</span> but his family left before dinner was served. <span class="hk">I do not think he ate.</span> He keeps mumbling but I cannot understand him.'},
     {delay:2900,from:'You',txt:'On my way. Do not give him anything by mouth.',you:true},
     {delay:3600,alert:true,txt:'Room 305 -- Altered consciousness -- Diabetic -- Possible hypoglycemia'},
   ],
@@ -1136,8 +1137,8 @@ SCENARIOS[5]={
 
 SCENARIOS[4]={
   handoff:[
-    {delay:500,from:'Triage Nurse Ortiz',txt:'Bay 2 -- Jamie Chen, 21F. Walked in 5 minutes ago after a bee sting in the parking lot. She says her throat feels tight and she cannot swallow properly.'},
-    {delay:1700,from:'Nurse Ortiz',txt:'Hives spreading across her chest and arms. She is scared. BP was 92/60 on triage -- I am watching it drop. HR 128. She has a bee allergy but did not bring her EpiPen today.'},
+    {delay:500,from:'Triage Nurse Ortiz',txt:'Bay 2 -- Jamie Chen, 21F. Walked in 5 minutes ago after a <span class="hk">bee sting</span> in the parking lot. She says her <span class="hk">throat feels tight</span> and she <span class="hk">cannot swallow properly</span>.'},
+    {delay:1700,from:'Nurse Ortiz',txt:'Hives spreading across her chest and arms. BP was <span class="hk">92/60 on triage -- I am watching it drop</span>. HR <span class="hk">128</span>. She has a <span class="hk">bee allergy</span> but <span class="hk">did not bring her EpiPen today</span>.'},
     {delay:2800,from:'You',txt:'On my way.',you:true},
     {delay:3400,alert:true,txt:'Bay 2 -- BP dropping -- SpO2 93% -- Stridor -- Anaphylaxis suspected'},
   ],
