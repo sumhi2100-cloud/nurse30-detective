@@ -850,13 +850,13 @@ SCENARIOS[3]={
      clue:'New abdominal distension + guarding + RUQ tenderness'},
     {id:'drain',lbl:'Drain',x:'62%',y:'58%',
      finds:[
-       {p:'c',t:'Jackson-Pratt drain in situ. Output last 4 hours: 35 mL -- dark reddish-brown.'},
+       {p:'c',t:'Jackson-Pratt drain in situ. Output last hour: 35 mL -- dark reddish-brown. Prior 4 hours combined: 12 mL.'},
        {p:'c',t:'Previous 4 hours: 12 mL -- serosanguineous. Output has tripled and darkened.'},
        {p:'w',t:'Normal post-cholecystectomy drain output is typically minimal and serosanguineous. Dark output increasing = concern.'},
        {p:'w',t:'The drain only captures what reaches it. Most of the blood may be pooling elsewhere in the abdomen.'},
      ],
-     insight:'Tripled drain output + colour change to dark red = active bleeding into the abdominal cavity. The drain is showing you the tip of the iceberg.',
-     clue:'JP drain output tripled -- dark reddish-brown'},
+     insight:'35 mL in one hour -- up from 3 mL/hr all night. Active arterial bleeding into the abdominal cavity. The drain is showing you the tip of the iceberg.',
+     clue:'JP drain 35 mL last hour -- was 12 mL prior 4h -- sudden escalation'},
     {id:'iv',lbl:'IV and Meds',x:'82%',y:'24%',
      finds:[
        {p:'c',t:'IV: 0.9% NaCl 75 mL/hr running. Patent.'},
@@ -2434,7 +2434,7 @@ function doAction(type){
   }else if(type==='drain_check'){
     if(!G.actionsTaken.includes('drain_check'))G.actionsTaken.push('drain_check');SFX.init();SFX.tapFind();
     openDrawer('JP drain reviewed',[
-      {p:'c',t:'Drain output last 4 hours: 35 mL dark reddish-brown.'},
+      {p:'c',t:'Drain output last hour: 35 mL dark reddish-brown. Prior 4 hours combined: 12 mL.'},
       {p:'c',t:'Previous 4 hours: 12 mL serosanguineous. Output tripled and darkened.'},
       {p:'w',t:'The drain only catches what reaches it. The rest is in the abdomen.'},
     ],'Tripling drain output + colour change = active intra-abdominal haemorrhage.');setTimeout(checkActions,200);
@@ -2459,7 +2459,7 @@ function doAction(type){
   }else if(type==='chart_d3'){
     if(!G.actionsTaken.includes('chart_d3'))G.actionsTaken.push('chart_d3');
     document.getElementById('cd-title').textContent='Write nursing note';
-    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Tyler 45M Room 214. Post-op Day 1 lap chole.\nAbdomen distended, firm, guarding RUQ, rebound. Right shoulder tip pain. JP drain 35mL dark red in 4h (12mL prior 4h). Skin pale, cool, clammy.\nHR trending 88-98 over 6h. BP trending 128/84-118/76.\nMorphine withheld. IV fluid challenge 250mL. Type & crossmatch ordered. Dr. Martinez notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Tyler 45M Room 214. Post-op Day 1 lap chole.\nAbdomen distended, firm, guarding RUQ, rebound. Right shoulder tip pain. JP drain 35mL dark red in last 1h (12mL prior 4h combined). Skin pale, cool, clammy.\nHR trending 88-98 over 6h. BP trending 128/84-118/76.\nMorphine withheld. IV fluid challenge 250mL. Type & crossmatch ordered. Dr. Martinez notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   // === DAY 7 ===
   }else if(type==='hold_med_d7'){
@@ -2854,7 +2854,7 @@ function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.pr
 const HO2_ITEMS={
   1:['Patient: Mrs. Delgado, 58F, Bay 4 -- suspected PE, post-op Day 2 hip replacement','SpO2 91% trending -- O2 applied, targeting >94%','Physician called -- CT-PA and heparin pending','Missed enoxaparin today -- DVT history, high risk','IV rate corrected 150 to 80 mL/hr','Right calf swollen and tender -- DVT source likely','Monitoring q15min','Family aware'],
   2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- IDC inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
-  3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- distension, guarding, shoulder tip pain','JP drain output tripled -- 35 mL dark red in 4h','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern','IV fluid challenge 250 mL. Type and crossmatch ordered','Dr. Martinez notified -- may return to theatre','Family aware'],
+  3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- distension, guarding, shoulder tip pain','JP drain 35 mL dark red in last hour -- was 12 mL prior 4h combined','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern','IV fluid challenge 250 mL. Type and crossmatch ordered','Dr. Martinez notified -- may return to theatre','Family aware'],
   6:['Patient: Mrs. Rivera, 71F, Room 312A -- post-op Day 3 colorectal resection, surgical site infection','BP trending down: 122/80 → 118/74 → 104/68 over 8 hours -- early sepsis pattern','HR 92, Temp 38.2C, RR 20, SpO2 96%, UO 7mL/hr -- oliguria','Wound: dark yellow-green drainage, erythema, periwound warmth','Blood cultures x2 drawn before antibiotics. Penicillin allergy documented -- avoid beta-lactams','IV fluid challenge 250mL Hartmann\'s -- BP responding to 110/72','Dr. Osei (Gen Surg) notified -- gentamicin ordered, on his way','NPO -- possible return to theatre for wound washout','Daughter present -- escalation de-escalated, charge nurse aware','Q15min monitoring active -- alert thresholds set'],
   5:['Patient: Mr. Park, 62M, Room 305 -- severe hypoglycemia, Type 2 DM','BGL 2.1 mmol/L on arrival -- D50W 50mL IV given, BGL now 6.8','GCS 10 on arrival -- improving, now GCS 14','Insulin Glargine withheld -- pending physician dose review','NPO until GCS 15 and safe swallow confirmed','Monitoring BGL q15min -- next check due','Dr. Abara notified -- reviewing insulin regimen at 06:00','Family educated -- insulin and meal timing explained','Aspiration precautions in place -- lateral positioning','Medication incident form to be completed -- missed meal + insulin given'],
   4:['Patient: Jamie Chen, 21F, ER Bay 2 -- anaphylaxis, bee sting','Epinephrine 0.3mg IM given outer thigh -- response observed','BP 84/52 on arrival -- trending up after epi and fluids','SpO2 93% on arrival -- improved on 15L NRB','Stridor and angioedema -- reducing. Airway trolley at bedside','IV access 16G x2 -- IV fluids 0.9% NaCl 1L running','Dr. Kowalski notified and on the way','Diphenhydramine and hydrocortisone given -- adjunct therapy','Biphasic reaction monitoring required -- observe minimum 4 hours','Family aware -- EpiPen prescription to be reviewed at discharge'],
