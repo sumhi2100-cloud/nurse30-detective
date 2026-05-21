@@ -2834,6 +2834,7 @@ function renderActionScreen(){
 }
 function answerChoice(idx){
   if(_answered)return;_answered=true;
+  SFX.stopMonitorLoop();
   const ch=getSC().choices[idx];
   document.querySelectorAll('.choicebtn').forEach((el,i)=>{el.setAttribute('disabled','');if(i===idx)el.classList.add(ch.correct?'cor':'wrng');else if(getSC().choices[i].correct)el.classList.add('rev');});
   G.outcome=ch.correct?'good':'bad';
