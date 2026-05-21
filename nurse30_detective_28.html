@@ -145,7 +145,8 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .pip.used{background:var(--teal);border-color:var(--teal);}
 .pip.gone{background:var(--alarm);border-color:var(--alarm);}
 .hud-menu-btn{background:rgba(255,255,255,.06);border:1px solid var(--wire2);color:var(--muted2);font-size:13px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:2px;}
-.hud-actions-btn{position:relative;background:rgba(0,201,160,.12);border:1px solid rgba(0,201,160,.4);color:var(--teal);font-size:13px;width:34px;height:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;border-radius:2px;gap:2px;}
+.hud-actions-btn{position:relative;background:rgba(0,201,160,.15);border:1px solid rgba(0,201,160,.55);color:var(--teal);display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;border-radius:3px;padding:0 9px;height:30px;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
+.hud-actions-icon{font-size:15px;line-height:1;}
 .hud-act-badge{position:absolute;top:-4px;right:-4px;background:var(--alarm);color:#fff;font-family:var(--mono);font-size:8px;font-weight:700;min-width:14px;height:14px;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:0 2px;display:none;}
 .hud-act-badge.show{display:flex;}
 .hud-menu{position:fixed;top:48px;right:8px;background:var(--ink2);border:1px solid var(--wire2);z-index:200;min-width:170px;box-shadow:0 8px 32px rgba(0,0,0,.5);}
@@ -470,7 +471,14 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
       <div class="alarmbadge" id="alarm-badge">&#9679; ALARM</div>
       <div class="piprow" id="pip-row"></div>
       <button class="hud-actions-btn" onclick="openActionSheet()" id="hud-actions-btn" title="Nursing Actions">
-        <span id="hud-act-count" class="hud-act-badge">0</span>&#128203;
+        <span id="hud-act-count" class="hud-act-badge">0</span>
+        <svg class="hud-actions-icon" viewBox="0 0 22 16" width="18" height="13" fill="currentColor" aria-hidden="true">
+          <path d="M3.5 12 L6 3.5 Q6.5 2.5 8 2.5 L14 2.5 Q15.5 2.5 16 3.5 L18.5 12 Z" opacity=".85"/>
+          <rect x="0" y="12" width="22" height="4" rx="1.5"/>
+          <rect x="9.5" y="4.5" width="3" height="6" rx="1" fill="var(--ink)"/>
+          <rect x="7.5" y="6.5" width="7" height="2.5" rx="1" fill="var(--ink)"/>
+        </svg>
+        <span>Actions</span>
       </button>
       <button class="hud-menu-btn" onclick="toggleHudMenu()">&#9776;</button>
     </div>
@@ -2393,7 +2401,7 @@ function doAction(type){
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }else if(type==='tylenol_d2'){
     if(!G.actionsTaken.includes('tylenol_d2'))G.actionsTaken.push('tylenol_d2');
-    applyVC({temp:{val:'38.3C',state:'warn'}},20);SFX.init();SFX.tapFind();
+    setTimeout(()=>{if(SCENARIOS[2]&&SCENARIOS[2].vitals&&SCENARIOS[2].vitals.temp){SCENARIOS[2].vitals.temp.val='38.3C';SCENARIOS[2].vitals.temp.state='warn';}updateVitals();},20000);SFX.init();SFX.tapFind();
     openDrawer('Paracetamol 1g IV given',[
       {p:'o',t:'Paracetamol 1g IV infused over 15 minutes. IV route -- patient confused, RR 22, oral unsafe.'},
       {p:'o',t:'Temp: 39.1C → expect 38.3C within 30-40 minutes. Reducing fever lowers O2 demand.'},
