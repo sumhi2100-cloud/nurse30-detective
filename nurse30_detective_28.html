@@ -68,6 +68,20 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .tsnd{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.08em;margin-top:6px;cursor:pointer;}
 /* CALENDAR */
 #scr-calendar{background:var(--ink);}
+#scr-vacation{background:var(--ink);flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center;overflow-y:auto;}
+.vac-emoji{font-size:56px;margin-bottom:10px;line-height:1;}
+.vac-tag{font-family:var(--mono);font-size:8px;color:var(--teal);letter-spacing:.18em;text-transform:uppercase;margin-bottom:4px;}
+.vac-dest{font-family:var(--serif);font-size:24px;font-weight:700;color:#fff;margin-bottom:14px;line-height:1.2;}
+.vac-vibe{font-family:var(--body);font-size:13px;font-weight:300;color:rgba(255,255,255,.6);line-height:1.8;max-width:300px;margin-bottom:8px;font-style:italic;}
+.vac-temp{font-family:var(--mono);font-size:9px;color:var(--muted);margin-bottom:24px;}
+.vac-recovery{background:var(--ink2);border:1px solid var(--wire2);padding:12px 18px;margin-bottom:24px;width:100%;max-width:300px;}
+.vac-rec-title{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.vac-rec-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.vac-rec-lbl{font-family:var(--mono);font-size:9px;color:var(--muted2);}
+.vac-rec-val{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--teal);}
+.vac-btn{width:100%;max-width:300px;padding:14px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;border:none;cursor:pointer;}
+.cal-dayoff-btn{width:calc(100% - 32px);margin:10px 16px 16px;padding:12px 16px;background:rgba(0,201,160,.06);border:1px dashed rgba(0,201,160,.25);color:var(--muted2);font-family:var(--mono);font-size:9px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;border-radius:2px;}
+.cal-dayoff-btn:active{background:rgba(0,201,160,.14);}
 .cal-hdr{padding:12px 16px 8px;border-bottom:1px solid var(--wire);flex-shrink:0;}
 .cal-title{font-family:var(--serif);font-size:20px;font-weight:800;color:#fff;}
 .cal-title span{color:var(--amber);}
@@ -415,6 +429,22 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:rgba(232,168,74,.1);border:1px solid rgba(232,168,74,.5);"></div>Next</div>
     <div class="cal-leg-item"><div class="cal-leg-dot" style="background:transparent;border:1px solid var(--wire);opacity:.4;"></div>Locked</div>
   </div>
+  <button class="cal-dayoff-btn" onclick="gotoVacation()">🌴 &nbsp;Take a day off — you earned it</button>
+</div>
+
+<div id="scr-vacation" class="scr">
+  <div class="vac-emoji" id="vac-emoji">🌴</div>
+  <div class="vac-tag">Day Off</div>
+  <div class="vac-dest" id="vac-dest">Bali, Indonesia</div>
+  <div class="vac-vibe" id="vac-vibe"></div>
+  <div class="vac-temp" id="vac-temp"></div>
+  <div class="vac-recovery">
+    <div class="vac-rec-title">Recovery</div>
+    <div class="vac-rec-row"><span class="vac-rec-lbl">Fatigue</span><span class="vac-rec-val" id="vac-fat-delta">-25</span></div>
+    <div class="vac-rec-row"><span class="vac-rec-lbl">Resilience</span><span class="vac-rec-val" id="vac-res-delta">+15</span></div>
+    <div class="vac-rec-row"><span class="vac-rec-lbl">Confidence</span><span class="vac-rec-val" id="vac-con-delta">+10</span></div>
+  </div>
+  <button class="vac-btn" onclick="returnFromVacation()">Back to schedule &rarr;</button>
 </div>
 <!-- HANDOFF -->
 <div id="scr-handoff" class="scr">
@@ -2977,6 +3007,43 @@ function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
 function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
 function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
+
+const VACATIONS=[
+  {dest:'Bali, Indonesia',emoji:'🌴',temp:'29°C — humid, warm, unhurried',vibe:'Rice terraces. Temple bells at dawn. The ocean has been here longer than your worries.'},
+  {dest:'Santorini, Greece',emoji:'🌅',temp:'24°C — dry, golden, endless blue',vibe:'Whitewashed walls. Caldera at sunset. Wine poured by someone who has never once rushed.'},
+  {dest:'Kyoto, Japan',emoji:'🌸',temp:'18°C — crisp, quiet, ancient',vibe:'Cherry blossoms over a stone path. A bamboo forest that asks nothing of you. Silence that feels earned.'},
+  {dest:'Banff, Canada',emoji:'🏔️',temp:'10°C — clear, cold, vast',vibe:'Turquoise lakes fed by glaciers. Mountains older than medicine. The kind of air that resets everything.'},
+  {dest:'Maldives',emoji:'🏝️',temp:'30°C — warm, still, perfect',vibe:'Overwater bungalow. Infinite turquoise. Your pager has no signal and you feel nothing but relief.'},
+  {dest:'Amalfi Coast, Italy',emoji:'🍋',temp:'22°C — warm, salty, golden',vibe:'Lemon groves on cliffsides. Pasta made by someone\'s grandmother. The sea below, always the sea.'},
+  {dest:'Patagonia, Chile',emoji:'🏕️',temp:'8°C — wild, windy, enormous',vibe:'Torres del Paine at golden hour. Wind that does not apologise. The world is very large and your shift is very small.'},
+  {dest:'Queenstown, New Zealand',emoji:'🎿',temp:'12°C — sharp, bright, alive',vibe:'The Remarkables at first light. Lake Wakatipu at your feet. You are small and that is wonderful.'},
+  {dest:'Cape Town, South Africa',emoji:'🌊',temp:'20°C — bright, breezy, two oceans',vibe:'Table Mountain behind you. Two oceans ahead. The light here is unlike anywhere else on earth.'},
+  {dest:'Northern Iceland',emoji:'🌌',temp:'4°C — dark, wild, electric',vibe:'Aurora borealis overhead. Hot springs at midnight. The sky is doing something that has no clinical explanation.'},
+  {dest:'Hạ Long Bay, Vietnam',emoji:'🚣',temp:'26°C — warm, misty, mythic',vibe:'Limestone karsts rising from emerald water. A slow boat. Nowhere to be by any particular time.'},
+  {dest:'Swiss Alps, Switzerland',emoji:'⛷️',temp:'−2°C — crisp, white, still',vibe:'Cowbells in the valley below. Snow on peaks you will never summit. Fondue in a wooden hut. Enough.'},
+  {dest:'Zanzibar, Tanzania',emoji:'🌺',temp:'28°C — lush, warm, spiced',vibe:'Clove trees and white sand. Dhows on the Indian Ocean at dusk. The world slows to breathing pace.'},
+  {dest:'Queenstown, New Zealand',emoji:'🌿',temp:'14°C — fresh, green, open',vibe:'Fiordland at dawn. No patients. No monitors. Just a mountain and the sound of water over stone.'},
+  {dest:'Barcelona, Spain',emoji:'🎨',temp:'21°C — warm, vibrant, beautiful',vibe:'Gaudí overhead. Tapas at midnight. A city that does not start living until 10pm. Stay out. Rest later.'},
+];
+function gotoVacation(){
+  const v=VACATIONS[Math.floor(Math.random()*VACATIONS.length)];
+  document.getElementById('vac-emoji').textContent=v.emoji;
+  document.getElementById('vac-dest').textContent=v.dest;
+  document.getElementById('vac-vibe').textContent=v.vibe;
+  document.getElementById('vac-temp').textContent=v.temp;
+  const fatDrop=Math.min(G.stats.fatigue||0,25);
+  const resDrop=Math.min(100-(G.stats.resilience||40),15);
+  const conDrop=Math.min(100-(G.stats.confidence||40),10);
+  document.getElementById('vac-fat-delta').textContent=fatDrop>0?'−'+fatDrop:'Already rested';
+  document.getElementById('vac-res-delta').textContent='+'+resDrop;
+  document.getElementById('vac-con-delta').textContent='+'+conDrop;
+  if(G.stats.fatigue)G.stats.fatigue=Math.max(0,G.stats.fatigue-25);
+  if(G.stats.resilience)G.stats.resilience=Math.min(100,(G.stats.resilience||40)+15);
+  if(G.stats.confidence)G.stats.confidence=Math.min(100,(G.stats.confidence||40)+10);
+  saveProgress();SFX.init();SFX.dawnAmbient();
+  wipeGo(()=>showScreen('vacation'));
+}
+function returnFromVacation(){wipeGo(gotoCalendar);}
 function closeHudConfirm(){const el=document.getElementById('hud-confirm');if(el)el.remove();}
 function showHudConfirm(title,msg,confirmLabel,onConfirm){const old=document.getElementById('hud-confirm');if(old)old.remove();const overlay=document.createElement('div');overlay.id='hud-confirm';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;';const box=document.createElement('div');box.style.cssText='background:var(--ink2);border:1px solid var(--wire2);padding:20px 18px;max-width:280px;width:90%;';box.innerHTML='<div style="font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">'+title+'</div><div style="font-family:var(--body);font-size:13px;color:var(--muted2);font-weight:300;line-height:1.6;margin-bottom:16px;">'+msg+'</div><div style="display:flex;gap:8px;"><button id="hud-confirm-yes" style="flex:1;padding:11px;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;border:none;cursor:pointer;text-transform:uppercase;">'+confirmLabel+'</button><button onclick="closeHudConfirm()" style="flex:1;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;">Cancel</button></div>';overlay.appendChild(box);document.getElementById('app').appendChild(overlay);document.getElementById('hud-confirm-yes').onclick=()=>{overlay.remove();onConfirm();};}
 
