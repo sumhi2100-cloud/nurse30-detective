@@ -2174,7 +2174,12 @@ function gotoInvestigate(){
   const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':G.currentDay===4?'Jamie Chen, 21F':G.currentDay===5?'Mr. Park, 62M':G.currentDay===6?'Mrs. Rivera, 71F':G.currentDay===7?'Mr. Kowalski, 54M':'Mrs. Delgado, 58F';
   const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=dayHud;if(pe)pe.textContent=ptHud;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
-  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);},100);});
+  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);
+    if(G.currentDay===3){
+      G._d3Tv1=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'106/68',state:'warn'},hr:{val:'104',state:'warn'}});SFX.init();SFX.urgentAlarm();}},120000);
+      G._d3Tv2=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'90/58',state:'crit'},hr:{val:'112',state:'crit'}});SFX.init();SFX.urgentAlarm();}},180000);
+    }
+  },100);});
 }
 
 // === TIMER ===
@@ -2748,6 +2753,7 @@ function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'c
 
 // === SBAR ===
 function gotoSBAR(){
+  if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}
   if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
   wipeGo(()=>{showScreen('sbar');renderSBAR();});
@@ -2842,7 +2848,7 @@ function answerChoice(idx){
   }
 }
 function continueAfterFail(){wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
-function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
+function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
 
 // === HANDOFF 2 ===
 const HO2_ITEMS={
@@ -2967,7 +2973,7 @@ function showDayDetail(day){
 // === HUD MENU ===
 function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
-function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
+function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
 function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
 function closeHudConfirm(){const el=document.getElementById('hud-confirm');if(el)el.remove();}
 function showHudConfirm(title,msg,confirmLabel,onConfirm){const old=document.getElementById('hud-confirm');if(old)old.remove();const overlay=document.createElement('div');overlay.id='hud-confirm';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;';const box=document.createElement('div');box.style.cssText='background:var(--ink2);border:1px solid var(--wire2);padding:20px 18px;max-width:280px;width:90%;';box.innerHTML='<div style="font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">'+title+'</div><div style="font-family:var(--body);font-size:13px;color:var(--muted2);font-weight:300;line-height:1.6;margin-bottom:16px;">'+msg+'</div><div style="display:flex;gap:8px;"><button id="hud-confirm-yes" style="flex:1;padding:11px;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;border:none;cursor:pointer;text-transform:uppercase;">'+confirmLabel+'</button><button onclick="closeHudConfirm()" style="flex:1;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;">Cancel</button></div>';overlay.appendChild(box);document.getElementById('app').appendChild(overlay);document.getElementById('hud-confirm-yes').onclick=()=>{overlay.remove();onConfirm();};}
