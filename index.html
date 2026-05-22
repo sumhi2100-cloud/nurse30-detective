@@ -395,29 +395,49 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 @keyframes icu2pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
 .icu2-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden;}
 .icu2-barfill{height:100%;background:var(--teal);transition:width .9s linear,background .4s;}
-.icu2-body{flex:1;overflow-y:auto;padding:10px 12px 14px;}
-.icu2-hint{font-family:var(--body);font-size:12px;color:var(--muted2);font-weight:300;line-height:1.5;margin-bottom:10px;}
-.icu2-rooms{display:flex;flex-direction:column;gap:10px;}
-.icu2-room{border:1px solid var(--wire2);border-radius:6px;padding:11px 12px;background:rgba(255,255,255,.03);cursor:pointer;transition:border-color .25s,background .25s;}
-.icu2-room.crit{border-color:rgba(217,64,64,.6);background:rgba(217,64,64,.06);}
-.icu2-room.warn{border-color:rgba(232,168,74,.5);}
-.icu2-room.stable{border-color:rgba(0,201,160,.5);background:rgba(0,201,160,.05);}
-.icu2-room.dead{border-color:#555;background:rgba(120,120,120,.08);opacity:.7;}
-.icu2-rhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;}
-.icu2-rtitle{font-family:var(--serif);font-size:15px;font-weight:700;color:#fff;}
-.icu2-rsub{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;}
+/* asymmetric 70/30 split — divided attention */
+.icu2-split{flex:1;display:flex;min-height:0;overflow:hidden;}
+.icu2-primary{flex:0 0 68%;overflow-y:auto;padding:10px 11px 16px;transition:filter .25s,opacity .25s;border-right:1px solid var(--wire2);}
+.icu2-secondary{flex:1;min-width:0;overflow-y:auto;padding:9px 8px 14px;cursor:pointer;background:rgba(0,0,0,.28);position:relative;transition:background .3s,box-shadow .3s;display:flex;flex-direction:column;gap:7px;}
+.icu2-split.switching .icu2-primary{filter:blur(3px);opacity:.45;}
+.icu2-split.switching .icu2-secondary{filter:blur(2px);opacity:.5;}
+/* secondary peripheral-stress states */
+.icu2-secondary.crit{box-shadow:inset 0 0 0 2px rgba(217,64,64,.7);animation:icu2flash 1.1s infinite;}
+.icu2-secondary.warn{box-shadow:inset 0 0 0 1px rgba(232,168,74,.6);}
+.icu2-secondary.stable{box-shadow:inset 0 0 0 1px rgba(0,201,160,.5);}
+.icu2-secondary.dead{box-shadow:inset 0 0 0 2px #555;opacity:.65;}
+@keyframes icu2flash{0%,100%{box-shadow:inset 0 0 0 2px rgba(217,64,64,.7);}50%{box-shadow:inset 0 0 0 3px rgba(217,64,64,1);}}
+.icu2-sec-swap{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;text-align:center;padding-bottom:2px;border-bottom:1px dashed var(--wire2);}
+.icu2-sec-room{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;letter-spacing:.05em;}
+.icu2-sec-name{font-family:var(--body);font-size:9px;color:var(--muted2);font-weight:300;line-height:1.3;}
+.icu2-sec-vits{display:flex;flex-direction:column;gap:5px;margin-top:2px;}
+.icu2-sec-vit{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:4px 6px;background:rgba(0,0,0,.35);border-radius:3px;}
+.icu2-sec-vl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.05em;}
+.icu2-sec-vv{font-family:var(--mono);font-size:16px;font-weight:700;}
+.icu2-sec-vv.ok{color:var(--teal);}.icu2-sec-vv.warn{color:var(--amber);}.icu2-sec-vv.crit{color:var(--alarm);}
+.icu2-sec-alarm{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.05em;text-align:center;padding:5px 4px;border-radius:3px;line-height:1.3;}
+.icu2-sec-alarm.crit{background:rgba(217,64,64,.2);color:var(--alarm);}
+.icu2-sec-alarm.warn{background:rgba(232,168,74,.18);color:var(--amber);}
+.icu2-sec-alarm.stable{background:rgba(0,201,160,.18);color:var(--teal);}
+.icu2-sec-alarm.dead{background:rgba(120,120,120,.2);color:#999;}
+.icu2-sec-staff{font-family:var(--mono);font-size:8px;color:var(--muted2);line-height:1.45;margin-top:auto;border-top:1px solid var(--wire2);padding-top:6px;}
+.icu2-sec-tapcue{font-family:var(--mono);font-size:7px;color:var(--teal);text-align:center;letter-spacing:.08em;opacity:.8;}
+/* primary panel */
+.icu2-phead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.icu2-ptitle{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff;line-height:1.2;}
+.icu2-psub{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;}
 .icu2-rtag{font-family:var(--mono);font-size:7px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:3px;white-space:nowrap;}
 .icu2-rtag.crit{background:rgba(217,64,64,.18);color:var(--alarm);}
 .icu2-rtag.warn{background:rgba(232,168,74,.18);color:var(--amber);}
 .icu2-rtag.stable{background:rgba(0,201,160,.18);color:var(--teal);}
 .icu2-rtag.dead{background:rgba(120,120,120,.2);color:#999;}
 .icu2-vits{display:flex;gap:6px;flex-wrap:wrap;}
-.icu2-vit{display:flex;flex-direction:column;align-items:center;padding:4px 9px;background:rgba(0,0,0,.3);border-radius:3px;min-width:46px;}
+.icu2-vit{display:flex;flex-direction:column;align-items:center;padding:5px 11px;background:rgba(0,0,0,.35);border-radius:4px;min-width:52px;}
 .icu2-vl{font-family:var(--mono);font-size:6px;color:var(--muted);letter-spacing:.06em;}
-.icu2-vv{font-family:var(--mono);font-size:14px;font-weight:700;}
+.icu2-vv{font-family:var(--mono);font-size:18px;font-weight:700;}
 .icu2-vv.ok{color:var(--teal);}.icu2-vv.warn{color:var(--amber);}.icu2-vv.crit{color:var(--alarm);}
-.icu2-status{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;margin-top:7px;line-height:1.45;}
-.icu2-section-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:14px 0 7px;}
+.icu2-status{font-family:var(--body);font-size:11.5px;color:var(--muted2);font-weight:300;margin-top:8px;line-height:1.5;}
+.icu2-section-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:13px 0 7px;}
 .icu2-actions{display:flex;flex-direction:column;gap:7px;}
 .icu2-act{text-align:left;padding:11px 12px;border-radius:5px;border:1px solid var(--wire2);background:rgba(255,255,255,.04);color:var(--text);font-family:var(--body);font-size:12.5px;cursor:pointer;line-height:1.4;transition:border-color .2s,background .2s;}
 .icu2-act:hover{border-color:var(--teal);}
@@ -648,8 +668,10 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
     </div>
     <div class="icu2-bar"><div class="icu2-barfill" id="icu2-barfill" style="width:100%"></div></div>
   </div>
-  <div class="icu2-body" id="icu2-body"></div>
-  <div class="icu2-foot" id="icu2-foot"></div>
+  <div class="icu2-split" id="icu2-split">
+    <div class="icu2-primary" id="icu2-primary"></div>
+    <div class="icu2-secondary" id="icu2-secondary" onclick="icu2SwapFocus()"></div>
+  </div>
   <div class="icu2-overlay" id="icu2-overlay"></div>
 </div>
 
@@ -3222,14 +3244,14 @@ function returnFromVacation(){wipeGo(gotoCalendar);}
 // === DAY 8 — ICU TWO-PATIENT DELEGATION ENGINE =======================
 // =====================================================================
 const ICU2={
-  T0:480, t:0, iv:null, view:'hub', ended:false,
+  T0:480, t:0, iv:null, focus:14, ended:false,
   log:[], _to:[], soloMoves:0, delegatedEarly:false,
   team:{rt:'idle',charge:'idle',cna:'idle',float:'idle'},
   r12:{escalated:false,pressor2:false,fluid:false,map:54,hr:132,spo2:92,stable:false,dead:false},
   r14:{rtThere:false,suctioned:false,sedated:false,airwayCleared:false,spo2:78,hr:140,stable:false,dead:false},
 };
 function icu2Reset(){
-  ICU2.t=0;ICU2.view='hub';ICU2.ended=false;ICU2.log=[];ICU2.soloMoves=0;ICU2.delegatedEarly=false;
+  ICU2.t=0;ICU2.focus=14;ICU2.ended=false;ICU2.log=[];ICU2.soloMoves=0;ICU2.delegatedEarly=false;
   ICU2._to.forEach(t=>clearTimeout(t));ICU2._to=[];
   ICU2.team={rt:'idle',charge:'idle',cna:'idle',float:'idle'};
   ICU2.r12={escalated:false,pressor2:false,fluid:false,map:54,hr:132,spo2:92,stable:false,dead:false};
@@ -3291,28 +3313,40 @@ function icu2RoomMeta(id){
   if(id===14)return{cls:'crit',tag:'AIRWAY',tagcls:'crit'};
   return{cls:(ICU2.r12.map<60?'crit':'warn'),tag:'SHOCK',tagcls:(ICU2.r12.map<60?'crit':'warn')};
 }
-function icu2RoomCardHTML(id){
-  const m=icu2RoomMeta(id);
-  if(id===14){
-    const r=ICU2.r14;
-    return '<div class="icu2-room '+m.cls+'" id="icu2-r14-card" onclick="icu2EnterRoom(14)">'+
-      '<div class="icu2-rhead"><div><div class="icu2-rtitle">Room 14 — Ms. Doyle, 51F</div><div class="icu2-rsub">Intubated post-overdose · vent crisis</div></div><div class="icu2-rtag '+m.tagcls+'" id="icu2-r14-tag">'+m.tag+'</div></div>'+
-      '<div class="icu2-vits">'+
-        '<div class="icu2-vit"><div class="icu2-vl">SpO2</div><div class="icu2-vv '+icu2VitClass('spo2',r.spo2)+'" id="icu2-r14-spo2">'+r.spo2+'%</div></div>'+
-        '<div class="icu2-vit"><div class="icu2-vl">HR</div><div class="icu2-vv '+icu2VitClass('hr',r.hr)+'" id="icu2-r14-hr">'+r.hr+'</div></div>'+
-        '<div class="icu2-vit"><div class="icu2-vl">Peak P</div><div class="icu2-vv crit" id="icu2-r14-peak">'+(r.airwayCleared?'OK':'HIGH')+'</div></div>'+
-      '</div>'+
-      '<div class="icu2-status" id="icu2-r14-status">'+icu2RoomStatusTxt(14)+'</div></div>';
-  }
-  const r=ICU2.r12;
-  return '<div class="icu2-room '+m.cls+'" id="icu2-r12-card" onclick="icu2EnterRoom(12)">'+
-    '<div class="icu2-rhead"><div><div class="icu2-rtitle">Room 12 — Mr. Adeyemi, 74M</div><div class="icu2-rsub">Septic shock · norepinephrine running</div></div><div class="icu2-rtag '+m.tagcls+'" id="icu2-r12-tag">'+m.tag+'</div></div>'+
-    '<div class="icu2-vits">'+
-      '<div class="icu2-vit"><div class="icu2-vl">MAP</div><div class="icu2-vv '+icu2VitClass('map',r.map)+'" id="icu2-r12-map">'+r.map+'</div></div>'+
-      '<div class="icu2-vit"><div class="icu2-vl">HR</div><div class="icu2-vv '+icu2VitClass('hr',r.hr)+'" id="icu2-r12-hr">'+r.hr+'</div></div>'+
-      '<div class="icu2-vit"><div class="icu2-vl">SpO2</div><div class="icu2-vv '+icu2VitClass('spo2',r.spo2)+'" id="icu2-r12-spo2">'+r.spo2+'%</div></div>'+
-    '</div>'+
-    '<div class="icu2-status" id="icu2-r12-status">'+icu2RoomStatusTxt(12)+'</div></div>';
+function icu2RoomInfo(id){return id===14?{title:'Room 14 — Ms. Doyle, 51F',sub:'Intubated post-overdose · vent crisis'}:{title:'Room 12 — Mr. Adeyemi, 74M',sub:'Septic shock · norepinephrine running'};}
+function icu2Vitals(id){
+  if(id===14){const r=ICU2.r14;return [{l:'SpO2',v:r.spo2+'%',c:icu2VitClass('spo2',r.spo2)},{l:'HR',v:r.hr,c:icu2VitClass('hr',r.hr)},{l:'Peak P',v:r.airwayCleared?'OK':'HIGH',c:r.airwayCleared?'ok':'crit'}];}
+  const r=ICU2.r12;return [{l:'MAP',v:r.map,c:icu2VitClass('map',r.map)},{l:'HR',v:r.hr,c:icu2VitClass('hr',r.hr)},{l:'SpO2',v:r.spo2+'%',c:icu2VitClass('spo2',r.spo2)}];
+}
+function icu2KeyVitals(id){const v=icu2Vitals(id);return id===14?[v[0],v[2]]:[v[0],v[1]];}
+function icu2AlarmTxt(tag){return tag==='AIRWAY'?'🚨 VENT ALARM':tag==='SHOCK'?'⚠ PRESSOR UNSTABLE':tag==='STABLE'?'✓ STABLE':tag==='CODE'?'CODE BLUE':tag;}
+function icu2SecStaffTxt(id){
+  const t=ICU2.team,lines=[];
+  if(id===14){if(t.rt!=='idle')lines.push('RT: '+t.rt);if(t.charge==='done')lines.push('Charge: helping');}
+  else{if(t.charge!=='idle')lines.push('Charge: '+t.charge);}
+  if(t.float!=='idle')lines.push('Float RN: '+t.float);
+  if(t.cna!=='idle')lines.push('CNA: '+t.cna);
+  return lines.length?lines.join('<br>'):'No staff assigned here';
+}
+function icu2PrimaryHTML(id){
+  const info=icu2RoomInfo(id),m=icu2RoomMeta(id),vs=icu2Vitals(id);
+  return '<div class="icu2-phead"><div><div class="icu2-ptitle">'+info.title+'</div><div class="icu2-psub">'+info.sub+'</div></div><div class="icu2-rtag '+m.tagcls+'" id="icu2-pri-tag">'+m.tag+'</div></div>'+
+    '<div class="icu2-vits">'+vs.map((x,i)=>'<div class="icu2-vit"><div class="icu2-vl">'+x.l+'</div><div class="icu2-vv '+x.c+'" id="icu2-pri-v'+i+'">'+x.v+'</div></div>').join('')+'</div>'+
+    '<div class="icu2-status" id="icu2-pri-status">'+icu2RoomStatusTxt(id)+'</div>'+
+    '<div class="icu2-section-lbl">What do you do here, right now?</div>'+
+    '<div class="icu2-actions">'+icu2RoomActions(id)+'</div>'+
+    '<button class="icu2-deleg-btn" style="margin-top:12px;" onclick="icu2OpenDelegate()">Delegate to the team &rarr;</button>'+
+    '<div class="icu2-section-lbl">Team</div>'+icu2TeamHTML()+
+    icu2LogHTML();
+}
+function icu2SecondaryHTML(id){
+  const info=icu2RoomInfo(id),m=icu2RoomMeta(id),kv=icu2KeyVitals(id);
+  return '<div class="icu2-sec-swap">Other patient</div>'+
+    '<div><div class="icu2-sec-room">'+(id===14?'ROOM 14':'ROOM 12')+'</div><div class="icu2-sec-name">'+info.sub+'</div></div>'+
+    '<div class="icu2-sec-vits">'+kv.map((x,i)=>'<div class="icu2-sec-vit"><span class="icu2-sec-vl">'+x.l+'</span><span class="icu2-sec-vv '+x.c+'" id="icu2-sec-v'+i+'">'+x.v+'</span></div>').join('')+'</div>'+
+    '<div class="icu2-sec-alarm '+m.tagcls+'" id="icu2-sec-alarm">'+icu2AlarmTxt(m.tag)+'</div>'+
+    '<div class="icu2-sec-staff" id="icu2-sec-staff">'+icu2SecStaffTxt(id)+'</div>'+
+    '<div class="icu2-sec-tapcue">tap to switch focus →</div>';
 }
 function icu2RoomStatusTxt(id){
   if(id===14){const r=ICU2.r14;
@@ -3328,39 +3362,30 @@ function icu2RoomStatusTxt(id){
   if(r.escalated)return 'Intensivist escalated — orders coming.';
   return 'MAP 54 on max norepinephrine. Needs escalation, not solo titration.';
 }
-function icu2TeamHTML(){
+function icu2TeamRows(){
   const lbl={rt:'RT',charge:'Charge RN',cna:'CNA',float:'Float ICU RN'};
-  return '<div class="icu2-team">'+Object.keys(lbl).map(k=>'<div class="icu2-trole"><div class="icu2-tname">'+lbl[k]+'</div><div class="icu2-tstate '+ICU2.team[k]+'">'+ICU2.team[k]+'</div></div>').join('')+'</div>';
+  return Object.keys(lbl).map(k=>'<div class="icu2-trole"><div class="icu2-tname">'+lbl[k]+'</div><div class="icu2-tstate '+ICU2.team[k]+'">'+ICU2.team[k]+'</div></div>').join('');
 }
+function icu2TeamHTML(){return '<div class="icu2-team" id="icu2-teambox">'+icu2TeamRows()+'</div>';}
 function icu2LogHTML(){
   return '<div class="icu2-log" id="icu2-logbox">'+ICU2.log.map(l=>'<div class="icu2-logline '+l.cls+'"><span class="lt">'+l.t+'</span> '+l.txt+'</div>').join('')+'</div>';
 }
 function icu2Render(){
-  const body=document.getElementById('icu2-body');const foot=document.getElementById('icu2-foot');
   const dEl=document.getElementById('icu2-day');if(dEl)dEl.textContent='Day 8 · ICU · Night shift';
-  if(!body)return;
-  if(ICU2.view==='hub'){
-    body.innerHTML=
-      '<div class="icu2-hint">Two patients are crashing and you cannot be in both rooms. Decide where you go — and who you send where.</div>'+
-      '<div class="icu2-rooms">'+icu2RoomCardHTML(14)+icu2RoomCardHTML(12)+'</div>'+
-      '<div class="icu2-section-lbl">Your team</div>'+icu2TeamHTML()+
-      icu2LogHTML();
-    if(foot)foot.innerHTML='<button class="icu2-deleg-btn" onclick="icu2OpenDelegate()">Delegate to the team &rarr;</button>';
-  }else{
-    icu2RenderRoom(ICU2.view);
-  }
+  const pri=document.getElementById('icu2-primary'),sec=document.getElementById('icu2-secondary');
+  if(!pri||!sec)return;
+  const f=ICU2.focus,o=(f===14?12:14);
+  pri.innerHTML=icu2PrimaryHTML(f);
+  sec.innerHTML=icu2SecondaryHTML(o);
   icu2RenderLive();
 }
-function icu2RenderRoom(id){
-  const body=document.getElementById('icu2-body');const foot=document.getElementById('icu2-foot');
-  const acts=icu2RoomActions(id);
-  body.innerHTML=
-    '<button class="icu2-back" onclick="icu2BackToHub()">&larr; Back to both rooms</button>'+
-    icu2RoomCardHTML(id).replace('onclick="icu2EnterRoom('+id+')"','')+
-    '<div class="icu2-section-lbl">What do you do, personally, right now?</div>'+
-    '<div class="icu2-actions">'+acts+'</div>'+
-    icu2LogHTML();
-  if(foot)foot.innerHTML='<button class="icu2-deleg-btn" onclick="icu2OpenDelegate()">Delegate to the team &rarr;</button>';
+function icu2SwapFocus(){
+  if(ICU2.ended)return;
+  ICU2.focus=ICU2.focus===14?12:14;
+  const sp=document.getElementById('icu2-split');
+  if(sp){sp.classList.add('switching');setTimeout(()=>{const s=document.getElementById('icu2-split');if(s)s.classList.remove('switching');},260);}
+  SFX.init();if(SFX.chime)SFX.chime();if(SFX.stopMonitorLoop)SFX.stopMonitorLoop();if(SFX.startICULoop)setTimeout(()=>{if(!ICU2.ended)SFX.startICULoop();},120);
+  icu2Render();
 }
 function icu2RoomActions(id){
   const A=[];
@@ -3390,8 +3415,6 @@ function icu2PersonalAction(key){
   else if(key==='p_titrate12'||key==='p_solo12'||key==='p_solo14'){ICU2.soloMoves++;icu2Log('Trying to do it alone — the other room is losing time. This is the trap.','bad');if(SFX.tapWrong)SFX.tapWrong();}
   icu2Render();
 }
-function icu2EnterRoom(id){if(ICU2.ended)return;ICU2.view=id;SFX.init();if(SFX.chime)SFX.chime();icu2Render();}
-function icu2BackToHub(){ICU2.view='hub';icu2Render();}
 // ---- Delegation ----
 function icu2OpenDelegate(){
   const ov=document.getElementById('icu2-overlay');if(!ov)return;
@@ -3423,13 +3446,13 @@ function icu2Delegate(role,target){
   ICU2.team[role]='busy';
   const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');
   // resolve by target
-  if(target==='rt14'){icu2Log('RT dispatched to Room 14 for the airway.','good');icu2After(8,()=>{ICU2.team.rt='done';ICU2.r14.rtThere=true;icu2Log('RT at Room 14 — finds a mucus plug + tube-biting. Suctioning, re-sedating.','good');icu2RenderLive();});}
-  else if(target==='rt12'){icu2Log('RT sent to Room 12 — but RT cannot manage septic shock. Wasted.','bad');ICU2.soloMoves++;icu2After(10,()=>{ICU2.team.rt='idle';icu2Log('RT returns from Room 12 — nothing in their scope to do there.','warn');icu2RenderLive();});}
-  else if(target==='ch12'){icu2Log('Charge RN escalating Room 12 to the intensivist.','good');icu2After(14,()=>{ICU2.team.charge='done';ICU2.r12.escalated=true;ICU2.r12.pressor2=true;icu2Log('Intensivist adds vasopressin (2nd pressor) + fluid. Room 12 turning around.','good');icu2RenderLive();});}
-  else if(target==='ch14'){icu2Log('Charge RN to Room 14 — helps hold the airway but it is not their specialty.','warn');icu2After(12,()=>{ICU2.team.charge='done';ICU2.r14.suctioned=true;icu2Log('Charge bags Room 14 — buys time, but RT is still the right call.','warn');icu2RenderLive();});}
-  else if(target==='cn_v'){icu2Log('CNA repeating vitals in both rooms.','good');icu2After(8,()=>{ICU2.team.cna='done';icu2Log('CNA reports vitals — your picture is current.','good');icu2RenderLive();});}
+  if(target==='rt14'){icu2Log('RT dispatched to Room 14 for the airway.','good');icu2After(8,()=>{ICU2.team.rt='done';ICU2.r14.rtThere=true;icu2Log('RT at Room 14 — finds a mucus plug + tube-biting. Suctioning, re-sedating.','good');icu2Render();});}
+  else if(target==='rt12'){icu2Log('RT sent to Room 12 — but RT cannot manage septic shock. Wasted.','bad');ICU2.soloMoves++;icu2After(10,()=>{ICU2.team.rt='idle';icu2Log('RT returns from Room 12 — nothing in their scope to do there.','warn');icu2Render();});}
+  else if(target==='ch12'){icu2Log('Charge RN escalating Room 12 to the intensivist.','good');icu2After(14,()=>{ICU2.team.charge='done';ICU2.r12.escalated=true;ICU2.r12.pressor2=true;icu2Log('Intensivist adds vasopressin (2nd pressor) + fluid. Room 12 turning around.','good');icu2Render();});}
+  else if(target==='ch14'){icu2Log('Charge RN to Room 14 — helps hold the airway but it is not their specialty.','warn');icu2After(12,()=>{ICU2.team.charge='done';ICU2.r14.suctioned=true;icu2Log('Charge bags Room 14 — buys time, but RT is still the right call.','warn');icu2Render();});}
+  else if(target==='cn_v'){icu2Log('CNA repeating vitals in both rooms.','good');icu2After(8,()=>{ICU2.team.cna='done';icu2Log('CNA reports vitals — your picture is current.','good');icu2Render();});}
   else if(target==='cn_air'){ICU2.team.cna='idle';icu2Log('You cannot delegate airway management to a CNA — out of scope. Reassign.','bad');ICU2.soloMoves++;}
-  else if(target==='fl_med'){icu2Log('Float ICU RN preparing sedation + pressor.','good');icu2After(9,()=>{ICU2.team.float='done';icu2Log('Float RN: sedation and second pressor are prepped and ready.','good');icu2RenderLive();});}
+  else if(target==='fl_med'){icu2Log('Float ICU RN preparing sedation + pressor.','good');icu2After(9,()=>{ICU2.team.float='done';icu2Log('Float RN: sedation and second pressor are prepped and ready.','good');icu2Render();});}
   else if(target==='fl_chart'){ICU2.team.float='idle';icu2Log('Float RN sent to chart — a clinical nurse wasted during a double crash.','bad');ICU2.soloMoves++;}
   icu2Render();
 }
@@ -3438,16 +3461,18 @@ function icu2RenderLive(){
   if(c){c.textContent=icu2Clock();const left=ICU2.T0-ICU2.t;c.className='icu2-clock'+(left<60?' crit':left<150?' warn':'');}
   const bf=document.getElementById('icu2-barfill');
   if(bf){const pct=Math.max(0,100*(ICU2.T0-ICU2.t)/ICU2.T0);bf.style.width=pct+'%';bf.style.background=pct<25?'var(--alarm)':pct<45?'var(--amber)':'var(--teal)';}
-  // live vitals (hub or room view both show the affected card)
-  const set=(id,val,vc)=>{const el=document.getElementById(id);if(el){el.textContent=val;if(vc)el.className='icu2-vv '+vc;}};
-  set('icu2-r14-spo2',ICU2.r14.spo2+'%',icu2VitClass('spo2',ICU2.r14.spo2));
-  set('icu2-r14-hr',ICU2.r14.hr,icu2VitClass('hr',ICU2.r14.hr));
-  set('icu2-r14-peak',ICU2.r14.airwayCleared?'OK':'HIGH',ICU2.r14.airwayCleared?'ok':'crit');
-  set('icu2-r12-map',ICU2.r12.map,icu2VitClass('map',ICU2.r12.map));
-  set('icu2-r12-hr',ICU2.r12.hr,icu2VitClass('hr',ICU2.r12.hr));
-  set('icu2-r12-spo2',ICU2.r12.spo2+'%',icu2VitClass('spo2',ICU2.r12.spo2));
-  [14,12].forEach(id=>{const m=icu2RoomMeta(id);const card=document.getElementById('icu2-r'+id+'-card');if(card)card.className='icu2-room '+m.cls;const tag=document.getElementById('icu2-r'+id+'-tag');if(tag){tag.textContent=m.tag;tag.className='icu2-rtag '+m.tagcls;}const st=document.getElementById('icu2-r'+id+'-status');if(st)st.textContent=icu2RoomStatusTxt(id);});
-  // team states
+  const f=ICU2.focus,o=(f===14?12:14);
+  // PRIMARY (focused room)
+  icu2Vitals(f).forEach((x,i)=>{const el=document.getElementById('icu2-pri-v'+i);if(el){el.textContent=x.v;el.className='icu2-vv '+x.c;}});
+  const pm=icu2RoomMeta(f);const ptag=document.getElementById('icu2-pri-tag');if(ptag){ptag.textContent=pm.tag;ptag.className='icu2-rtag '+pm.tagcls;}
+  const ps=document.getElementById('icu2-pri-status');if(ps)ps.textContent=icu2RoomStatusTxt(f);
+  // SECONDARY (peripheral room)
+  icu2KeyVitals(o).forEach((x,i)=>{const el=document.getElementById('icu2-sec-v'+i);if(el){el.textContent=x.v;el.className='icu2-sec-vv '+x.c;}});
+  const sm=icu2RoomMeta(o);const secEl=document.getElementById('icu2-secondary');if(secEl)secEl.className='icu2-secondary '+sm.cls;
+  const sa=document.getElementById('icu2-sec-alarm');if(sa){sa.className='icu2-sec-alarm '+sm.tagcls;sa.textContent=icu2AlarmTxt(sm.tag);}
+  const sst=document.getElementById('icu2-sec-staff');if(sst)sst.innerHTML=icu2SecStaffTxt(o);
+  // team + log
+  const tb=document.getElementById('icu2-teambox');if(tb)tb.innerHTML=icu2TeamRows();
   const lb=document.getElementById('icu2-logbox');if(lb)lb.innerHTML=ICU2.log.map(l=>'<div class="icu2-logline '+l.cls+'"><span class="lt">'+l.t+'</span> '+l.txt+'</div>').join('');
 }
 function icu2End(){
