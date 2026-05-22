@@ -385,6 +385,66 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .esfooter{padding:10px 16px 24px;flex-shrink:0;}
 .btnnext{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;}
 .btnretry{width:100%;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;}
+/* === DAY 8 ICU2 (two-patient delegation) === */
+#scr-icu2{background:var(--ink);flex-direction:column;overflow:hidden;}
+.icu2-top{flex-shrink:0;padding:8px 12px 6px;border-bottom:1px solid var(--wire2);background:rgba(8,11,18,.96);}
+.icu2-toprow{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.icu2-day{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+.icu2-clock{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--teal);letter-spacing:.05em;}
+.icu2-clock.warn{color:var(--amber);}.icu2-clock.crit{color:var(--alarm);animation:icu2pulse 1s infinite;}
+@keyframes icu2pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+.icu2-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden;}
+.icu2-barfill{height:100%;background:var(--teal);transition:width .9s linear,background .4s;}
+.icu2-body{flex:1;overflow-y:auto;padding:10px 12px 14px;}
+.icu2-hint{font-family:var(--body);font-size:12px;color:var(--muted2);font-weight:300;line-height:1.5;margin-bottom:10px;}
+.icu2-rooms{display:flex;flex-direction:column;gap:10px;}
+.icu2-room{border:1px solid var(--wire2);border-radius:6px;padding:11px 12px;background:rgba(255,255,255,.03);cursor:pointer;transition:border-color .25s,background .25s;}
+.icu2-room.crit{border-color:rgba(217,64,64,.6);background:rgba(217,64,64,.06);}
+.icu2-room.warn{border-color:rgba(232,168,74,.5);}
+.icu2-room.stable{border-color:rgba(0,201,160,.5);background:rgba(0,201,160,.05);}
+.icu2-room.dead{border-color:#555;background:rgba(120,120,120,.08);opacity:.7;}
+.icu2-rhead{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px;}
+.icu2-rtitle{font-family:var(--serif);font-size:15px;font-weight:700;color:#fff;}
+.icu2-rsub{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;}
+.icu2-rtag{font-family:var(--mono);font-size:7px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:3px;white-space:nowrap;}
+.icu2-rtag.crit{background:rgba(217,64,64,.18);color:var(--alarm);}
+.icu2-rtag.warn{background:rgba(232,168,74,.18);color:var(--amber);}
+.icu2-rtag.stable{background:rgba(0,201,160,.18);color:var(--teal);}
+.icu2-rtag.dead{background:rgba(120,120,120,.2);color:#999;}
+.icu2-vits{display:flex;gap:6px;flex-wrap:wrap;}
+.icu2-vit{display:flex;flex-direction:column;align-items:center;padding:4px 9px;background:rgba(0,0,0,.3);border-radius:3px;min-width:46px;}
+.icu2-vl{font-family:var(--mono);font-size:6px;color:var(--muted);letter-spacing:.06em;}
+.icu2-vv{font-family:var(--mono);font-size:14px;font-weight:700;}
+.icu2-vv.ok{color:var(--teal);}.icu2-vv.warn{color:var(--amber);}.icu2-vv.crit{color:var(--alarm);}
+.icu2-status{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;margin-top:7px;line-height:1.45;}
+.icu2-section-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:14px 0 7px;}
+.icu2-actions{display:flex;flex-direction:column;gap:7px;}
+.icu2-act{text-align:left;padding:11px 12px;border-radius:5px;border:1px solid var(--wire2);background:rgba(255,255,255,.04);color:var(--text);font-family:var(--body);font-size:12.5px;cursor:pointer;line-height:1.4;transition:border-color .2s,background .2s;}
+.icu2-act:hover{border-color:var(--teal);}
+.icu2-act .ttl{font-weight:600;color:#fff;display:block;}
+.icu2-act .meta{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.05em;display:block;margin-top:3px;}
+.icu2-act.p1{border-color:rgba(0,201,160,.45);background:rgba(0,201,160,.07);}
+.icu2-act[disabled]{opacity:.4;cursor:default;pointer-events:none;}
+.icu2-act.done{border-color:rgba(0,201,160,.4);}
+.icu2-act.done .ttl{color:var(--teal);}
+.icu2-team{display:flex;flex-direction:column;gap:6px;}
+.icu2-trole{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;}
+.icu2-tname{flex-shrink:0;width:78px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;}
+.icu2-tstate{font-size:8px;padding:2px 6px;border-radius:3px;}
+.icu2-tstate.idle{background:rgba(255,255,255,.06);color:var(--muted);}
+.icu2-tstate.busy{background:rgba(232,168,74,.18);color:var(--amber);}
+.icu2-tstate.done{background:rgba(0,201,160,.18);color:var(--teal);}
+.icu2-log{margin-top:12px;border-top:1px solid var(--wire2);padding-top:8px;display:flex;flex-direction:column;gap:5px;max-height:120px;overflow-y:auto;}
+.icu2-logline{font-family:var(--mono);font-size:9px;line-height:1.4;color:var(--muted2);}
+.icu2-logline .lt{color:var(--muted);}
+.icu2-logline.good{color:var(--teal);}.icu2-logline.bad{color:var(--alarm);}.icu2-logline.warn{color:var(--amber);}
+.icu2-back{margin-bottom:10px;font-family:var(--mono);font-size:9px;color:var(--teal);background:none;border:none;cursor:pointer;letter-spacing:.06em;padding:2px 0;}
+.icu2-foot{flex-shrink:0;padding:8px 12px 16px;border-top:1px solid var(--wire2);}
+.icu2-deleg-btn{width:100%;padding:12px;background:rgba(0,201,160,.14);border:1px solid rgba(0,201,160,.5);color:var(--teal);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-radius:4px;}
+.icu2-overlay{position:absolute;inset:0;background:rgba(6,9,15,.97);z-index:60;display:none;flex-direction:column;padding:18px 16px;overflow-y:auto;}
+.icu2-overlay.on{display:flex;}
+.icu2-ov-title{font-family:var(--serif);font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
+.icu2-ov-sub{font-family:var(--body);font-size:12px;color:var(--muted2);font-weight:300;margin-bottom:14px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -579,6 +639,20 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
     <div class="ppbody" id="pp-body" style="overflow-y:auto;flex:1;"></div>
   </div>
 </div>
+<!-- DAY 8 ICU2 (two-patient delegation) -->
+<div id="scr-icu2" class="scr">
+  <div class="icu2-top">
+    <div class="icu2-toprow">
+      <div class="icu2-day" id="icu2-day">Day 8 · ICU · 05:12</div>
+      <div class="icu2-clock" id="icu2-clock">8:00</div>
+    </div>
+    <div class="icu2-bar"><div class="icu2-barfill" id="icu2-barfill" style="width:100%"></div></div>
+  </div>
+  <div class="icu2-body" id="icu2-body"></div>
+  <div class="icu2-foot" id="icu2-foot"></div>
+  <div class="icu2-overlay" id="icu2-overlay"></div>
+</div>
+
 <!-- ACTION -->
 <div id="scr-action" class="scr">
   <div class="acthdr"><div class="acthdrl">Make your decision</div><div class="acthdrt">What do you do first?</div></div>
@@ -1239,6 +1313,24 @@ SCENARIOS[4]={
   vitals:{spo2:{val:'93%',state:'warn'},hr:{val:'128',state:'crit'},rr:{val:'26',state:'crit'},bp:{val:'84/52',state:'crit'},temp:{val:'37.0C',state:'ok'},gcs:{val:'14',state:'warn'},uo:null,lac:null},
   iv:{main:{name:'No IV access',vol:'--',rate:'--',state:'crit',note:'Large bore IV needed -- urgent'}},
 };
+SCENARIOS[8]={
+  handoff:[
+    {delay:500,from:'Charge RN Okonkwo',txt:'It is 05:12. Two of yours are going off at the same time and I am pulled to a code in Room 6. You have <span class="hk">Room 12</span> and <span class="hk">Room 14</span>. I will be back as fast as I can.'},
+    {delay:2400,from:'Charge RN Okonkwo',txt:'<span class="hk">Room 12</span> -- Mr. Adeyemi, 74M. Septic shock from pneumonia. Norepinephrine running. His <span class="hk">MAP just dropped to 54</span>, BP 78/42. He is mottling.'},
+    {delay:4000,from:'Charge RN Okonkwo',txt:'<span class="hk">Room 14</span> -- Ms. Doyle, 51F. Intubated after an overdose. She is suddenly <span class="hk">agitated and biting the tube</span>. High peak-pressure alarm. <span class="hk">SpO2 78 and falling.</span>'},
+    {delay:5600,from:'You',txt:'Both at once. Okay -- who do I have to help?',you:true},
+    {delay:6800,from:'Charge RN Okonkwo',txt:'<span class="hk">RT is on the unit.</span> There is a <span class="hk">float ICU RN</span> you can grab, and a <span class="hk">CNA</span>. And me, once I am out of the code. You cannot do both rooms with two hands. <span class="hk">Use the team.</span>'},
+    {delay:8200,alert:true,txt:'Room 14 -- VENTILATOR HIGH PEAK PRESSURE -- SpO2 76% and falling'},
+  ],
+  taps:[],
+  patient:{name:'Two patients',age:'',dx:'ICU -- simultaneous deterioration',room:'Rooms 12 & 14'},
+  outcomeGood:{statDeltas:{judgment:14,confidence:12,communication:14,resilience:9,fatigue:10},
+    headline:'Two patients. You did not face them alone.',
+    story:'RT reached Room 14 and cleared the airway -- the biting and the mucus plug were dropping her sats. You sent the charge nurse to escalate Room 12 and the intensivist added a second pressor. Both patients held. The thing that saved them was not your hands -- it was how fast you put the right people in the right rooms.'},
+  outcomeBad:{statDeltas:{judgment:7,confidence:-3,communication:6,resilience:8,fatigue:16},
+    headline:'You tried to carry both. No one can.',
+    story:'You went room to room doing everything yourself. While you were titrating the pressor in 12, Room 14 desaturated into a code -- the airway was the emergency and it could not wait for you. The lesson is hard but it is the whole job in the ICU: the strongest nurse is not the one who does everything. It is the one who mobilizes the team in the first sixty seconds.'},
+};
 
 const SBAR_DATA={
   1:{doctor:'Dr. Okonkwo',role:'Responsible Medical Officer',phone:'ext. 4421',
@@ -1733,6 +1825,11 @@ const DAYS={
      handoffVitalsLabel:'Vitals on arrival -- ER',
      handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv ok">118/78</div></div><div><div class="vcl">HR</div><div class="vcv warn">96</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.4C</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div>',
      visual:{patientState:'stable',o2Saturation:99,skinFlush:0.3,diaphoresis:0.1,mottle:0,confusion:false,ecgChaos:0.05}},
+  8:{acts:()=>[], monitorTitle:'ICU -- Rooms 12 & 14', sfxLoop:'icu', chartKey:'chart_d8',
+     hudDay:'Day 8 ICU 05:12', hudPt:'Two patients', handoffSub:'Day 8 ICU Night Shift 05:12',
+     handoffVitalsLabel:'Two unstable patients -- last vitals',
+     handoffVitalsGrid:'<div><div class="vcl">12 BP</div><div class="vcv crit">78/42</div></div><div><div class="vcl">12 MAP</div><div class="vcv crit">54</div></div><div><div class="vcl">12 SpO2</div><div class="vcv warn">92%</div></div><div><div class="vcl">14 SpO2</div><div class="vcv crit">78%</div></div><div><div class="vcl">14 HR</div><div class="vcv crit">140</div></div><div><div class="vcl">14 Peak</div><div class="vcv crit">HIGH</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:92,skinFlush:0,diaphoresis:0.5,mottle:0.3,confusion:false,ecgChaos:0.3}, custom:'icu2'},
 };
 function DAY(){return DAYS[G.currentDay]||DAYS[1];}
 function getACTS(){const d=DAYS[G.currentDay];return d&&d.acts?d.acts():ACTS;}
@@ -2266,6 +2363,7 @@ function startHandoff(){
 }
 function clearDayTimers(){if(G._dayTimers){G._dayTimers.forEach(t=>clearTimeout(t));}G._dayTimers=[];}
 function gotoInvestigate(){
+  if(DAY().custom==='icu2'){return gotoICU2();}
   const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=DAY().hudDay;if(pe)pe.textContent=DAY().hudPt;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
   wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(DAY().sfxLoop==='icu')SFX.startICULoop();else SFX.startMonitorLoop();},700);
@@ -2962,6 +3060,7 @@ const HO2_ITEMS={
   5:['Patient: Mr. Park, 62M, Room 305 -- severe hypoglycemia, Type 2 DM','BGL 2.1 mmol/L on arrival -- D50W 50mL IV given, BGL now 6.8','GCS 10 on arrival -- improving, now GCS 14','Insulin Glargine withheld -- pending physician dose review','NPO until GCS 15 and safe swallow confirmed','Monitoring BGL q15min -- next check due','Dr. Abara notified -- reviewing insulin regimen at 06:00','Family educated -- insulin and meal timing explained','Aspiration precautions in place -- lateral positioning','Medication incident form to be completed -- missed meal + insulin given'],
   4:['Patient: Jamie Chen, 21F, ER Bay 2 -- anaphylaxis, bee sting','Epinephrine 0.3mg IM given outer thigh -- response observed','BP 84/52 on arrival -- trending up after epi and fluids','SpO2 93% on arrival -- improved on 15L NRB','Stridor and angioedema -- reducing. Airway trolley at bedside','IV access 16G x2 -- IV fluids 0.9% NaCl 1L running','Dr. Kowalski notified and on the way','Diphenhydramine and hydrocortisone given -- adjunct therapy','Biphasic reaction monitoring required -- observe minimum 4 hours','Family aware -- EpiPen prescription to be reviewed at discharge'],
   7:['Patient: Mr. Kowalski, 54M, ER Bay 6 -- right leg cellulitis, Penicillin allergy (anaphylaxis)','Amoxicillin order identified -- penicillin class, contraindicated. Medication held BEFORE administration','Allergy confirmed: RED wristband, MAR allergy flag, patient verbal confirmation','Discussed with Dr. Chen (ER Physician, ext. 2240) -- order changed to Clindamycin 600mg IV q8h','Cross-class allergy reference verified -- pharmacy consulted','Near-miss incident report filed -- ISMP Canada format','Charge nurse notified -- safety event documented','Vitals stable: HR 88, BP 132/84, SpO2 99%, Temp 37.8C','IV access patent 18G right antecubital -- Clindamycin starting next dose cycle','Patient educated -- penicillin class allergy, always disclose to all providers'],
+  8:['Room 14: Ms. Doyle, 51F -- intubated post-overdose, acute airway emergency this shift','Room 14: RT called immediately for high peak pressure + biting tube -- airway cleared, re-sedated','Room 14: SpO2 recovered after suction + sedation -- vent settings reviewed','Room 12: Mr. Adeyemi, 74M -- septic shock, norepinephrine running, MAP dropped to 54','Room 12: Charge RN + intensivist escalated -- second pressor (vasopressin) + fluid bolus added','Room 12: MAP recovering, repeat lactate ordered','Team mobilized early -- RT to airway, charge/MD to circulation, CNA repeat vitals, float RN med prep','Priority rationale documented: airway (Room 14) before circulation (Room 12)','Both patients stable at handover -- continuous monitoring, q15min vitals','Charge nurse aware of workload -- support continued into day shift'],
 };
 function buildHandoff2(){
   const items=HO2_ITEMS[G.currentDay]||HO2_ITEMS[1];G.handoffSel=[];
@@ -2982,7 +3081,8 @@ function buildEndShift(){
   const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
   const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'},6:{good:'She was not angry. She was scared. Naming the right emotion -- "scared," not "frustrated" -- is what changed the room. Moving toward her, not back, is what made her trust you. Words matter. Posture matters.',bad:'The assessment happened. The communication did not. When families feel unheard, they escalate -- not because they are difficult, but because they are terrified and no one has named it yet.'},
-7:{good:'You held the medication and spoke up before it reached the patient. That is the entire job. Medication safety is not about catching someone -- it is about the five seconds of doubt that saves a life. You had the doubt. You acted on it.',bad:'The wristband, the MAR, and the patient all said the same thing: stop. The order came from a physician. The responsibility to hold it came from you. Those two facts are not in conflict. They are the standard of care.'}};
+7:{good:'You held the medication and spoke up before it reached the patient. That is the entire job. Medication safety is not about catching someone -- it is about the five seconds of doubt that saves a life. You had the doubt. You acted on it.',bad:'The wristband, the MAR, and the patient all said the same thing: stop. The order came from a physician. The responsibility to hold it came from you. Those two facts are not in conflict. They are the standard of care.'},
+8:{good:'Airway beats circulation when both are failing at once -- Room 14 (SpO2 78, biting the tube) was the immediate threat and you put RT there fast. Then you escalated Room 12 instead of soloing it. Prioritize by what kills first, delegate by scope, escalate early.',bad:'Two crashing patients cannot be run by one nurse. The airway emergency in Room 14 could not wait while you worked Room 12. The skill is not speed of hands -- it is speed of mobilizing the team: RT to the airway, charge/MD to the pressor, you coordinating.'}};
   // References: always use current Canadian/North American sources (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC, CCS) (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC)
   const srcs={
     1:'ACCP CHEST Guidelines 2021 (VTE) / Wells PS, Lancet 1997 / CTS Venous Thromboembolism Management',
@@ -2991,7 +3091,8 @@ function buildEndShift(){
     4:'WAO Anaphylaxis Guidelines 2020 / CSACI Anaphylaxis Position Statement / Anaphylaxis Canada Clinical Resource',
     5:'Diabetes Canada Clinical Practice Guidelines 2023 / Cryer PE, NEJM 2013 / RNAO BPG: Diabetes Management',
     6:'RNAO BPG: Therapeutic Communication 2020 / CPI Non-Violent Crisis Intervention / CAMH Trauma-Informed Care / SSC 2021 Post-op Sepsis',
-    7:'ISMP Canada Medication Safety Guidelines / CNA Code of Ethics 2017 / RNAO BPG: Safe Medication Administration / Health Canada Drug Monograph: Amoxicillin / CRNBC Professional Standards'
+    7:'ISMP Canada Medication Safety Guidelines / CNA Code of Ethics 2017 / RNAO BPG: Safe Medication Administration / Health Canada Drug Monograph: Amoxicillin / CRNBC Professional Standards',
+    8:'CACCN Standards for Critical Care Nursing / CCCS Canadian Critical Care Guidelines / CNA-CCCN Delegation & Assignment Framework / RNAO BPG: Care Transitions / Surviving Sepsis Campaign 2021'
   };
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
@@ -3005,6 +3106,7 @@ const END_MSGS={
   2:{good:["qSOFA 3/3, MAP under 65 -- you recognised septic shock and you started the bundle. Blood cultures first, then antibiotics. The order matters.","You initiated resuscitation before the physician arrived. That is nursing.","The 1-hour bundle runs in parallel. You understood that under pressure. That is clinical judgment."],bad:["Sepsis is one of the hardest clinical pictures to act on decisively. Come back.","Cultures before antibiotics. Two minutes. You know now why it matters.","Today you learned what the bundle looks like. Come back and run it."]},
   3:{good:["The vitals looked normal. The trend was not. You read the trend. That is the skill that takes most nurses months to build -- and you found it on Day 3.","You held the morphine. Assessment before medication -- one of the hardest calls in nursing. You made it correctly.","Shoulder tip pain. Distension. A tripling drain. Each alone has an explanation. Together they told a story. You listened."],bad:["Trending vitals are more important than a single value. HR 88 to 98 over 6 hours is what you are looking for next time.","Assessment before medication. Always. The order was valid. The morphine was not appropriate. Those are two different things.","Post-operative haemorrhage hides in plain sight. Normal numbers, wrong direction. You have seen it now. You will not miss it again."]},
   7:{good:["You caught it before it reached him. Red wristband, MAR, patient verbal -- three sources said the same thing, and you listened to all three. That is medication safety working exactly as it should.","The physician wrote the order. You held the medication. Both of those things are true, and neither one is wrong. Professional accountability lives in the space between them. You stood in that space today.","You said something. That is not always easy. It is always right."],bad:["Three sources of allergy documentation. One order that ignored them. The safeguard is you -- not the system, not the chart. You. Come back.","A RED wristband is not a suggestion. It is the last line of protection before a preventable anaphylaxis. You know what it means now. Come back.","Knowing something is wrong and acting on it are two different skills. You have the first one. Come back and build the second."]},
+  8:{good:["Two patients crashing and you did not freeze. You put RT on the airway, sent the charge nurse to escalate the pressor, and kept yourself free to coordinate. That is ICU thinking.","Airway first. You saw that Room 14 could not wait and you acted on it. Prioritization under pressure is the hardest skill in critical care -- and you used it tonight.","You asked for help in the first minute. New nurses think that is weakness. It is the opposite. It is exactly what kept both of them alive."],bad:["No one can run two crashing patients alone -- not you, not the most senior nurse on the unit. The lesson is not to be faster. It is to call the team sooner. Come back.","The airway in Room 14 was the emergency that could not wait. Next shift you will hear it first. Come back and run it again.","You carried too much by yourself tonight. That instinct to protect everyone comes from a good place -- but in the ICU it has to become: who do I send where, right now. Come back."]},
 };
 const END_SUBS={good:["Go home. You earned it.","That shift is done. You are not the same nurse who started it.","Rest well. Come back tomorrow."],bad:["Come back. It will be different next time.","One step further than yesterday. Always.","Rest. Then come back."]};
 function getEndMsg(day,outcome){const pool=(END_MSGS[day]||END_MSGS[1])[outcome==='good'?'good':'bad'];const msg=pool[Math.floor(Math.random()*pool.length)];const sub=END_SUBS[outcome==='good'?'good':'bad'][Math.floor(Math.random()*END_SUBS.good.length)];return {msg,sub};}
@@ -3115,6 +3217,258 @@ function gotoVacation(){
   wipeGo(()=>showScreen('vacation'));
 }
 function returnFromVacation(){wipeGo(gotoCalendar);}
+
+// =====================================================================
+// === DAY 8 — ICU TWO-PATIENT DELEGATION ENGINE =======================
+// =====================================================================
+const ICU2={
+  T0:480, t:0, iv:null, view:'hub', ended:false,
+  log:[], _to:[], soloMoves:0, delegatedEarly:false,
+  team:{rt:'idle',charge:'idle',cna:'idle',float:'idle'},
+  r12:{escalated:false,pressor2:false,fluid:false,map:54,hr:132,spo2:92,stable:false,dead:false},
+  r14:{rtThere:false,suctioned:false,sedated:false,airwayCleared:false,spo2:78,hr:140,stable:false,dead:false},
+};
+function icu2Reset(){
+  ICU2.t=0;ICU2.view='hub';ICU2.ended=false;ICU2.log=[];ICU2.soloMoves=0;ICU2.delegatedEarly=false;
+  ICU2._to.forEach(t=>clearTimeout(t));ICU2._to=[];
+  ICU2.team={rt:'idle',charge:'idle',cna:'idle',float:'idle'};
+  ICU2.r12={escalated:false,pressor2:false,fluid:false,map:54,hr:132,spo2:92,stable:false,dead:false};
+  ICU2.r14={rtThere:false,suctioned:false,sedated:false,airwayCleared:false,spo2:78,hr:140,stable:false,dead:false};
+}
+function icu2After(sec,fn){const h=setTimeout(()=>{if(!ICU2.ended)fn();},sec*1000);ICU2._to.push(h);}
+function icu2Log(txt,cls){ICU2.log.unshift({t:icu2Clock(),txt:txt,cls:cls||''});if(ICU2.log.length>14)ICU2.log.pop();}
+function icu2Clock(){const r=Math.max(0,ICU2.T0-ICU2.t);return Math.floor(r/60)+':'+(r%60<10?'0':'')+(r%60);}
+function gotoICU2(){
+  icu2Reset();
+  icu2Log('05:12 — two patients deteriorating at once. You are one nurse. Use the team.','warn');
+  wipeGo(()=>{showScreen('icu2');icu2Render();
+    if(ICU2.iv)clearInterval(ICU2.iv);
+    ICU2.iv=setInterval(icu2Tick,1000);
+    SFX.init();if(SFX.startICULoop)SFX.startICULoop();
+  });
+}
+function icu2Stop(){if(ICU2.iv){clearInterval(ICU2.iv);ICU2.iv=null;}ICU2._to.forEach(t=>clearTimeout(t));ICU2._to=[];if(SFX.stopMonitorLoop)SFX.stopMonitorLoop();}
+function icu2Tick(){
+  if(ICU2.ended)return;
+  ICU2.t++;
+  const a=ICU2.r14,b=ICU2.r12;
+  // ROOM 14 — airway emergency (the immediate life threat)
+  if(!a.airwayCleared&&!a.dead){
+    const helped=a.rtThere||a.suctioned;
+    if(helped){
+      a.spo2=Math.min(97,a.spo2+3);a.hr=Math.max(96,a.hr-3);
+      if(a.spo2>=94&&(a.rtThere||a.sedated)){a.airwayCleared=true;a.stable=true;icu2Log('Room 14 — airway cleared, SpO2 recovering. Patient stable.','good');SFX.init();if(SFX.resolve)SFX.resolve();}
+    }else{
+      a.spo2=Math.max(40,a.spo2-1);
+      if(a.spo2<=72&&a.spo2>50&&ICU2.t%4===0)icu2Log('Room 14 — SpO2 '+a.spo2+'%, desaturating. Airway not addressed.','bad');
+      if(a.spo2<=50){a.dead=true;icu2Log('Room 14 — SpO2 critical. Patient arrested. CODE BLUE.','bad');SFX.init();if(SFX.codeBlueAlarm)SFX.codeBlueAlarm();return icu2End();}
+    }
+  }
+  // ROOM 12 — septic shock on pressors (needs escalation, slower clock)
+  if(!b.stable&&!b.dead){
+    if(b.escalated&&(b.pressor2||b.fluid)){
+      b.map=Math.min(70,b.map+1);
+      if(b.map>=65){b.stable=true;icu2Log('Room 12 — MAP ≥65 with second agent + fluid. Patient stable.','good');SFX.init();if(SFX.resolve)SFX.resolve();}
+    }else{
+      if(ICU2.t%6===0)b.map=Math.max(38,b.map-1);
+      if(b.map<=42){b.dead=true;icu2Log('Room 12 — refractory shock, cardiac arrest.','bad');SFX.init();if(SFX.codeBlueAlarm)SFX.codeBlueAlarm();return icu2End();}
+    }
+  }
+  if(a.stable&&b.stable){return icu2End();}
+  if(ICU2.t>=ICU2.T0){icu2Log('07:00 — day shift arriving. Time is up.','warn');return icu2End();}
+  icu2RenderLive();
+}
+function icu2VitClass(metric,v){
+  if(metric==='spo2')return v<85?'crit':v<92?'warn':'ok';
+  if(metric==='map')return v<60?'crit':v<65?'warn':'ok';
+  if(metric==='hr')return v>130?'crit':v>110?'warn':'ok';
+  return 'ok';
+}
+function icu2RoomMeta(id){
+  const r=id===14?ICU2.r14:ICU2.r12;
+  if(r.dead)return{cls:'dead',tag:'CODE',tagcls:'dead'};
+  if(r.stable)return{cls:'stable',tag:'STABLE',tagcls:'stable'};
+  if(id===14)return{cls:'crit',tag:'AIRWAY',tagcls:'crit'};
+  return{cls:(ICU2.r12.map<60?'crit':'warn'),tag:'SHOCK',tagcls:(ICU2.r12.map<60?'crit':'warn')};
+}
+function icu2RoomCardHTML(id){
+  const m=icu2RoomMeta(id);
+  if(id===14){
+    const r=ICU2.r14;
+    return '<div class="icu2-room '+m.cls+'" id="icu2-r14-card" onclick="icu2EnterRoom(14)">'+
+      '<div class="icu2-rhead"><div><div class="icu2-rtitle">Room 14 — Ms. Doyle, 51F</div><div class="icu2-rsub">Intubated post-overdose · vent crisis</div></div><div class="icu2-rtag '+m.tagcls+'" id="icu2-r14-tag">'+m.tag+'</div></div>'+
+      '<div class="icu2-vits">'+
+        '<div class="icu2-vit"><div class="icu2-vl">SpO2</div><div class="icu2-vv '+icu2VitClass('spo2',r.spo2)+'" id="icu2-r14-spo2">'+r.spo2+'%</div></div>'+
+        '<div class="icu2-vit"><div class="icu2-vl">HR</div><div class="icu2-vv '+icu2VitClass('hr',r.hr)+'" id="icu2-r14-hr">'+r.hr+'</div></div>'+
+        '<div class="icu2-vit"><div class="icu2-vl">Peak P</div><div class="icu2-vv crit" id="icu2-r14-peak">'+(r.airwayCleared?'OK':'HIGH')+'</div></div>'+
+      '</div>'+
+      '<div class="icu2-status" id="icu2-r14-status">'+icu2RoomStatusTxt(14)+'</div></div>';
+  }
+  const r=ICU2.r12;
+  return '<div class="icu2-room '+m.cls+'" id="icu2-r12-card" onclick="icu2EnterRoom(12)">'+
+    '<div class="icu2-rhead"><div><div class="icu2-rtitle">Room 12 — Mr. Adeyemi, 74M</div><div class="icu2-rsub">Septic shock · norepinephrine running</div></div><div class="icu2-rtag '+m.tagcls+'" id="icu2-r12-tag">'+m.tag+'</div></div>'+
+    '<div class="icu2-vits">'+
+      '<div class="icu2-vit"><div class="icu2-vl">MAP</div><div class="icu2-vv '+icu2VitClass('map',r.map)+'" id="icu2-r12-map">'+r.map+'</div></div>'+
+      '<div class="icu2-vit"><div class="icu2-vl">HR</div><div class="icu2-vv '+icu2VitClass('hr',r.hr)+'" id="icu2-r12-hr">'+r.hr+'</div></div>'+
+      '<div class="icu2-vit"><div class="icu2-vl">SpO2</div><div class="icu2-vv '+icu2VitClass('spo2',r.spo2)+'" id="icu2-r12-spo2">'+r.spo2+'%</div></div>'+
+    '</div>'+
+    '<div class="icu2-status" id="icu2-r12-status">'+icu2RoomStatusTxt(12)+'</div></div>';
+}
+function icu2RoomStatusTxt(id){
+  if(id===14){const r=ICU2.r14;
+    if(r.dead)return 'Arrested — code in progress.';
+    if(r.stable)return 'Airway cleared. Sedated. Vent synchronised.';
+    if(r.rtThere)return 'RT at bedside managing the airway.';
+    if(r.suctioned)return 'You suctioned + are bagging — holding for now. Needs definitive help.';
+    return 'Biting the tube, high peak pressure, SpO2 falling. This is the airway emergency.';
+  }
+  const r=ICU2.r12;
+  if(r.dead)return 'Arrested — refractory shock.';
+  if(r.stable)return 'Second pressor + fluid running. MAP holding.';
+  if(r.escalated)return 'Intensivist escalated — orders coming.';
+  return 'MAP 54 on max norepinephrine. Needs escalation, not solo titration.';
+}
+function icu2TeamHTML(){
+  const lbl={rt:'RT',charge:'Charge RN',cna:'CNA',float:'Float ICU RN'};
+  return '<div class="icu2-team">'+Object.keys(lbl).map(k=>'<div class="icu2-trole"><div class="icu2-tname">'+lbl[k]+'</div><div class="icu2-tstate '+ICU2.team[k]+'">'+ICU2.team[k]+'</div></div>').join('')+'</div>';
+}
+function icu2LogHTML(){
+  return '<div class="icu2-log" id="icu2-logbox">'+ICU2.log.map(l=>'<div class="icu2-logline '+l.cls+'"><span class="lt">'+l.t+'</span> '+l.txt+'</div>').join('')+'</div>';
+}
+function icu2Render(){
+  const body=document.getElementById('icu2-body');const foot=document.getElementById('icu2-foot');
+  const dEl=document.getElementById('icu2-day');if(dEl)dEl.textContent='Day 8 · ICU · Night shift';
+  if(!body)return;
+  if(ICU2.view==='hub'){
+    body.innerHTML=
+      '<div class="icu2-hint">Two patients are crashing and you cannot be in both rooms. Decide where you go — and who you send where.</div>'+
+      '<div class="icu2-rooms">'+icu2RoomCardHTML(14)+icu2RoomCardHTML(12)+'</div>'+
+      '<div class="icu2-section-lbl">Your team</div>'+icu2TeamHTML()+
+      icu2LogHTML();
+    if(foot)foot.innerHTML='<button class="icu2-deleg-btn" onclick="icu2OpenDelegate()">Delegate to the team &rarr;</button>';
+  }else{
+    icu2RenderRoom(ICU2.view);
+  }
+  icu2RenderLive();
+}
+function icu2RenderRoom(id){
+  const body=document.getElementById('icu2-body');const foot=document.getElementById('icu2-foot');
+  const acts=icu2RoomActions(id);
+  body.innerHTML=
+    '<button class="icu2-back" onclick="icu2BackToHub()">&larr; Back to both rooms</button>'+
+    icu2RoomCardHTML(id).replace('onclick="icu2EnterRoom('+id+')"','')+
+    '<div class="icu2-section-lbl">What do you do, personally, right now?</div>'+
+    '<div class="icu2-actions">'+acts+'</div>'+
+    icu2LogHTML();
+  if(foot)foot.innerHTML='<button class="icu2-deleg-btn" onclick="icu2OpenDelegate()">Delegate to the team &rarr;</button>';
+}
+function icu2RoomActions(id){
+  const A=[];
+  if(id===14){
+    const r=ICU2.r14;
+    A.push(icu2ActBtn('p_suction14',r.suctioned?'Suctioning + bagging — airway held':'Suction + bag-mask now','You stabilise the airway yourself — buys time until definitive help',r.suctioned||r.airwayCleared,true));
+    A.push(icu2ActBtn('p_sed14',r.sedated?'Sedation bolus given':'Give sedation bolus (stop the biting)',ICU2.team.float==='done'||r.sedated?'Sedation prepared — safe to give':'Needs meds prepped — assign Float RN first',r.sedated||r.airwayCleared,ICU2.team.float==='done'));
+    A.push(icu2ActBtn('p_solo12','Leave 14 and handle Room 12 yourself','Room 14 is the airway emergency — leaving it now is dangerous',false,false,'warn'));
+  }else{
+    const r=ICU2.r12;
+    A.push(icu2ActBtn('p_fluid12',r.fluid?'Fluid bolus running':'Start fluid bolus','Supports MAP — adjunct while escalation happens',r.fluid||r.stable,true));
+    A.push(icu2ActBtn('p_titrate12','Titrate norepinephrine yourself','Already near max — a second agent needs a physician order',false,false,'warn'));
+    A.push(icu2ActBtn('p_solo14','Leave 12 and run Room 14 alone too','You cannot personally cover both crashing rooms',false,false,'warn'));
+  }
+  return A.join('');
+}
+function icu2ActBtn(key,ttl,meta,done,enabled,tone){
+  const cls='icu2-act'+(tone==='warn'?'':' ')+(done?' done':'')+(tone==='p1'?' p1':'');
+  const dis=(done||enabled===false)?' disabled':'';
+  return '<button class="'+cls+'"'+dis+' onclick="icu2PersonalAction(\''+key+'\')"><span class="ttl">'+ttl+'</span><span class="meta">'+meta+'</span></button>';
+}
+function icu2PersonalAction(key){
+  if(ICU2.ended)return;SFX.init();
+  if(key==='p_suction14'){ICU2.r14.suctioned=true;icu2Log('You suction Room 14 and bag-mask — SpO2 starting to hold. Get definitive help.','warn');if(SFX.o2Flow)SFX.o2Flow();}
+  else if(key==='p_sed14'){if(ICU2.team.float!=='done'){icu2Log('No sedation prepared yet — assign the Float RN to prep meds first.','bad');}else{ICU2.r14.sedated=true;icu2Log('Sedation bolus given — she stops biting the tube.','good');}}
+  else if(key==='p_fluid12'){ICU2.r12.fluid=true;icu2Log('Fluid bolus started in Room 12 — adjunct support while you escalate.','warn');if(SFX.o2Flow)SFX.o2Flow();}
+  else if(key==='p_titrate12'||key==='p_solo12'||key==='p_solo14'){ICU2.soloMoves++;icu2Log('Trying to do it alone — the other room is losing time. This is the trap.','bad');if(SFX.tapWrong)SFX.tapWrong();}
+  icu2Render();
+}
+function icu2EnterRoom(id){if(ICU2.ended)return;ICU2.view=id;SFX.init();if(SFX.chime)SFX.chime();icu2Render();}
+function icu2BackToHub(){ICU2.view='hub';icu2Render();}
+// ---- Delegation ----
+function icu2OpenDelegate(){
+  const ov=document.getElementById('icu2-overlay');if(!ov)return;
+  const rows=[
+    {role:'rt',name:'Respiratory Therapist',opts:[
+      {t:'rt14',ttl:'Send RT to Room 14 — airway / vent',meta:'Scope: airway. The right call for the desaturating tube.',ok:true},
+      {t:'rt12',ttl:'Send RT to Room 12 — septic shock',meta:'RT does not manage pressors — wrong scope.',ok:false}]},
+    {role:'charge',name:'Charge RN',opts:[
+      {t:'ch12',ttl:'Charge → escalate Room 12 to intensivist',meta:'Gets MD + a second pressor order + extra hands.',ok:true},
+      {t:'ch14',ttl:'Charge → take over Room 14 airway',meta:'Charge can help but cannot manage the vent like RT.',ok:'meh'}]},
+    {role:'cna',name:'CNA / HCA',opts:[
+      {t:'cn_v',ttl:'CNA → repeat vitals both rooms',meta:'In scope. Frees you, gives live numbers.',ok:true},
+      {t:'cn_air',ttl:'CNA → manage Room 14 airway',meta:'Out of scope — unsafe delegation.',ok:false}]},
+    {role:'float',name:'Float ICU RN',opts:[
+      {t:'fl_med',ttl:'Float RN → prep meds (sedation + pressor)',meta:'Enables sedation for 14 and second pressor for 12.',ok:true},
+      {t:'fl_chart',ttl:'Float RN → sit and chart the shift',meta:'Wastes a clinical RN during a double crash.',ok:false}]},
+  ];
+  ov.innerHTML='<div class="icu2-ov-title">Delegate to the team</div><div class="icu2-ov-sub">Right person, right task, right scope. Wrong-scope delegation is unsafe and costs you trust.</div>'+
+    rows.map(r=>'<div class="icu2-section-lbl">'+r.name+' &middot; '+ICU2.team[r.role]+'</div><div class="icu2-actions">'+
+      r.opts.map(o=>'<button class="icu2-act'+(ICU2.team[r.role]!=='idle'?' done':'')+'"'+(ICU2.team[r.role]!=='idle'?' disabled':'')+' onclick="icu2Delegate(\''+r.role+'\',\''+o.t+'\')"><span class="ttl">'+o.ttl+'</span><span class="meta">'+o.meta+'</span></button>').join('')+'</div>').join('')+
+    '<button class="icu2-back" style="margin-top:14px;" onclick="icu2CloseDelegate()">&larr; Close</button>';
+  ov.classList.add('on');
+}
+function icu2CloseDelegate(){const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');icu2Render();}
+function icu2Delegate(role,target){
+  if(ICU2.ended)return;SFX.init();
+  if(ICU2.team[role]!=='idle'){return;}
+  if(ICU2.t<=60)ICU2.delegatedEarly=true;
+  ICU2.team[role]='busy';
+  const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');
+  // resolve by target
+  if(target==='rt14'){icu2Log('RT dispatched to Room 14 for the airway.','good');icu2After(8,()=>{ICU2.team.rt='done';ICU2.r14.rtThere=true;icu2Log('RT at Room 14 — finds a mucus plug + tube-biting. Suctioning, re-sedating.','good');icu2RenderLive();});}
+  else if(target==='rt12'){icu2Log('RT sent to Room 12 — but RT cannot manage septic shock. Wasted.','bad');ICU2.soloMoves++;icu2After(10,()=>{ICU2.team.rt='idle';icu2Log('RT returns from Room 12 — nothing in their scope to do there.','warn');icu2RenderLive();});}
+  else if(target==='ch12'){icu2Log('Charge RN escalating Room 12 to the intensivist.','good');icu2After(14,()=>{ICU2.team.charge='done';ICU2.r12.escalated=true;ICU2.r12.pressor2=true;icu2Log('Intensivist adds vasopressin (2nd pressor) + fluid. Room 12 turning around.','good');icu2RenderLive();});}
+  else if(target==='ch14'){icu2Log('Charge RN to Room 14 — helps hold the airway but it is not their specialty.','warn');icu2After(12,()=>{ICU2.team.charge='done';ICU2.r14.suctioned=true;icu2Log('Charge bags Room 14 — buys time, but RT is still the right call.','warn');icu2RenderLive();});}
+  else if(target==='cn_v'){icu2Log('CNA repeating vitals in both rooms.','good');icu2After(8,()=>{ICU2.team.cna='done';icu2Log('CNA reports vitals — your picture is current.','good');icu2RenderLive();});}
+  else if(target==='cn_air'){ICU2.team.cna='idle';icu2Log('You cannot delegate airway management to a CNA — out of scope. Reassign.','bad');ICU2.soloMoves++;}
+  else if(target==='fl_med'){icu2Log('Float ICU RN preparing sedation + pressor.','good');icu2After(9,()=>{ICU2.team.float='done';icu2Log('Float RN: sedation and second pressor are prepped and ready.','good');icu2RenderLive();});}
+  else if(target==='fl_chart'){ICU2.team.float='idle';icu2Log('Float RN sent to chart — a clinical nurse wasted during a double crash.','bad');ICU2.soloMoves++;}
+  icu2Render();
+}
+function icu2RenderLive(){
+  const c=document.getElementById('icu2-clock');
+  if(c){c.textContent=icu2Clock();const left=ICU2.T0-ICU2.t;c.className='icu2-clock'+(left<60?' crit':left<150?' warn':'');}
+  const bf=document.getElementById('icu2-barfill');
+  if(bf){const pct=Math.max(0,100*(ICU2.T0-ICU2.t)/ICU2.T0);bf.style.width=pct+'%';bf.style.background=pct<25?'var(--alarm)':pct<45?'var(--amber)':'var(--teal)';}
+  // live vitals (hub or room view both show the affected card)
+  const set=(id,val,vc)=>{const el=document.getElementById(id);if(el){el.textContent=val;if(vc)el.className='icu2-vv '+vc;}};
+  set('icu2-r14-spo2',ICU2.r14.spo2+'%',icu2VitClass('spo2',ICU2.r14.spo2));
+  set('icu2-r14-hr',ICU2.r14.hr,icu2VitClass('hr',ICU2.r14.hr));
+  set('icu2-r14-peak',ICU2.r14.airwayCleared?'OK':'HIGH',ICU2.r14.airwayCleared?'ok':'crit');
+  set('icu2-r12-map',ICU2.r12.map,icu2VitClass('map',ICU2.r12.map));
+  set('icu2-r12-hr',ICU2.r12.hr,icu2VitClass('hr',ICU2.r12.hr));
+  set('icu2-r12-spo2',ICU2.r12.spo2+'%',icu2VitClass('spo2',ICU2.r12.spo2));
+  [14,12].forEach(id=>{const m=icu2RoomMeta(id);const card=document.getElementById('icu2-r'+id+'-card');if(card)card.className='icu2-room '+m.cls;const tag=document.getElementById('icu2-r'+id+'-tag');if(tag){tag.textContent=m.tag;tag.className='icu2-rtag '+m.tagcls;}const st=document.getElementById('icu2-r'+id+'-status');if(st)st.textContent=icu2RoomStatusTxt(id);});
+  // team states
+  const lb=document.getElementById('icu2-logbox');if(lb)lb.innerHTML=ICU2.log.map(l=>'<div class="icu2-logline '+l.cls+'"><span class="lt">'+l.t+'</span> '+l.txt+'</div>').join('');
+}
+function icu2End(){
+  if(ICU2.ended)return;ICU2.ended=true;icu2Stop();
+  const both=ICU2.r14.stable&&ICU2.r12.stable;
+  const good=both&&ICU2.soloMoves<=1;
+  G.outcome=good?'good':'bad';
+  G.clues=[];G.actionsTaken=[];
+  const ov=document.getElementById('icu2-overlay');
+  if(ov){
+    const r14=ICU2.r14,r12=ICU2.r12;
+    const line=(lab,r)=>{const ok=r.stable;const dead=r.dead;return '<div class="icu2-logline '+(dead?'bad':ok?'good':'warn')+'" style="font-size:11px;">'+lab+': '+(dead?'CODE / lost':ok?'stabilised':'unstable at handover')+'</div>';};
+    ov.innerHTML='<div class="icu2-ov-title">'+(good?'Both rooms held.':'A hard shift.')+'</div>'+
+      '<div class="icu2-ov-sub">'+(good?'You put the right people in the right rooms fast — airway to RT, circulation to the charge/MD, and you coordinated.':'Two crashing patients cannot be run by one person. The airway in Room 14 was the threat that could not wait.')+'</div>'+
+      line('Room 14 (airway)',r14)+line('Room 12 (shock)',r12)+
+      '<button class="icu2-deleg-btn" style="margin-top:18px;" onclick="icu2Finish()">Continue to handover &rarr;</button>';
+    ov.classList.add('on');
+  }
+  SFX.init();if(good){if(SFX.resolve)SFX.resolve();}else{if(SFX.flatline)SFX.flatline();}
+}
+function icu2Finish(){const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
 function closeHudConfirm(){const el=document.getElementById('hud-confirm');if(el)el.remove();}
 function showHudConfirm(title,msg,confirmLabel,onConfirm){const old=document.getElementById('hud-confirm');if(old)old.remove();const overlay=document.createElement('div');overlay.id='hud-confirm';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;';const box=document.createElement('div');box.style.cssText='background:var(--ink2);border:1px solid var(--wire2);padding:20px 18px;max-width:280px;width:90%;';box.innerHTML='<div style="font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">'+title+'</div><div style="font-family:var(--body);font-size:13px;color:var(--muted2);font-weight:300;line-height:1.6;margin-bottom:16px;">'+msg+'</div><div style="display:flex;gap:8px;"><button id="hud-confirm-yes" style="flex:1;padding:11px;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;border:none;cursor:pointer;text-transform:uppercase;">'+confirmLabel+'</button><button onclick="closeHudConfirm()" style="flex:1;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;">Cancel</button></div>';overlay.appendChild(box);document.getElementById('app').appendChild(overlay);document.getElementById('hud-confirm-yes').onclick=()=>{overlay.remove();onConfirm();};}
 
