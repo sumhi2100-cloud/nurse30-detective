@@ -385,6 +385,86 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .esfooter{padding:10px 16px 24px;flex-shrink:0;}
 .btnnext{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;}
 .btnretry{width:100%;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;}
+/* === DAY 8 ICU2 (two-patient delegation) === */
+#scr-icu2{background:var(--ink);flex-direction:column;overflow:hidden;}
+.icu2-top{flex-shrink:0;padding:8px 12px 6px;border-bottom:1px solid var(--wire2);background:rgba(8,11,18,.96);}
+.icu2-toprow{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.icu2-day{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;}
+.icu2-clock{font-family:var(--mono);font-size:15px;font-weight:700;color:var(--teal);letter-spacing:.05em;}
+.icu2-clock.warn{color:var(--amber);}.icu2-clock.crit{color:var(--alarm);animation:icu2pulse 1s infinite;}
+@keyframes icu2pulse{0%,100%{opacity:1;}50%{opacity:.45;}}
+.icu2-bar{height:4px;border-radius:2px;background:rgba(255,255,255,.08);margin-top:6px;overflow:hidden;}
+.icu2-barfill{height:100%;background:var(--teal);transition:width .9s linear,background .4s;}
+/* asymmetric 70/30 split — divided attention */
+.icu2-split{flex:1;display:flex;min-height:0;overflow:hidden;}
+.icu2-primary{flex:0 0 68%;overflow-y:auto;padding:10px 11px 16px;transition:filter .25s,opacity .25s;border-right:1px solid var(--wire2);}
+.icu2-secondary{flex:1;min-width:0;overflow-y:auto;padding:9px 8px 14px;cursor:pointer;background:rgba(0,0,0,.28);position:relative;transition:background .3s,box-shadow .3s;display:flex;flex-direction:column;gap:7px;}
+.icu2-split.switching .icu2-primary{filter:blur(3px);opacity:.45;}
+.icu2-split.switching .icu2-secondary{filter:blur(2px);opacity:.5;}
+/* secondary peripheral-stress states */
+.icu2-secondary.crit{box-shadow:inset 0 0 0 2px rgba(217,64,64,.7);animation:icu2flash 1.1s infinite;}
+.icu2-secondary.warn{box-shadow:inset 0 0 0 1px rgba(232,168,74,.6);}
+.icu2-secondary.stable{box-shadow:inset 0 0 0 1px rgba(0,201,160,.5);}
+.icu2-secondary.dead{box-shadow:inset 0 0 0 2px #555;opacity:.65;}
+@keyframes icu2flash{0%,100%{box-shadow:inset 0 0 0 2px rgba(217,64,64,.7);}50%{box-shadow:inset 0 0 0 3px rgba(217,64,64,1);}}
+.icu2-sec-swap{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;text-align:center;padding-bottom:2px;border-bottom:1px dashed var(--wire2);}
+.icu2-sec-room{font-family:var(--mono);font-size:13px;font-weight:700;color:#fff;letter-spacing:.05em;}
+.icu2-sec-name{font-family:var(--body);font-size:9px;color:var(--muted2);font-weight:300;line-height:1.3;}
+.icu2-sec-vits{display:flex;flex-direction:column;gap:5px;margin-top:2px;}
+.icu2-sec-vit{display:flex;align-items:baseline;justify-content:space-between;gap:4px;padding:4px 6px;background:rgba(0,0,0,.35);border-radius:3px;}
+.icu2-sec-vl{font-family:var(--mono);font-size:7px;color:var(--muted);letter-spacing:.05em;}
+.icu2-sec-vv{font-family:var(--mono);font-size:16px;font-weight:700;}
+.icu2-sec-vv.ok{color:var(--teal);}.icu2-sec-vv.warn{color:var(--amber);}.icu2-sec-vv.crit{color:var(--alarm);}
+.icu2-sec-alarm{font-family:var(--mono);font-size:8px;font-weight:700;letter-spacing:.05em;text-align:center;padding:5px 4px;border-radius:3px;line-height:1.3;}
+.icu2-sec-alarm.crit{background:rgba(217,64,64,.2);color:var(--alarm);}
+.icu2-sec-alarm.warn{background:rgba(232,168,74,.18);color:var(--amber);}
+.icu2-sec-alarm.stable{background:rgba(0,201,160,.18);color:var(--teal);}
+.icu2-sec-alarm.dead{background:rgba(120,120,120,.2);color:#999;}
+.icu2-sec-staff{font-family:var(--mono);font-size:8px;color:var(--muted2);line-height:1.45;margin-top:auto;border-top:1px solid var(--wire2);padding-top:6px;}
+.icu2-sec-tapcue{font-family:var(--mono);font-size:7px;color:var(--teal);text-align:center;letter-spacing:.08em;opacity:.8;}
+/* primary panel */
+.icu2-phead{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.icu2-ptitle{font-family:var(--serif);font-size:16px;font-weight:700;color:#fff;line-height:1.2;}
+.icu2-psub{font-family:var(--body);font-size:11px;color:var(--muted2);font-weight:300;}
+.icu2-rtag{font-family:var(--mono);font-size:7px;letter-spacing:.1em;text-transform:uppercase;padding:3px 7px;border-radius:3px;white-space:nowrap;}
+.icu2-rtag.crit{background:rgba(217,64,64,.18);color:var(--alarm);}
+.icu2-rtag.warn{background:rgba(232,168,74,.18);color:var(--amber);}
+.icu2-rtag.stable{background:rgba(0,201,160,.18);color:var(--teal);}
+.icu2-rtag.dead{background:rgba(120,120,120,.2);color:#999;}
+.icu2-vits{display:flex;gap:6px;flex-wrap:wrap;}
+.icu2-vit{display:flex;flex-direction:column;align-items:center;padding:5px 11px;background:rgba(0,0,0,.35);border-radius:4px;min-width:52px;}
+.icu2-vl{font-family:var(--mono);font-size:6px;color:var(--muted);letter-spacing:.06em;}
+.icu2-vv{font-family:var(--mono);font-size:18px;font-weight:700;}
+.icu2-vv.ok{color:var(--teal);}.icu2-vv.warn{color:var(--amber);}.icu2-vv.crit{color:var(--alarm);}
+.icu2-status{font-family:var(--body);font-size:11.5px;color:var(--muted2);font-weight:300;margin-top:8px;line-height:1.5;}
+.icu2-section-lbl{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin:13px 0 7px;}
+.icu2-actions{display:flex;flex-direction:column;gap:7px;}
+.icu2-act{text-align:left;padding:11px 12px;border-radius:5px;border:1px solid var(--wire2);background:rgba(255,255,255,.04);color:var(--text);font-family:var(--body);font-size:12.5px;cursor:pointer;line-height:1.4;transition:border-color .2s,background .2s;}
+.icu2-act:hover{border-color:var(--teal);}
+.icu2-act .ttl{font-weight:600;color:#fff;display:block;}
+.icu2-act .meta{font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.05em;display:block;margin-top:3px;}
+.icu2-act.p1{border-color:rgba(0,201,160,.45);background:rgba(0,201,160,.07);}
+.icu2-act[disabled]{opacity:.4;cursor:default;pointer-events:none;}
+.icu2-act.done{border-color:rgba(0,201,160,.4);}
+.icu2-act.done .ttl{color:var(--teal);}
+.icu2-team{display:flex;flex-direction:column;gap:6px;}
+.icu2-trole{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:9px;}
+.icu2-tname{flex-shrink:0;width:78px;color:var(--muted2);text-transform:uppercase;letter-spacing:.06em;}
+.icu2-tstate{font-size:8px;padding:2px 6px;border-radius:3px;}
+.icu2-tstate.idle{background:rgba(255,255,255,.06);color:var(--muted);}
+.icu2-tstate.busy{background:rgba(232,168,74,.18);color:var(--amber);}
+.icu2-tstate.done{background:rgba(0,201,160,.18);color:var(--teal);}
+.icu2-log{margin-top:12px;border-top:1px solid var(--wire2);padding-top:8px;display:flex;flex-direction:column;gap:5px;max-height:120px;overflow-y:auto;}
+.icu2-logline{font-family:var(--mono);font-size:9px;line-height:1.4;color:var(--muted2);}
+.icu2-logline .lt{color:var(--muted);}
+.icu2-logline.good{color:var(--teal);}.icu2-logline.bad{color:var(--alarm);}.icu2-logline.warn{color:var(--amber);}
+.icu2-back{margin-bottom:10px;font-family:var(--mono);font-size:9px;color:var(--teal);background:none;border:none;cursor:pointer;letter-spacing:.06em;padding:2px 0;}
+.icu2-foot{flex-shrink:0;padding:8px 12px 16px;border-top:1px solid var(--wire2);}
+.icu2-deleg-btn{width:100%;padding:12px;background:rgba(0,201,160,.14);border:1px solid rgba(0,201,160,.5);color:var(--teal);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;border-radius:4px;}
+.icu2-overlay{position:absolute;inset:0;background:rgba(6,9,15,.97);z-index:60;display:none;flex-direction:column;padding:18px 16px;overflow-y:auto;}
+.icu2-overlay.on{display:flex;}
+.icu2-ov-title{font-family:var(--serif);font-size:17px;font-weight:700;color:#fff;margin-bottom:4px;}
+.icu2-ov-sub{font-family:var(--body);font-size:12px;color:var(--muted2);font-weight:300;margin-bottom:14px;line-height:1.5;}
 </style>
 </head>
 <body>
@@ -533,6 +613,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
           <div class="monitem"><div class="monlbl">RR</div><div class="monval warn" id="mo-rr">--</div></div>
           <div class="monitem"><div class="monlbl">Temp</div><div class="monval ok" id="mo-temp-d1">--</div></div>
           <div class="monitem"><div class="monlbl">GCS</div><div class="monval warn" id="mo-gcs-d1">--</div></div>
+          <div class="monitem" id="mo-uo-d1-wrap" style="display:none;"><div class="monlbl">UO/hr</div><div class="monval crit" id="mo-uo-d1">--</div></div>
         </div>
         <div class="monrow-grid-d2" id="mon-grid-d2" style="display:none;">
           <div class="monitem"><div class="monlbl">BP</div><div class="monval crit" id="mo-bp-d2">--</div></div>
@@ -578,6 +659,22 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
     <div class="ppbody" id="pp-body" style="overflow-y:auto;flex:1;"></div>
   </div>
 </div>
+<!-- DAY 8 ICU2 (two-patient delegation) -->
+<div id="scr-icu2" class="scr">
+  <div class="icu2-top">
+    <div class="icu2-toprow">
+      <div class="icu2-day" id="icu2-day">Day 8 · ICU · 05:12</div>
+      <div class="icu2-clock" id="icu2-clock">8:00</div>
+    </div>
+    <div class="icu2-bar"><div class="icu2-barfill" id="icu2-barfill" style="width:100%"></div></div>
+  </div>
+  <div class="icu2-split" id="icu2-split">
+    <div class="icu2-primary" id="icu2-primary"></div>
+    <div class="icu2-secondary" id="icu2-secondary" onclick="icu2SwapFocus()"></div>
+  </div>
+  <div class="icu2-overlay" id="icu2-overlay"></div>
+</div>
+
 <!-- ACTION -->
 <div id="scr-action" class="scr">
   <div class="acthdr"><div class="acthdrl">Make your decision</div><div class="acthdrt">What do you do first?</div></div>
@@ -626,7 +723,7 @@ const G={
   highestDay:1,dayResults:{},
   fluidRunning:false,fluidMl:0,fluidRate:'KVO',fluidName:'0.9% NaCl 1L',
   abxRunning:false,abxProgress:0,abxName:'',codeBluePending:false,
-  labsDrawn:false,interruptFired:false,interruptChoice:null,
+  labsDrawn:false,interruptFired:false,interrupt2Fired:false,interruptChoice:null,
   patientState:'deteriorating',o2Saturation:91,skinFlush:0,
   diaphoresis:0.3,mottle:0,confusion:false,ecgChaos:0.15,
   timerIv:null,animFrame:null,ecgT:0,
@@ -831,12 +928,12 @@ SCENARIOS[2]={
   question:'Mr. Chen has septic shock -- MAP 62, qSOFA 3/3, new confusion, surgical source. The 1-hour bundle has not been started.',
   sub:'What is the single most important first action right now?',
   choices:[
-    {key:'A',lbl:'Simultaneously: start fluid bolus + draw blood cultures + call physician',desc:'Initiate the sepsis bundle in parallel. Not one at a time -- all at once.',correct:true,
-     exp:'Correct. The 1-hour bundle runs simultaneously, not sequentially. Fluid bolus for MAP below 65. Blood cultures before antibiotics -- takes 2 minutes, never skip. Physician call for vasopressor and antibiotic orders.'},
-    {key:'B',lbl:'Give the overdue antibiotic dose immediately',desc:'Pip-Tazo is 6 hours overdue. Give it now.',correct:false,
+    {key:'A',lbl:'Give the overdue antibiotic dose immediately',desc:'Pip-Tazo is 6 hours overdue. Give it now.',correct:false,
      exp:'Antibiotics are critical -- but blood cultures must come first. Drawing cultures takes 2 minutes. Giving antibiotics before cultures sterilises the blood and may prevent identifying the organism.'},
-    {key:'C',lbl:'Wait for the physician to arrive before initiating anything',desc:'The physician needs to assess and give orders first.',correct:false,
+    {key:'B',lbl:'Wait for the physician to arrive before initiating anything',desc:'The physician needs to assess and give orders first.',correct:false,
      exp:'You have standing orders and nursing protocols. In septic shock, every minute without resuscitation worsens outcomes. Start O2, begin fluid bolus, draw cultures -- these are within your scope. Waiting wastes irreversible time.'},
+    {key:'C',lbl:'Simultaneously: start fluid bolus + draw blood cultures + call physician',desc:'Initiate the sepsis bundle in parallel. Not one at a time -- all at once.',correct:true,
+     exp:'Correct. The 1-hour bundle runs simultaneously, not sequentially. Fluid bolus for MAP below 65. Blood cultures before antibiotics -- takes 2 minutes, never skip. Physician call for vasopressor and antibiotic orders.'},
     {key:'D',lbl:'Reposition flat and increase monitoring frequency',desc:'Improve venous return and observe more closely.',correct:false,
      exp:'Repositioning provides marginal benefit. With MAP 62, this patient needs active resuscitation immediately, not closer watching. Observation does not treat shock.'},
   ],
@@ -922,10 +1019,10 @@ SCENARIOS[3]={
   question:'Tyler: post-op Day 1 cholecystectomy, HR trending up 88 to 98, BP trending down 128 to 118 over 6 hours, new abdominal distension, guarding, shoulder tip pain, drain output tripled and dark. He is asking for morphine.',
   sub:'What is the most important first action right now?',
   choices:[
-    {key:'A',lbl:'Complete full assessment, hold morphine, call Dr. Martinez urgently',desc:'Finish the picture before giving anything. The surgeon needs to know now.',correct:true,
-     exp:'Correct. Assessment first, always. Morphine would mask the pain that is telling you something is wrong, and cause vasodilation in a patient who cannot afford it. Dr. Martinez needs the full picture: trending vitals, distension, drain output, shoulder tip pain. This is a surgical emergency that has been developing for 6 hours.'},
-    {key:'B',lbl:'Give morphine 2mg IV as ordered -- he is clearly in pain',desc:'The PRN order exists. His pain score is high. Relieve his suffering.',correct:false,
+    {key:'A',lbl:'Give morphine 2mg IV as ordered -- he is clearly in pain',desc:'The PRN order exists. His pain score is high. Relieve his suffering.',correct:false,
      exp:'The morphine order exists, but orders are not automatic authorisation. A nurse assesses before medicating. Morphine masks abdominal pain -- the primary symptom of internal bleeding. It also causes vasodilation, reducing preload in a patient whose BP is already trending down. Giving it now could cause haemodynamic collapse and delay recognition of a surgical emergency.'},
+    {key:'B',lbl:'Complete full assessment, hold morphine, call Dr. Martinez urgently',desc:'Finish the picture before giving anything. The surgeon needs to know now.',correct:true,
+     exp:'Correct. Assessment first, always. Morphine would mask the pain that is telling you something is wrong, and cause vasodilation in a patient who cannot afford it. Dr. Martinez needs the full picture: trending vitals, distension, drain output, shoulder tip pain. This is a surgical emergency that has been developing for 6 hours.'},
     {key:'C',lbl:'Reassure him, increase monitoring to q30min, wait for the next set of vitals',desc:'He is within normal range. Observe for now.',correct:false,
      exp:'Individual vitals are normal -- but trend is not. Six-hour trends showing HR rising and BP falling are haemodynamic compensation. Waiting for the next set of vitals while a patient compensates for internal bleeding is how a Class I haemorrhage becomes a Class III. The time to act is during compensation, not after.'},
     {key:'D',lbl:'Call MET immediately without doing the physical assessment first',desc:'Something is clearly wrong -- escalate now.',correct:false,
@@ -996,14 +1093,14 @@ SCENARIOS[7]={
   question:'You have confirmed: Amoxicillin = penicillin class. Mr. Kowalski has a documented penicillin → anaphylaxis allergy -- wristband, chart, and his own words. Dr. Chen wrote this order 10 minutes ago and is currently treating a patient in Bay 3.',
   sub:'What do you do?',
   choices:[
-    {key:'A',lbl:'Hold the amoxicillin. Walk to Bay 3: "Dr. Chen, I need a moment -- Mr. Kowalski in Bay 6 has a penicillin allergy, anaphylaxis history. The amoxicillin order -- can we review this together?"',desc:'Hold the medication, then approach the physician directly.',correct:true,
-     exp:'Correct -- and the structure matters. Hold FIRST. Then speak. You do not give and then ask. The medication never reaches the patient until the order is verified safe. The language matters too: "Can we review this together" is collaborative, not accusatory. You are not telling Dr. Chen they are wrong -- you are flagging a safety concern and inviting review. This is ISMP Canada speak-up culture: confident, specific, non-confrontational. Will it feel uncomfortable? Possibly. That discomfort is smaller than an anaphylaxis code.'},
-    {key:'B',lbl:'Give the medication as ordered -- Dr. Chen reviewed the chart and must have had a reason to override the allergy alert.',desc:'Trust the prescriber\'s clinical judgment.',correct:false,
+    {key:'A',lbl:'Give the medication as ordered -- Dr. Chen reviewed the chart and must have had a reason to override the allergy alert.',desc:'Trust the prescriber\'s clinical judgment.',correct:false,
      exp:'The prescriber overrode an automated alert -- those are overridden dozens of times a day, sometimes appropriately, sometimes by accident. Overriding an alert is not the same as making a deliberate clinical decision. You cannot assume intent. The nurse\'s role in the 5 Rights is not "verify the doctor checked" -- it is "verify it is safe before it goes into the patient." You are the last check. ISMP Canada: medication errors most often reach the patient when the nurse defers to the prescriber without independent verification.'},
-    {key:'C',lbl:'Call pharmacy and ask them to review the order before you approach the physician.',desc:'Pharmacy is the medication safety expert -- let them handle it.',correct:false,
+    {key:'B',lbl:'Call pharmacy and ask them to review the order before you approach the physician.',desc:'Pharmacy is the medication safety expert -- let them handle it.',correct:false,
      exp:'Pharmacy is a valuable safety partner -- but this is not a complex interaction query. This is a clear contraindication. Routing it to pharmacy adds 10-20 minutes of delay while Mr. Kowalski\'s cellulitis progresses without treatment. The physician is 10 metres away. Go directly. Pharmacy can be looped in after the order is corrected to update the medication record and flag the near-miss.'},
-    {key:'D',lbl:'Add a note to the chart flagging the allergy concern and leave it for Dr. Chen to review at their next available moment.',desc:'Document the concern and let the physician address it.',correct:false,
+    {key:'C',lbl:'Add a note to the chart flagging the allergy concern and leave it for Dr. Chen to review at their next available moment.',desc:'Document the concern and let the physician address it.',correct:false,
      exp:'The medication is due in 13 minutes. A chart note does not stop the next nurse from giving it. Documentation is not a safety intervention -- it is a record. The intervention is holding the medication and speaking directly to the prescriber. Chart notes are for after the safety action, not instead of it. (ISMP Canada: verbal escalation is required when documentation alone cannot prevent harm in time)'},
+    {key:'D',lbl:'Hold the amoxicillin. Walk to Bay 3: "Dr. Chen, I need a moment -- Mr. Kowalski in Bay 6 has a penicillin allergy, anaphylaxis history. The amoxicillin order -- can we review this together?"',desc:'Hold the medication, then approach the physician directly.',correct:true,
+     exp:'Correct -- and the structure matters. Hold FIRST. Then speak. You do not give and then ask. The medication never reaches the patient until the order is verified safe. The language matters too: "Can we review this together" is collaborative, not accusatory. You are not telling Dr. Chen they are wrong -- you are flagging a safety concern and inviting review. This is ISMP Canada speak-up culture: confident, specific, non-confrontational. Will it feel uncomfortable? Possibly. That discomfort is smaller than an anaphylaxis code.'},
   ],
   outcomeGood:{statDeltas:{judgment:14,confidence:15,communication:12,resilience:10,fatigue:7},
     headline:'You were the last check. You caught it.',
@@ -1020,7 +1117,7 @@ SCENARIOS[6]={
   handoff:[
     {delay:500,from:'Charge Nurse Patel',txt:'312A -- Mrs. Rivera, 71F. <span class="hk">Post-op Day 3</span> colorectal resection. Her daughter Ana has been here since 06:00. She is upset. But listen -- she said <span class="hk">her mom seems different today</span>. That part is worth hearing.'},
     {delay:1900,from:'Night Nurse Sanders',txt:'I did check her at 22:00. She was <span class="hk">38.1C</span>. I put it down to post-op inflammation. The daughter <span class="hk">asked me twice to call the doctor</span> and I said I would monitor. <span class="hk">I did not call.</span>'},
-    {delay:3200,from:'Charge Nurse Patel',txt:'Ana is not unreasonable -- she is scared. Her mom has cancer and this is Day 3. She has been watching her mom get quieter all morning and nobody has explained anything. Keep that in mind when you walk in.'},
+    {delay:3200,from:'Charge Nurse Patel',txt:'Ana\'s fear is completely valid. Her mother has cancer. She has watched her get quieter all morning while three different nurses walked past without stopping. Walk in ready for <span class="hk">both of them</span>.'},
     {delay:4300,from:'You',txt:'Understood. On my way.',you:true},
     {delay:5000,alert:true,txt:'312A -- Daughter requesting manager -- "Nobody is listening to me"'},
   ],
@@ -1051,9 +1148,9 @@ SCENARIOS[6]={
      clue:'Wound -- dark drainage + erythema -- surgical site infection'},
     {id:'urine',lbl:'Catheter',x:'65%',y:'68%',
      finds:[
-       {p:'c',t:'IDC in situ. Urine dark yellow, concentrated. Hourly output last 3 hours: 9, 6, 7mL. <strong>Average 7.3mL/hr.</strong>'},
+       {p:'c',t:'Foley catheter in situ. Urine dark yellow, concentrated. Hourly output last 3 hours: 9, 6, 7mL. <strong>Average 7.3mL/hr.</strong>'},
        {p:'w',t:'Normal: at least 0.5mL/kg/hr. For 68kg: at least 34mL/hr. She is making one-fifth of that.'},
-       {p:'c',t:'Strict hourly IDC chart shows a clear downtrend over the last 6 hours. This was not flagged.'},
+       {p:'c',t:'Strict hourly Foley output chart shows a clear downtrend over the last 6 hours. This was not flagged.'},
      ],
      insight:'UO 7mL/hr = oliguria. Combined with BP drop and fever = haemodynamic compromise. The kidneys know before the numbers shout.',
      clue:'UO 7mL/hr -- oliguria -- renal perfusion compromised'},
@@ -1071,10 +1168,10 @@ SCENARIOS[6]={
   question:'You walk into 312A. Ana, the daughter, moves directly into your path. Her voice is loud but her eyes are wet: <em>"FINALLY. THREE HOURS. Nobody tells me ANYTHING. Is she dying? What is HAPPENING?"</em> Behind her, Mrs. Rivera watches quietly from the bed.',
   sub:'How do you approach this?',
   choices:[
-    {key:'A',lbl:'Step toward Ana -- not back. Lower your voice, hold eye contact: "I can see you\'re scared for her. I\'m going to check on her right now. Stay with me -- two minutes."',desc:'Move closer, name the fear, set the expectation, then assess.',correct:true,
-     exp:'Correct -- and the details matter. Moving TOWARD an upset person (not backward) signals confidence and care, not threat. "Scared" names the real emotion -- not "frustrated," not "upset." Naming the right emotion is the NURSE mnemonic: Name it. This de-escalates faster than any apology. "Stay with me" includes her in the process instead of pushing her out. You said two minutes -- now you have to mean it. (CPI Non-Violent Crisis Intervention / RNAO Therapeutic Communication 2020)'},
-    {key:'B',lbl:'"I understand your frustration, but I need to assess the patient before I can answer your questions."',desc:'Professional boundary -- assessment comes first.',correct:false,
+    {key:'A',lbl:'"I understand your frustration, but I need to assess the patient before I can answer your questions."',desc:'Professional boundary -- assessment comes first.',correct:false,
      exp:'"But" erases everything before it. The moment you say "but," Ana heard: "your feelings don\'t matter." Stepping back while saying it -- even slightly -- signals defensiveness. "Frustration" misnames fear. She is not frustrated about a coffee order. She is terrified her mother is dying. Naming the wrong emotion feels dismissive. The words were almost right. The structure was not. (Motivational Interviewing: rolling with resistance, not opposing it)'},
+    {key:'B',lbl:'Step toward Ana -- not back. Lower your voice, hold eye contact: "I can see you\'re scared for her. I\'m going to check on her right now. Stay with me -- two minutes."',desc:'Move closer, name the fear, set the expectation, then assess.',correct:true,
+     exp:'Correct -- and the details matter. Moving TOWARD an upset person (not backward) signals confidence and care, not threat. "Scared" names the real emotion -- not "frustrated," not "upset." Naming the right emotion is the NURSE mnemonic: Name it. This de-escalates faster than any apology. "Stay with me" includes her in the process instead of pushing her out. You said two minutes -- now you have to mean it. (CPI Non-Violent Crisis Intervention / RNAO Therapeutic Communication 2020)'},
     {key:'C',lbl:'"I\'m so sorry you\'ve been waiting -- that\'s really not okay. Let me find out what\'s been happening and get you all the answers you deserve."',desc:'Full empathy -- validate her experience completely.',correct:false,
      exp:'"I\'m sorry you\'ve been waiting" sounds kind but implies the system failed -- which invites Ana to agree loudly. "That\'s not okay" is an apology on behalf of every nurse who came before you, and it opens the door to an accountability conversation you cannot have right now. You have now spent 45 seconds on a promise to explain everything, and Mrs. Rivera has not been touched. Over-empathising without action is not therapeutic -- it is avoidance. (CAMH Trauma-Informed Care: validation requires follow-through, not just words)'},
     {key:'D',lbl:'In a calm, measured tone: "Mrs. Rivera was assessed at 22:00 and her vitals were stable. These things take time. I\'ll update you once I\'ve finished."',desc:'Factual and professional -- reassure with clinical information.',correct:false,
@@ -1145,12 +1242,12 @@ SCENARIOS[5]={
   question:'Mr. Park, 62M, Room 305. BGL 2.1 mmol/L. GCS 10 -- eyes open, confused speech, cannot follow commands. Insulin Glargine given 4 hours ago. Dinner missed. IV patent.',
   sub:'What is your immediate intervention?',
   choices:[
-    {key:'A',lbl:'D50W 50mL IV push -- immediately',desc:'IV glucose for severe hypoglycemia with altered consciousness.',correct:true,
-     exp:'Correct. GCS 10 means he cannot swallow safely -- oral glucose risks aspiration. IV access is patent -- D50W (50% dextrose) 50mL gives rapid glucose delivery directly into the bloodstream. Onset within 1-2 minutes. This is the standard of care for severe hypoglycemia with IV access.'},
-    {key:'B',lbl:'Orange juice 150mL orally -- fastest oral route',desc:'Oral glucose is fast and easy.',correct:false,
+    {key:'A',lbl:'Orange juice 150mL orally -- fastest oral route',desc:'Oral glucose is fast and easy.',correct:false,
      exp:'GCS 10 is too low for safe swallowing. Giving oral fluids to a patient who cannot follow commands and cannot protect their airway risks aspiration pneumonia. Never give oral glucose to an altered patient. IV or intramuscular only.'},
-    {key:'C',lbl:'Glucagon 1mg IM -- no need to confirm IV',desc:'Glucagon reverses hypoglycemia without IV.',correct:false,
+    {key:'B',lbl:'Glucagon 1mg IM -- no need to confirm IV',desc:'Glucagon reverses hypoglycemia without IV.',correct:false,
      exp:'Glucagon 1mg IM is the correct treatment when there is NO IV access. But IV access is patent here -- D50W IV is faster, more reliable, and immediately effective. Glucagon also requires glycogen stores (depleted in fasting patients). With IV access, D50W is preferred.'},
+    {key:'C',lbl:'D50W 50mL IV push -- immediately',desc:'IV glucose for severe hypoglycemia with altered consciousness.',correct:true,
+     exp:'Correct. GCS 10 means he cannot swallow safely -- oral glucose risks aspiration. IV access is patent -- D50W (50% dextrose) 50mL gives rapid glucose delivery directly into the bloodstream. Onset within 1-2 minutes. This is the standard of care for severe hypoglycemia with IV access.'},
     {key:'D',lbl:'Check urine ketones before treating -- rule out DKA first',desc:'Confirm it is not DKA before giving glucose.',correct:false,
      exp:'The BGL is 2.1 mmol/L. DKA presents with HIGH glucose (>14 mmol/L) and ketones -- not hypoglycemia. There is no clinical basis for DKA here: no fruity breath, no Kussmaul breathing, no hyperglycemia. Delaying treatment while checking ketones is dangerous. Treat the confirmed hypoglycemia now.'},
   ],
@@ -1219,10 +1316,10 @@ SCENARIOS[4]={
   question:'Jamie, 21F, ER Bay 2. Bee sting 15 minutes ago. Stridor, angioedema, urticaria spreading. SpO2 93%, BP 84/52 dropping, HR 128. She is in anaphylactic shock.',
   sub:'What is your first action?',
   choices:[
-    {key:'A',lbl:'Epinephrine 0.3mg IM to the outer thigh -- immediately',desc:'No IV needed. IM epinephrine saves lives. It goes in now.',correct:true,
-     exp:'Correct. Epinephrine IM is the only first-line treatment for anaphylaxis. The outer thigh (vastus lateralis) -- faster absorption than deltoid. 0.3mg for adults. It goes in before IV access, before antihistamines, before anything else. Every minute of delay increases cardiac arrest risk.'},
-    {key:'B',lbl:'Give diphenhydramine 50mg IV first -- antihistamine controls the reaction',desc:'Antihistamine is the standard for allergic reactions.',correct:false,
+    {key:'A',lbl:'Give diphenhydramine 50mg IV first -- antihistamine controls the reaction',desc:'Antihistamine is the standard for allergic reactions.',correct:false,
      exp:'Antihistamines treat the symptom -- histamine. They do NOT reverse airway oedema, bronchospasm, or haemodynamic collapse. Epinephrine does. Antihistamines are adjunct therapy -- they come after epinephrine. Never before.'},
+    {key:'B',lbl:'Epinephrine 0.3mg IM to the outer thigh -- immediately',desc:'No IV needed. IM epinephrine saves lives. It goes in now.',correct:true,
+     exp:'Correct. Epinephrine IM is the only first-line treatment for anaphylaxis. The outer thigh (vastus lateralis) -- faster absorption than deltoid. 0.3mg for adults. It goes in before IV access, before antihistamines, before anything else. Every minute of delay increases cardiac arrest risk.'},
     {key:'C',lbl:'Call the physician for orders before giving any medication',desc:'You need an order before administering epinephrine.',correct:false,
      exp:'Anaphylaxis has standing nursing protocols for epinephrine administration in emergency settings. Waiting for a physician order in anaphylactic shock causes preventable deaths. Act within your scope. Epinephrine first. Call simultaneously.'},
     {key:'D',lbl:'Start IV access and fluid bolus first -- hypotension needs fluids',desc:'Establish IV before giving medications.',correct:false,
@@ -1237,6 +1334,102 @@ SCENARIOS[4]={
   patient:{name:'Jamie Chen',age:'21F',dx:'Anaphylaxis -- bee sting',room:'ER Bay 2'},
   vitals:{spo2:{val:'93%',state:'warn'},hr:{val:'128',state:'crit'},rr:{val:'26',state:'crit'},bp:{val:'84/52',state:'crit'},temp:{val:'37.0C',state:'ok'},gcs:{val:'14',state:'warn'},uo:null,lac:null},
   iv:{main:{name:'No IV access',vol:'--',rate:'--',state:'crit',note:'Large bore IV needed -- urgent'}},
+};
+SCENARIOS[8]={
+  handoff:[
+    {delay:500,from:'Charge RN Okonkwo',txt:'It is 05:12. Two of yours are going off at the same time and I am pulled to a code in Room 6. You have <span class="hk">Room 12</span> and <span class="hk">Room 14</span>. I will be back as fast as I can.'},
+    {delay:2400,from:'Charge RN Okonkwo',txt:'<span class="hk">Room 12</span> -- Mr. Adeyemi, 74M. Septic shock from pneumonia. Norepinephrine running. His <span class="hk">MAP just dropped to 54</span>, BP 78/42. He is mottling.'},
+    {delay:4000,from:'Charge RN Okonkwo',txt:'<span class="hk">Room 14</span> -- Ms. Doyle, 51F. Intubated after an overdose. She is suddenly <span class="hk">agitated and biting the tube</span>. High peak-pressure alarm. <span class="hk">SpO2 78 and falling.</span>'},
+    {delay:5600,from:'You',txt:'Both at once. Okay -- who do I have to help?',you:true},
+    {delay:6800,from:'Charge RN Okonkwo',txt:'<span class="hk">RT is on the unit.</span> There is a <span class="hk">float ICU RN</span> you can grab, and a <span class="hk">CNA</span>. And me, once I am out of the code. You cannot do both rooms with two hands. <span class="hk">Use the team.</span>'},
+    {delay:8200,alert:true,txt:'Room 14 -- VENTILATOR HIGH PEAK PRESSURE -- SpO2 76% and falling'},
+  ],
+  taps:[],
+  patient:{name:'Two patients',age:'',dx:'ICU -- simultaneous deterioration',room:'Rooms 12 & 14'},
+  outcomeGood:{statDeltas:{judgment:14,confidence:12,communication:14,resilience:9,fatigue:10},
+    headline:'Two patients. You did not face them alone.',
+    story:'RT reached Room 14 and cleared the airway -- the biting and the mucus plug were dropping her sats. You sent the charge nurse to escalate Room 12 and the intensivist added a second pressor. Both patients held. The thing that saved them was not your hands -- it was how fast you put the right people in the right rooms.'},
+  outcomeBad:{statDeltas:{judgment:7,confidence:-3,communication:6,resilience:8,fatigue:16},
+    headline:'You tried to carry both. No one can.',
+    story:'You went room to room doing everything yourself. While you were titrating the pressor in 12, Room 14 desaturated into a code -- the airway was the emergency and it could not wait for you. The lesson is hard but it is the whole job in the ICU: the strongest nurse is not the one who does everything. It is the one who mobilizes the team in the first sixty seconds.'},
+};
+SCENARIOS[9]={
+  handoff:[
+    {delay:500,from:'Charge RN Dubois',txt:'4 West, Bed 12 -- Mr. Tremblay, 89. Admitted two days ago with a <span class="hk">UTI and dehydration</span>. Start of shift he was <span class="hk">alert and oriented</span>, did his crossword. The last few hours he has changed.'},
+    {delay:2300,from:'Charge RN Dubois',txt:'He is <span class="hk">confused, restless, trying to climb out of bed</span> and pulling at his IV. He keeps asking for his wife -- she passed three years ago. This is <span class="hk">new tonight</span>.'},
+    {delay:3900,from:'You',txt:'Was he like this on admission?',you:true},
+    {delay:4700,from:'Charge RN Dubois',txt:'No -- <span class="hk">baseline alert and independent</span> at home per his daughter. She is on the phone now: "that is NOT my father." And his <span class="hk">evening IV fluids were missed</span> in the handover gap.'},
+    {delay:6100,from:'Charge RN Dubois',txt:'We are short tonight -- him plus three others. I know you are tired. <span class="hk">Go see him first.</span>'},
+    {delay:7400,alert:true,txt:'Bed 12 -- BED EXIT ALARM -- patient attempting to climb over the rail'},
+  ],
+  taps:[
+    {id:'patient',lbl:'Observe',x:'38%',y:'30%',
+     finds:[
+       {p:'c',t:'He is sitting up, one leg over the rail, pulling at his IV. He looks <strong>frightened, not aggressive.</strong> "I need to go home. Where is my wife?"'},
+       {p:'w',t:'He does not recognise the room. His attention drifts mid-sentence, then suddenly fixes on you: <em>"Please... please don\'t leave me."</em>'},
+       {p:'c',t:'Acute onset, fluctuating, inattention -- this is the picture of <strong>delirium</strong>, not baseline dementia and not just "a confused old man."'},
+     ],
+     insight:'Acute onset + fluctuating course + inattention = delirium until proven otherwise. The question is not "is he confused" -- it is "WHY, tonight."',
+     clue:'Acute fluctuating confusion + inattention -- delirium pattern'},
+    {id:'foley',lbl:'Foley',x:'62%',y:'66%',
+     finds:[
+       {p:'c',t:'Foley bag: urine is <strong>cloudy, dark, concentrated, strong-smelling.</strong> Output low -- about 18 mL/hr.'},
+       {p:'w',t:'He was admitted for a UTI. Cloudy concentrated urine + low output = infection likely worsening AND ongoing dehydration.'},
+     ],
+     insight:'Cloudy concentrated urine + low output. The UTI he was admitted for may be driving both the delirium and the dehydration.',
+     clue:'Cloudy concentrated urine, UO 18 mL/hr -- worsening UTI + dehydration'},
+    {id:'vitals',lbl:'Monitor',x:'80%',y:'34%',
+     finds:[
+       {p:'c',t:'Temp <strong>38.5C</strong> -- up from 37.9 earlier. HR <strong>104</strong>, up from 88. BP 108/62, soft. RR 20.'},
+       {p:'w',t:'Low-grade fever + rising HR + softening BP in a patient admitted with a UTI -- think early sepsis as a delirium driver.'},
+     ],
+     insight:'Fever 38.5 + HR 104 + softening BP. Infection is progressing. Delirium is the brain showing you the body is sick.',
+     clue:'Temp 38.5 + HR 104 + BP 108/62 -- infection progressing'},
+    {id:'mouth',lbl:'Hydration',x:'46%',y:'42%',
+     finds:[
+       {p:'c',t:'Mucous membranes <strong>dry</strong>, tongue furrowed. Skin tents when pinched. Eyes slightly sunken.'},
+       {p:'w',t:'Clinical dehydration. His evening IV fluids were missed and overnight oral intake is poor.'},
+     ],
+     insight:'Dry membranes + skin tenting + missed fluids. Dehydration alone causes delirium in the elderly -- here it is stacked on top of infection.',
+     clue:'Dry membranes + skin tenting -- dehydration (missed evening fluids)'},
+    {id:'chart',lbl:'Chart',x:'82%',y:'20%',
+     finds:[
+       {p:'w',t:'Admitted 2 days ago: UTI + dehydration. Baseline per daughter: <strong>alert, oriented, independent, does the daily crossword.</strong> No dementia diagnosis.'},
+       {p:'c',t:'Meds: no new sedatives, no opioids, no benzodiazepines. <strong>Evening IV maintenance fluids: NOT given</strong> (handover gap). Last BGL 6.1 at 20:00.'},
+       {p:'c',t:'No alcohol history (withdrawal unlikely). No fall, no anticoagulant, no focal neuro signs charted (stroke less likely -- but keep it on the list).'},
+     ],
+     insight:'Sharp baseline + no culprit medications + missed fluids + active UTI. The reversible causes are right here: infection and dehydration.',
+     clue:'Baseline alert (no dementia) -- missed IV fluids -- active UTI, no sedatives'},
+    {id:'daughter',lbl:'Daughter',x:'20%',y:'30%',
+     finds:[
+       {p:'c',t:'Daughter, on the phone, voice shaking: <em>"He did the crossword with me yesterday. He is NOT like this. Something is wrong."</em>'},
+       {p:'w',t:'Family who say "this is not them" are giving you the single most important piece of data: a reliable baseline. Believe them.'},
+     ],
+     insight:'"This is not his normal." A reliable collateral baseline is gold -- it turns "confused old man" into "acute change that needs a cause."',
+     clue:'Daughter: "This is NOT his normal" -- reliable baseline = acute change'},
+    {id:'tv',x:'18%',y:'62%',wrong:true,wrongTxt:'The television is not a clinical cue. He is frightened and overstimulated -- if anything, reduce noise and light, do not add to it.'},
+    {id:'restraintkit',x:'85%',y:'74%',wrong:true,wrongTxt:'Reaching for restraints first is the reflex to resist. Restraints increase agitation, injury, and delirium duration. Safety comes from assessment and presence, not restraint. (CCSMH / Choosing Wisely Canada)'},
+  ],
+  question:'It is 03:12. Mr. Tremblay is frightened, confused, and trying to climb over the rail. You are exhausted and you have three other patients. What is the safest, most appropriate approach right now?',
+  sub:'Confusion is a symptom, not a diagnosis.',
+  choices:[
+    {key:'A',lbl:'Apply physical restraints to keep him from falling, then carry on with your other patients.',desc:'He is a fall risk -- restrain him for his own safety.',correct:false,
+     exp:'Restraints are not a safety intervention here -- they increase agitation, injury, aspiration, and prolong delirium, and they never treat the cause. Physical restraint is a last resort after less restrictive measures fail, with an order and continuous monitoring -- not a first reflex on a frightened, confused elder. (CCSMH National Delirium Guidelines; Choosing Wisely Canada; RNAO Delirium BPG)'},
+    {key:'B',lbl:'Make him immediately safe without restraint (lower bed, exit alarm, reorient, ask the CNA to sit with him), assess and treat the reversible causes -- glucose, hydration, infection -- then SBAR the MD about an acute change in mental status.',desc:'Safety first without restraint, find and treat the cause, escalate.',correct:true,
+     exp:'Correct. Delirium is acute brain failure from a reversible cause. Secure safety with the least restrictive measures (low bed, alarm, presence, reduced stimulation), rule out the fast killer (check glucose), and treat what you find -- here, worsening UTI and dehydration -- while escalating the acute change. Restraints and antipsychotics are last resorts, not first moves. (CCSMH 2014/2024; RNAO BPG Delirium; CAM)'},
+    {key:'C',lbl:'Give a PRN dose of quetiapine (or loxapine) to settle him before he hurts himself.',desc:'Chemical settling is faster and avoids physical restraint.',correct:false,
+     exp:'Antipsychotics are not first-line for delirium. They do not treat the cause, they increase falls, stroke, and mortality in older adults, and they cloud the very mental status you are trying to follow. Reserve low-dose antipsychotics only for severe distress or danger when non-pharmacological measures have failed -- never as the opening move. (Choosing Wisely Canada -- Geriatrics; CCSMH; Health Canada antipsychotic warnings)'},
+    {key:'D',lbl:'He is 89 and confused at night -- this is likely sundowning/dementia. Document "confused" and continue your rounds.',desc:'Age-related night confusion is expected; reassess in the morning.',correct:false,
+     exp:'This is the most dangerous option because it does nothing. He has no dementia diagnosis, a sharp baseline yesterday, and an acute change tonight with fever and dehydration. Labelling it "dementia/sundowning" misses the sepsis. "Confused" is not a diagnosis -- it is a symptom demanding a cause. (RNAO Delirium BPG; CCSMH)'},
+  ],
+  outcomeGood:{statDeltas:{judgment:14,confidence:11,communication:11,resilience:8,fatigue:12},
+    headline:'You saw the change -- and the cause.',
+    story:'You lowered the bed, put the alarm on, and sat with him while you worked. Glucose normal. Cloudy urine, fever 38.5, dry as a bone, missed fluids. You restarted his fluids, sent a repeat urine, and called the MD with a clear SBAR: acute delirium, likely worsening urosepsis. Antibiotics escalated, fluids running. By morning he was calmer and knew his daughter\'s voice. She said: "Thank you for noticing he was different." You were exhausted -- and you still saw him.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-3,communication:5,resilience:7,fatigue:16},
+    headline:'Confusion is a symptom. It needed a cause.',
+    story:'It was 3 AM with three other patients. It was easy to call it "just confusion" -- or to settle him and move on. But the fever and dehydration kept climbing behind the label. Delirium is the brain telling you the body is failing. Next time: secure safety without restraint, check the glucose, find the infection, escalate the change. You will hear the daughter\'s words differently then -- "this is not him" is a clinical finding.'},
+  patient:{name:'Mr. Tremblay',age:'89M',dx:'UTI + dehydration -- acute delirium',room:'4 West Bed 12'},
+  vitals:{spo2:{val:'96%',state:'ok'},hr:{val:'104',state:'warn'},rr:{val:'20',state:'warn'},bp:{val:'108/62',state:'warn'},temp:{val:'38.5C',state:'crit'},gcs:{val:'A&O x1',state:'crit'},uo:{val:'18 mL/hr',state:'warn'},lac:null},
 };
 
 const SBAR_DATA={
@@ -1299,6 +1492,21 @@ const SBAR_DATA={
     md_response:{delay:1600,
       text:'"You are right -- I overrode the alert without reading it. Good catch. Give clindamycin 300mg PO TID times seven days. And -- document this as a near-miss, please. It should go through the safety system."',
       followup:'Order corrected to clindamycin. Near-miss documented. Mr. Kowalski will receive the safe antibiotic. You were the last check -- and you did your job.'},
+  },
+  9:{doctor:'Dr. Singh',role:'Internal Medicine Resident',phone:'ext. 3340',
+    cards:[
+      {id:'s9',zone:'s',text:'I am calling about Mr. Tremblay in 4 West Bed 12. I am concerned about an acute change in mental status -- new delirium overnight.'},
+      {id:'b9',zone:'b',text:'89-year-old male, admitted 2 days ago with a UTI and dehydration. Baseline alert and oriented, independent at home, no dementia. His evening IV maintenance fluids were missed.'},
+      {id:'a9',zone:'a',text:'Acute fluctuating confusion, inattention, climbing out of bed. Temp 38.5, HR 104, BP 108/62, SpO2 96%. Cloudy concentrated urine, UO 18 mL/hr. Glucose 6.1 -- normal. No focal neuro signs.'},
+      {id:'r9',zone:'r',text:'Bed lowered, exit alarm on, CNA at bedside, IV fluids restarted, repeat urinalysis sent. I think his UTI is worsening. I need you to review, with orders for fluids and antibiotic escalation.'},
+    ],
+    s:{title:'Situation',hint:'What is the acute change?'},
+    b:{title:'Background',hint:'Baseline and what is missing?'},
+    a:{title:'Assessment',hint:'Mental status, vitals, what you ruled out?'},
+    r:{title:'Recommendation',hint:'What you have done and what you need?'},
+    md_response:{delay:1800,
+      text:'"Agree -- this is delirium from worsening urosepsis and dehydration. Give a 500 mL bolus then maintenance, repeat cultures, escalate to IV ceftriaxone, and keep him safe without restraints. Good catch on the glucose. I will come review."',
+      followup:'Dr. Singh notified. Fluids and antibiotics escalated. Non-pharmacological safety in place. You found the cause behind the confusion.'},
   },
   6:{doctor:'Dr. Osei',role:'General Surgery Resident',phone:'ext. 4418',
     cards:[
@@ -1593,7 +1801,11 @@ const ACTS_D5=[
   {key:'d50_iv',pri:1,sec:'Immediate -- Glucose Replacement',
    getL:()=>G.actionsTaken.includes('d50_iv')?'D50W 50mL IV given -- BGL rising':'Give D50W 50mL IV push -- BGL 2.1',
    desc:'BGL 2.1 mmol/L + GCS 10 = severe hypoglycemia. Cannot swallow safely. Push D50W (50% dextrose) 50mL IV over 1-2 minutes. Onset within seconds. This is the fastest and safest route with patent IV.',
-   done:()=>G.actionsTaken.includes('d50_iv'),unlock:2,need:'glucose'},
+   done:()=>G.actionsTaken.includes('d50_iv'),unlock:1,need:'glucose'},
+  {key:'juice_d5',pri:1,sec:'Immediate -- Glucose Replacement',
+   getL:()=>G.actionsTaken.includes('juice_d5')?'Oral glucose -- STOPPED (aspiration risk)':'Give orange juice / oral glucose',
+   desc:'⚠ GCS 10 -- swallow reflex unreliable. Oral glucose risks aspiration pneumonia. Use IV D50W instead.',
+   done:()=>G.actionsTaken.includes('juice_d5'),unlock:1,need:'glucose'},
   {key:'nil_oral_d5',pri:1,sec:'Immediate -- Safety',
    getL:()=>G.actionsTaken.includes('nil_oral_d5')?'NPO confirmed -- oral route unsafe':'NPO -- do NOT give anything by mouth',
    desc:'GCS 10: cannot follow commands, swallow reflex unreliable. Giving oral glucose or fluids risks aspiration. NPO until GCS returns to 15 and patient can follow commands.',
@@ -1683,15 +1895,115 @@ const ACTS_D4=[
    done:()=>G.actionsTaken.includes('chart_d4'),unlock:3,need:null},
 ];
 
-function getACTS(){
-  if(G.currentDay===2)return ACTS_D2;
-  if(G.currentDay===3)return ACTS_D3;
-  if(G.currentDay===4)return ACTS_D4;
-  if(G.currentDay===5)return ACTS_D5;
-  if(G.currentDay===6)return ACTS_D6;
-  if(G.currentDay===7)return ACTS_D7;
-  return ACTS;
-}
+const ACTS_D9=[
+  {key:'safety_d9',pri:1,sec:'Immediate -- Safety',
+   getL:()=>G.actionsTaken.includes('safety_d9')?'Bed lowered + alarm on -- fall precautions':'Make him safe -- lower bed, exit alarm, clear lines',
+   desc:'Lowest bed height, bed/chair exit alarm on, tidy tubing he can pull, call bell in hand, clear path. Least restrictive fall prevention -- safety without restraint.',
+   done:()=>G.actionsTaken.includes('safety_d9'),unlock:1,need:null},
+  {key:'reorient_d9',pri:1,sec:'Immediate -- Communication',
+   getL:()=>G.actionsTaken.includes('reorient_d9')?'Reoriented -- calm presence':'Reorient calmly -- name, place, reassure',
+   desc:'Eye level, low calm voice: "You are in hospital, it is night, you are safe, I am right here." Reduce noise and light. Repeat as needed. Do not argue with the confusion.',
+   done:()=>G.actionsTaken.includes('reorient_d9'),unlock:1,need:null},
+  {key:'vitals_d9',pri:1,sec:'Immediate -- Assessment',
+   getL:()=>G.actionsTaken.includes('vitals_d9')?'Full vitals -- febrile, tachycardic':'Take full vitals',
+   desc:'Temp, HR, BP, RR, SpO2. Fever and tachycardia point to infection as the delirium driver.',
+   done:()=>G.actionsTaken.includes('vitals_d9'),unlock:1,need:null},
+  {key:'glucose_d9',pri:1,sec:'Immediate -- Rule out',
+   getL:()=>G.actionsTaken.includes('glucose_d9')?'BGL 6.1 -- hypoglycemia ruled out':'Check blood glucose -- rule out hypoglycemia',
+   desc:'Always check a glucose in any acute confusion -- hypoglycemia is fast, reversible, and looks exactly like this. One fast killer ruled out.',
+   done:()=>G.actionsTaken.includes('glucose_d9'),unlock:1,need:null},
+  {key:'cam_d9',pri:2,sec:'Urgent -- Assessment',
+   getL:()=>G.actionsTaken.includes('cam_d9')?'CAM positive -- delirium confirmed':'Screen with CAM (Confusion Assessment Method)',
+   desc:'CAM: acute onset + fluctuating course, AND inattention, PLUS disorganised thinking OR altered consciousness. Names the problem: delirium, not dementia.',
+   done:()=>G.actionsTaken.includes('cam_d9'),unlock:2,need:'patient'},
+  {key:'fluids_d9',pri:2,sec:'Urgent -- Treat cause',
+   getL:()=>G.actionsTaken.includes('fluids_d9')?'IV fluids restarted':'Restart IV fluids -- treat dehydration',
+   desc:'His evening maintenance fluids were missed and he is clinically dry. Restart IV fluids per orders. Rehydration alone often improves delirium.',
+   done:()=>G.actionsTaken.includes('fluids_d9'),unlock:2,need:'mouth'},
+  {key:'urine_d9',pri:2,sec:'Urgent -- Investigate',
+   getL:()=>G.actionsTaken.includes('urine_d9')?'Repeat urinalysis + culture sent':'Send repeat urinalysis + culture',
+   desc:'Cloudy concentrated urine in a UTI admission -- send repeat urinalysis and culture to confirm worsening infection and guide antibiotics.',
+   done:()=>G.actionsTaken.includes('urine_d9'),unlock:2,need:'foley'},
+  {key:'cna_d9',pri:2,sec:'Urgent -- Delegation',
+   getL:()=>G.actionsTaken.includes('cna_d9')?'CNA staying with patient':'Ask CNA to sit with him (1:1 presence)',
+   desc:'A calm familiar presence is the safest fall prevention for a frightened delirious patient -- and it frees you to escalate. Delegation is a safety tool.',
+   done:()=>G.actionsTaken.includes('cna_d9'),unlock:2,need:null},
+  {key:'call_d9',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Dr. Singh notified':'Call MD -- acute change in mental status',
+   desc:'Escalate the acute change with a clear SBAR: new delirium, likely worsening urosepsis + dehydration, glucose normal. Ask for review, fluids, antibiotic escalation.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'restraint_d9',pri:3,sec:'Caution -- Last resort',
+   getL:()=>G.actionsTaken.includes('restraint_d9')?'Restraint attempted -- he is more distressed':'Apply physical restraints',
+   desc:'WARNING: restraints are a last resort, not a first move. Expect more agitation and injury -- and the cause is still untreated.',
+   done:()=>G.actionsTaken.includes('restraint_d9'),unlock:1,need:null},
+  {key:'antipsych_d9',pri:3,sec:'Caution -- Last resort',
+   getL:()=>G.actionsTaken.includes('antipsych_d9')?'Antipsychotic given -- picture now clouded':'Give PRN quetiapine / loxapine',
+   desc:'WARNING: antipsychotics do not treat delirium and raise falls, stroke, and mortality in elders. Last resort only, for severe danger after non-drug measures fail.',
+   done:()=>G.actionsTaken.includes('antipsych_d9'),unlock:1,need:null},
+  {key:'chart_d9',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d9')?'Nursing note written':'Document assessment + CAM + actions',
+   desc:'Time-stamp the acute change, CAM result, vitals, glucose, what you found and did, who you called, and that least-restrictive safety measures were used.',
+   done:()=>G.actionsTaken.includes('chart_d9'),unlock:3,need:null},
+];
+
+// === DAY REGISTRY (data-driven per-day config) ===
+// Adding a new day = add one DAYS[N] entry + SCENARIOS[N] + ACTS_DN. No more scattered if(currentDay===N).
+const VC=(b,h,bs,hs)=>({bp:{val:b,state:bs},hr:{val:h,state:hs}}); // vitals-change shorthand for timers
+const DAYS={
+  1:{acts:()=>ACTS, monitorTitle:'Monitor Bay 4', sfxLoop:'monitor', chartKey:'chart',
+     hudDay:'Day 1 Bay 4', hudPt:'Mrs. Delgado, 58F', handoffSub:'Day 1 Bay 4 23:42',
+     handoffVitalsLabel:'Last recorded vitals',
+     handoffVitalsGrid:'<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:91,skinFlush:0,diaphoresis:0.3,mottle:0,confusion:false,ecgChaos:0.15},
+     ivReset:()=>{if(SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='150 mL/hr';SCENARIOS[1].iv.main.state='crit';SCENARIOS[1].iv.main.note='Prescribed 80 mL/hr -- running too fast';}}},
+  2:{acts:()=>ACTS_D2, monitorTitle:'Monitor ICU', sfxLoop:'icu', chartKey:'chart_d2',
+     hudDay:'Day 2 ICU Bed 3', hudPt:'Mr. Chen, 67M', handoffSub:'Day 2 ICU Bed 3 06:14',
+     handoffVitalsLabel:'Last recorded vitals 30 min ago',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:95,skinFlush:0.7,diaphoresis:0.8,mottle:0.4,confusion:true,ecgChaos:0.3},
+     drawIVFluid:true, tickMottle:true, codeBlue:{at:180,guard:'fluids'}},
+  3:{acts:()=>ACTS_D3, monitorTitle:'Monitor Room 214', sfxLoop:'monitor', chartKey:'chart_d3',
+     hudDay:'Day 3 Room 214', hudPt:'Tyler, 45M', handoffSub:'Day 3 Room 214 05:30',
+     handoffVitalsLabel:'Last recorded vitals -- trending',
+     handoffVitalsGrid:'<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">50mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:97,skinFlush:0,diaphoresis:0.3,mottle:0.1,confusion:false,ecgChaos:0.1},
+     timers:[{at:120000,vitals:VC('106/68','104','warn','warn'),guard:'call_md'},{at:180000,vitals:VC('90/58','112','crit','crit'),guard:'call_md'}]},
+  4:{acts:()=>ACTS_D4, monitorTitle:'Monitor ER Bay 2', sfxLoop:'monitor', chartKey:'chart_d4',
+     hudDay:'Day 4 ER Bay 2', hudPt:'Jamie Chen, 21F', handoffSub:'Day 4 ER Bay 2 14:05',
+     handoffVitalsLabel:'Triage vitals -- 5 min ago',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv crit">84/52</div></div><div><div class="vcl">HR</div><div class="vcv crit">128</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">93%</div></div><div><div class="vcl">RR</div><div class="vcv crit">26</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.0C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:93,skinFlush:0.9,diaphoresis:0.2,mottle:0.2,confusion:false,ecgChaos:0.2},
+     ivReset:()=>{if(SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='No IV access';SCENARIOS[4].iv.main.vol='--';SCENARIOS[4].iv.main.rate='--';SCENARIOS[4].iv.main.state='crit';SCENARIOS[4].iv.main.note='Large bore IV needed -- urgent';}}},
+  5:{acts:()=>ACTS_D5, monitorTitle:'Monitor Room 305', sfxLoop:'monitor', chartKey:'chart_d5',
+     hudDay:'Day 5 Room 305', hudPt:'Mr. Park, 62M', handoffSub:'Day 5 Room 305 02:30',
+     handoffVitalsLabel:'Vitals taken by aide 02:30',
+     handoffVitalsGrid:'<div><div class="vcl">BGL</div><div class="vcv crit">2.1 mmol</div></div><div><div class="vcl">GCS</div><div class="vcv crit">10</div></div><div><div class="vcl">HR</div><div class="vcv warn">106</div></div><div><div class="vcl">BP</div><div class="vcv ok">124/78</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">98%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:98,skinFlush:0,diaphoresis:0.8,mottle:0.1,confusion:true,ecgChaos:0.1}},
+  6:{acts:()=>ACTS_D6, monitorTitle:'Monitor Room 312A', sfxLoop:'monitor', chartKey:'chart_d6',
+     hudDay:'Day 6 Room 312A', hudPt:'Mrs. Rivera, 71F', handoffSub:'Day 6 Room 312A 07:15',
+     handoffVitalsLabel:'Vitals trending -- last 8 hours',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv crit">104/68</div></div><div><div class="vcl">HR</div><div class="vcv warn">92</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.2C</div></div><div><div class="vcl">RR</div><div class="vcv warn">20</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">96%</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">7 mL</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:96,skinFlush:0,diaphoresis:0.4,mottle:0.2,confusion:false,ecgChaos:0.1},
+     ivReset:()=>{if(SCENARIOS[6]&&SCENARIOS[6].iv&&SCENARIOS[6].iv.main){SCENARIOS[6].iv.main.rate='80 mL/hr';SCENARIOS[6].iv.main.state='warn';SCENARIOS[6].iv.main.note='Review rate -- UO declining';}},
+     timers:[{at:180000,vitals:VC('96/60','102','crit','warn'),guard:'call_md'},{at:300000,vitals:VC('84/54','112','crit','crit'),guard:'call_md'}]},
+  7:{acts:()=>ACTS_D7, monitorTitle:'Monitor ER Bay 6', sfxLoop:'monitor', chartKey:'chart_d7',
+     hudDay:'Day 7 ER Bay 6', hudPt:'Mr. Kowalski, 54M', handoffSub:'Day 7 ER Bay 6 10:51',
+     handoffVitalsLabel:'Vitals on arrival -- ER',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv ok">118/78</div></div><div><div class="vcl">HR</div><div class="vcv warn">96</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.4C</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div>',
+     visual:{patientState:'stable',o2Saturation:99,skinFlush:0.3,diaphoresis:0.1,mottle:0,confusion:false,ecgChaos:0.05}},
+  8:{acts:()=>[], monitorTitle:'ICU -- Rooms 12 & 14', sfxLoop:'icu', chartKey:'chart_d8',
+     hudDay:'Day 8 ICU 05:12', hudPt:'Two patients', handoffSub:'Day 8 ICU Night Shift 05:12',
+     handoffVitalsLabel:'Two unstable patients -- last vitals',
+     handoffVitalsGrid:'<div><div class="vcl">12 BP</div><div class="vcv crit">78/42</div></div><div><div class="vcl">12 MAP</div><div class="vcv crit">54</div></div><div><div class="vcl">12 SpO2</div><div class="vcv warn">92%</div></div><div><div class="vcl">14 SpO2</div><div class="vcv crit">78%</div></div><div><div class="vcl">14 HR</div><div class="vcv crit">140</div></div><div><div class="vcl">14 Peak</div><div class="vcv crit">HIGH</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:92,skinFlush:0,diaphoresis:0.5,mottle:0.3,confusion:false,ecgChaos:0.3}, custom:'icu2'},
+  9:{acts:()=>ACTS_D9, monitorTitle:'Monitor 4 West', sfxLoop:'monitor', chartKey:'chart_d9',
+     hudDay:'Day 9 4 West 03:12', hudPt:'Mr. Tremblay, 89M', handoffSub:'Day 9 Medical Unit 03:12',
+     handoffVitalsLabel:'Vitals 2 hours ago -- he was settled then',
+     handoffVitalsGrid:'<div><div class="vcl">Temp</div><div class="vcv warn">37.9C</div></div><div><div class="vcl">HR</div><div class="vcv ok">88</div></div><div><div class="vcl">BP</div><div class="vcv ok">122/70</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">96%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Orient</div><div class="vcv ok">A&O x3</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:96,skinFlush:0,diaphoresis:0.2,mottle:0,confusion:true,ecgChaos:0.08}},
+};
+function DAY(){return DAYS[G.currentDay]||DAYS[1];}
+function getACTS(){const d=DAYS[G.currentDay];return d&&d.acts?d.acts():ACTS;}
 function getSC(){return SCENARIOS[G.currentDay]||SCENARIOS[1];}
 function getSBAR(){return SBAR_DATA[G.currentDay]||SBAR_DATA[1];}
 function isSBARDragMode(){return (G.currentDay||1)<=5;}
@@ -1726,11 +2038,11 @@ function getVSForDay(day){
 }
 function resetVSForDay(day){
   Object.assign(VS,getVSForDay(day));
-  if(day===1&&SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='150 mL/hr';SCENARIOS[1].iv.main.state='crit';SCENARIOS[1].iv.main.note='Prescribed 80 mL/hr -- running too fast';}
   if(SCENARIOS[2]&&SCENARIOS[2].vitals){SCENARIOS[2].vitals.lac=null;}
-  if(day===6&&SCENARIOS[6]&&SCENARIOS[6].iv&&SCENARIOS[6].iv.main){SCENARIOS[6].iv.main.rate='80 mL/hr';SCENARIOS[6].iv.main.state='warn';SCENARIOS[6].iv.main.note='Review rate -- UO declining';}
-  if(day===4&&SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='No IV access';SCENARIOS[4].iv.main.vol='--';SCENARIOS[4].iv.main.rate='--';SCENARIOS[4].iv.main.state='crit';SCENARIOS[4].iv.main.note='Large bore IV needed -- urgent';}
+  if(DAYS[day]&&DAYS[day].ivReset)DAYS[day].ivReset();
   renderIVPanel(day);
+  const labRows=document.getElementById('lab-rows');if(labRows)labRows.innerHTML='';
+  const labsPanel=document.getElementById('labs-panel');if(labsPanel)labsPanel.classList.remove('show');
 }
 function updateVitals(chg={}){
   if(chg.spo2)Object.assign(VS.spo2,chg.spo2);if(chg.hr)Object.assign(VS.hr,chg.hr);
@@ -1753,10 +2065,12 @@ function updateVitals(chg={}){
     if(scv.gcs){const ge=document.getElementById('mo-gcs');if(ge){ge.textContent=scv.gcs.val;ge.className='monval '+scv.gcs.state;}}
   }else{
     const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
-    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':G.currentDay===4?'Monitor ER Bay 2':G.currentDay===5?'Monitor Room 305':G.currentDay===6?'Monitor Room 312A':G.currentDay===7?'Monitor ER Bay 6':'Monitor Bay 4';
-    const sc1v=(SCENARIOS[1]||{}).vitals||{};
+    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=DAY().monitorTitle;
+    const sc1v=(SCENARIOS[G.currentDay]||{}).vitals||{};
     if(sc1v.temp){const te=document.getElementById('mo-temp-d1');if(te){te.textContent=sc1v.temp.val;te.className='monval '+sc1v.temp.state;}}
     if(sc1v.gcs){const ge=document.getElementById('mo-gcs-d1');if(ge){ge.textContent=sc1v.gcs.val;ge.className='monval '+sc1v.gcs.state;}}
+    const uoW=document.getElementById('mo-uo-d1-wrap'),uoE=document.getElementById('mo-uo-d1');
+    if(sc1v.uo&&uoW&&uoE){uoW.style.display='';uoE.textContent=sc1v.uo.val;uoE.className='monval '+sc1v.uo.state;}else if(uoW){uoW.style.display='none';}
   }
   const alarm=document.getElementById('alarm-badge');
   if(alarm)alarm.classList.toggle('show',Object.values(VS).some(v=>typeof v==='object'&&v.state==='crit'));
@@ -1767,7 +2081,7 @@ function updateVitals(chg={}){
   if(chg.hr&&SFX._beepIv){
     SFX.stopMonitorLoop();
     setTimeout(()=>{
-      if(G.currentDay===2)SFX.startICULoop();
+      if(DAY().sfxLoop==='icu')SFX.startICULoop();
       else SFX.startMonitorLoop();
     },50);
   }
@@ -1809,39 +2123,16 @@ function labRowHTML(id,name,val,state,isNew){return '<div class="lab-row" id="'+
 
 // === VISUAL STATE ===
 function initVisualState(day){
-  if(day===2){G.patientState='deteriorating';G.o2Saturation=95;G.skinFlush=0.7;G.diaphoresis=0.8;G.mottle=0.4;G.confusion=true;G.ecgChaos=0.3;}
-  else if(day===3){
-    G.patientState='deteriorating';G.o2Saturation=97;
-    G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0.1;G.confusion=false;G.ecgChaos=0.1;
-    // Day 3: pale skin, slightly clammy, restless -- not dramatic
-  }
-  else if(day===4){
-    G.patientState='deteriorating';G.o2Saturation=93;
-    G.skinFlush=0.9;G.diaphoresis=0.2;G.mottle=0.2;G.confusion=false;G.ecgChaos=0.2;
-    // Day 4: anaphylaxis -- flushed, urticaria, tachycardic, hypotensive
-  }
-  else if(day===5){
-    G.patientState='deteriorating';G.o2Saturation=98;
-    G.skinFlush=0;G.diaphoresis=0.8;G.mottle=0.1;G.confusion=true;G.ecgChaos=0.1;
-  }
-  else if(day===6){
-    G.patientState='deteriorating';G.o2Saturation=96;
-    G.skinFlush=0;G.diaphoresis=0.4;G.mottle=0.2;G.confusion=false;G.ecgChaos=0.1;
-    // Day 6: early sepsis -- pale, slightly diaphoretic, subtle deterioration
-  }
-  else if(day===7){
-    G.patientState='stable';G.o2Saturation=99;
-    G.skinFlush=0.3;G.diaphoresis=0.1;G.mottle=0;G.confusion=false;G.ecgChaos=0.05;
-    // Day 7: right leg cellulitis -- stable vitals, mild warmth/erythema, no acute deterioration
-  }
-  else{G.patientState='deteriorating';G.o2Saturation=91;G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0;G.confusion=false;G.ecgChaos=0.15;}
+  const v=(DAYS[day]&&DAYS[day].visual)||DAYS[1].visual;
+  G.patientState=v.patientState;G.o2Saturation=v.o2Saturation;G.skinFlush=v.skinFlush;
+  G.diaphoresis=v.diaphoresis;G.mottle=v.mottle;G.confusion=v.confusion;G.ecgChaos=v.ecgChaos;
 }
 function applyVisualImprovement(type){
   if(type==='o2'||type==='o2_d2')G.o2Saturation=Math.min(99,G.o2Saturation+4);
   if(type==='fluids')setTimeout(()=>{G.mottle=Math.max(0,G.mottle-0.3);},3000);
 }
 function tickVisualDeterioration(){
-  if(G.currentDay===2&&!G.actionsTaken.includes('fluids')){G.mottle=Math.min(1,G.mottle+0.02);G.ecgChaos=Math.min(0.8,G.ecgChaos+0.01);}
+  if(DAY().tickMottle&&!G.actionsTaken.includes('fluids')){G.mottle=Math.min(1,G.mottle+0.02);G.ecgChaos=Math.min(0.8,G.ecgChaos+0.01);}
   if(!G.actionsTaken.includes('o2')&&!G.actionsTaken.includes('o2_d2'))G.o2Saturation=Math.max(82,G.o2Saturation-0.05);
 }
 
@@ -1897,7 +2188,7 @@ function drawPatient(ctx,W,H){
   if(G.patientState==='stable'){ctx.beginPath();ctx.arc(cx,cy-28+breathY,5,0.2,Math.PI-0.2);ctx.stroke();}
   else{ctx.beginPath();ctx.moveTo(cx-5,cy-27+breathY);ctx.lineTo(cx+5,cy-27+breathY);ctx.stroke();}
   if(G.o2Device)drawO2(ctx,cx,cy+breathY,G.o2Device);
-  if(G.currentDay===2)drawIVFluid(ctx,W,H);
+  if(DAY().drawIVFluid)drawIVFluid(ctx,W,H);
 }
 function drawO2(ctx,cx,cy,dev){
   if(dev==='prong'){ctx.strokeStyle='rgba(100,200,255,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-20,cy-32);ctx.bezierCurveTo(cx-15,cy-38,cx-8,cy-38,cx-6,cy-34);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+20,cy-32);ctx.bezierCurveTo(cx+15,cy-38,cx+8,cy-38,cx+6,cy-34);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-6,cy-34);ctx.bezierCurveTo(cx-3,cy-30,cx+3,cy-30,cx+6,cy-34);ctx.stroke();ctx.fillStyle='rgba(100,200,255,.8)';ctx.font="bold 7px 'DM Mono'";ctx.fillText('NC 2L',cx-18,cy-44);}
@@ -1965,11 +2256,17 @@ function handleTap(tap){
   G.touchesLeft--;G.clues.push(tap.id);renderPips();SFX.init();SFX.tapFind();
   const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft+' of '+getTouchLimit()+' touches left';
   openDrawer(tap.lbl||'Finding',tap.finds.slice(0,3),tap.insight);checkActions();
+  // Day 5: BGL tap → immediately show result in labs panel
+  if(G.currentDay===5&&tap.id==='glucose'){addLabResult('BGL','2.1 mmol/L','crit',true);SFX.init();SFX.urgentAlarm();}
   // Day 6 interrupt: daughter speaks mid-assessment after 2nd valid clue
   const validSoFar=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
-  if(G.currentDay===6&&validSoFar.length===2&&!G.interruptFired){
+  if((G.currentDay===6||G.currentDay===9)&&validSoFar.length===2&&!G.interruptFired){
     G.interruptFired=true;
     setTimeout(()=>showInterrupt(),1200);
+  }
+  if(G.currentDay===6&&G.clues.includes('wound')&&G.interruptFired&&!G.interrupt2Fired){
+    G.interrupt2Fired=true;
+    setTimeout(()=>showInterrupt2(),2000);
   }
 }
 function handleWrongTap(tap){
@@ -2006,7 +2303,67 @@ const INTERRUPTS={
        clue:'Family -- false reassurance given'},
     ],
   },
+  9:{
+    tag:'Night shift — the unit does not pause',
+    quote:'A call bell chimes in Bed 14. An IV pump alarms in Bed 10. The CNA leans in: "Sorry — Bed 14 needs the commode and Bed 10\'s pump keeps beeping. Can you come?" Mr. Tremblay is still half over the rail.',
+    sub:'It is 3 AM, you are one nurse, and everything happens at once. What do you do?',
+    choices:[
+      {key:'A',lbl:'"Please take Bed 14 to the commode and silence Bed 10\'s pump — I\'ll check it after. Right now I need you back here to sit with Mr. Tremblay; he is not safe alone."',
+       result:'good',
+       fb:'Good. You triaged: the confused patient climbing over the rail is the highest fall risk and cannot be left. You delegated the lower-acuity tasks and kept a sitter on the unsafe patient. Clear, calm, prioritised.',
+       clue:'Unit triage -- protected the highest-risk patient, delegated the rest'},
+      {key:'B',lbl:'Leave Mr. Tremblay for a minute to handle the pump and the commode yourself, then come back.',
+       result:'neutral',
+       fb:'Understandable at 3 AM — but you left the highest fall-risk patient alone and unmonitored. The tasks got done; the most dangerous gap was the empty chair beside the confused man on the rail. Delegate the small things; stay with the unsafe patient.',
+       clue:'Fragmented -- left the confused patient briefly unattended'},
+      {key:'C',lbl:'Tell the CNA you are too busy and try to manage everything in the room at once while the alarms keep going.',
+       result:'bad',
+       fb:'Trying to hold every thread alone is how things fall through. The pump and call bell are tasks you can delegate; the patient on the rail can be on the floor in seconds. Name the priority and share the load.',
+       clue:'Overloaded -- no delegation, attention split too thin'},
+    ],
+  },
 };
+const INTERRUPTS2={
+  6:{
+    tag:'Mrs. Rivera — patient',
+    quote:'"Excuse me." Her voice is quiet, careful. "I know Ana is... a lot right now. But she is right. I have been feeling strange since yesterday. Not just tired. Wrong strange. Cold inside."',
+    sub:'She is trying to tell you something. How do you respond?',
+    choices:[
+      {key:'A',lbl:'"I hear you. Can you tell me more -- what does wrong feel like?" [Stop. Make eye contact. Listen.]',
+       result:'good',
+       fb:'Good. You stopped and listened. "Cold inside" in a post-op Day 3 patient is a haemodynamic red flag. Pallor + subjective cold = poor peripheral perfusion. She just gave you the most important clue of the shift -- and you heard it.',
+       clue:'Patient -- subjective cold + wrong feeling -- perfusion concern'},
+      {key:'B',lbl:'"I know -- I can see that. We are taking care of you right now." [Continue documenting]',
+       result:'neutral',
+       fb:'Your reassurance was kind but you missed the data. "Cold inside" is clinically significant. She was trying to describe hypoperfusion in her own words. You heard the emotion but not the symptom. Always ask: "Tell me more about that."',
+       clue:'Patient -- symptom partially heard'},
+      {key:'C',lbl:'"I understand. I am nearly done with your assessment." [Continue without exploring further]',
+       result:'bad',
+       fb:'She told you she felt wrong. You acknowledged and moved on. "Wrong strange. Cold inside." That is a patient describing early shock in lay terms. Dismissing subjective symptoms in post-op patients costs lives. The most important question you never asked: "Tell me more."',
+       clue:'Patient -- symptom dismissed'},
+    ],
+  },
+};
+function showInterrupt2(){
+  if(G.currentDay!==6)return;
+  const int=INTERRUPTS2[G.currentDay];if(!int)return;
+  const ov=document.getElementById('interrupt-overlay');
+  const box=document.getElementById('interrupt-box');
+  if(!ov||!box)return;
+  const tagCl='color:var(--amber)';
+  box.innerHTML=`<div style="font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;${tagCl}">${int.tag}</div><div class="int-quote">${int.quote}</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-bottom:14px;">${int.sub}</div><div style="display:flex;flex-direction:column;gap:8px;">${int.choices.map((c,i)=>`<button class="int-choice" onclick="answerInterrupt2(${i})">${c.lbl}</button>`).join('')}</div><div id="int2-fb" style="margin-top:12px;"></div>`;
+  ov.classList.add('show');SFX.init();SFX.chime();
+}
+function answerInterrupt2(idx){
+  const int=INTERRUPTS2[G.currentDay];if(!int)return;
+  const ch=int.choices[idx];
+  document.querySelectorAll('.int-choice').forEach((b,i)=>{b.setAttribute('disabled','');if(i===idx)b.style.cssText+=ch.result==='good'?';border-color:var(--teal);color:var(--teal);':ch.result==='bad'?';border-color:var(--alarm);color:var(--alarm);':';border-color:var(--amber);color:var(--amber);';});
+  const fb=document.getElementById('int2-fb');
+  if(fb)fb.innerHTML=`<div style="font-family:var(--body);font-size:12px;color:var(--text);line-height:1.6;border-left:2px solid ${ch.result==='good'?'var(--teal)':ch.result==='bad'?'var(--alarm)':'var(--amber)'};padding-left:10px;">${ch.fb}</div>`;
+  if(ch.clue&&!G.clues.includes('patient_voice'))G.clues.push('patient_voice');
+  G.interrupt2Choice=ch.result;
+  setTimeout(()=>{const ov=document.getElementById('interrupt-overlay');if(ov)ov.classList.remove('show');checkActions();},3000);
+}
 function showInterrupt(){
   const int=INTERRUPTS[G.currentDay];if(!int)return;
   const ov=document.getElementById('interrupt-overlay');
@@ -2174,7 +2531,7 @@ function gotoHandoff(){
   G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;
   G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];
   G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.fluidName='0.9% NaCl 1L';
-  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;G.interruptFired=false;G.interruptChoice=null;
+  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;G._phoneRing=null;
   stopScene();if(G.timerIv)clearInterval(G.timerIv);
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
@@ -2182,15 +2539,9 @@ function gotoHandoff(){
 }
 function startHandoff(){
   const chat=document.getElementById('ho-chat');if(chat)chat.innerHTML='';
-  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':G.currentDay===4?'Day 4 ER Bay 2 14:05':G.currentDay===5?'Day 5 Room 305 02:30':G.currentDay===6?'Day 6 Room 312A 07:15':G.currentDay===7?'Day 7 ER Bay 6 10:51':'Day 1 Bay 4 23:42';
+  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=DAY().handoffSub;
   const lbl=document.getElementById('ho-vitals-lbl');const grid=document.getElementById('ho-vitals-grid');
-  if(G.currentDay===2){if(lbl)lbl.textContent='Last recorded vitals 30 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>';}
-  else if(G.currentDay===3){if(lbl)lbl.textContent='Last recorded vitals -- trending';if(grid)grid.innerHTML='<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">50mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>';}
-  else if(G.currentDay===4){if(lbl)lbl.textContent='Triage vitals -- 5 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">84/52</div></div><div><div class="vcl">HR</div><div class="vcv crit">128</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">93%</div></div><div><div class="vcl">RR</div><div class="vcv crit">26</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.0C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
-  else if(G.currentDay===5){if(lbl)lbl.textContent='Vitals taken by aide 02:30';if(grid)grid.innerHTML='<div><div class="vcl">BGL</div><div class="vcv crit">2.1 mmol</div></div><div><div class="vcl">GCS</div><div class="vcv crit">10</div></div><div><div class="vcl">HR</div><div class="vcv warn">106</div></div><div><div class="vcl">BP</div><div class="vcv ok">124/78</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">98%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div>';}
-  else if(G.currentDay===6){if(lbl)lbl.textContent='Vitals trending -- last 8 hours';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">104/68</div></div><div><div class="vcl">HR</div><div class="vcv warn">92</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.2C</div></div><div><div class="vcl">RR</div><div class="vcv warn">20</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">96%</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">7 mL</div></div>';}
-  else if(G.currentDay===7){if(lbl)lbl.textContent='Vitals on arrival -- ER';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv ok">118/78</div></div><div><div class="vcl">HR</div><div class="vcv warn">96</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.4C</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div>';}
-  else{if(lbl)lbl.textContent='Last recorded vitals';if(grid)grid.innerHTML='<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
+  if(lbl)lbl.textContent=DAY().handoffVitalsLabel;if(grid)grid.innerHTML=DAY().handoffVitalsGrid;
   const vc=document.getElementById('ho-vitals');if(vc)vc.style.display='none';
   const sc=getSC();let i=0;
   function next(){if(i>=sc.handoff.length)return;const msg=sc.handoff[i++];setTimeout(()=>{
@@ -2200,16 +2551,14 @@ function startHandoff(){
     next();},msg.delay||800);
   }next();
 }
+function clearDayTimers(){if(G._dayTimers){G._dayTimers.forEach(t=>clearTimeout(t));}G._dayTimers=[];}
 function gotoInvestigate(){
-  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':G.currentDay===4?'Day 4 ER Bay 2':G.currentDay===5?'Day 5 Room 305':G.currentDay===6?'Day 6 Room 312A':G.currentDay===7?'Day 7 ER Bay 6':'Day 1 Bay 4';
-  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':G.currentDay===4?'Jamie Chen, 21F':G.currentDay===5?'Mr. Park, 62M':G.currentDay===6?'Mrs. Rivera, 71F':G.currentDay===7?'Mr. Kowalski, 54M':'Mrs. Delgado, 58F';
-  const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=dayHud;if(pe)pe.textContent=ptHud;
+  if(DAY().custom==='icu2'){return gotoICU2();}
+  const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=DAY().hudDay;if(pe)pe.textContent=DAY().hudPt;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
-  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);
-    if(G.currentDay===3){
-      G._d3Tv1=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'106/68',state:'warn'},hr:{val:'104',state:'warn'}});SFX.init();SFX.urgentAlarm();}},120000);
-      G._d3Tv2=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'90/58',state:'crit'},hr:{val:'112',state:'crit'}});SFX.init();SFX.urgentAlarm();}},180000);
-    }
+  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(DAY().sfxLoop==='icu')SFX.startICULoop();else SFX.startMonitorLoop();},700);
+    clearDayTimers();const tmrs=DAY().timers;
+    if(tmrs)tmrs.forEach(tm=>{G._dayTimers.push(setTimeout(()=>{if(!tm.guard||!G.actionsTaken.includes(tm.guard)){updateVitals(tm.vitals);SFX.init();SFX.urgentAlarm();}},tm.at));});
   },100);});
 }
 
@@ -2268,7 +2617,7 @@ function startTimer(resume=false){
     if(G.timerSec===180){SFX.init();SFX.deterioration();}
     if(G.timerSec===90){SFX.init();SFX.urgentAlarm();}
     if(G.timerSec%10===0)tickVisualDeterioration();
-    if(G.currentDay===2&&G.timerSec===180&&!G.actionsTaken.includes('fluids')){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
+    const cb=DAY().codeBlue;if(cb&&G.timerSec===cb.at&&!G.actionsTaken.includes(cb.guard)){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
     if(G.timerSec<=0){clearInterval(G.timerIv);resetTimerPressure();stopScene();gotoAction();}
   },1000);
 }
@@ -2426,14 +2775,14 @@ function doAction(type){
     ],null);setTimeout(checkActions,200);
   }else if(type==='call_d2'){gotoSBAR();
   }else if(type==='lactate_repeat'){if(!G.actionsTaken.includes('lactate_repeat'))G.actionsTaken.push('lactate_repeat');openDrawer('Repeat lactate ordered',[{p:'o',t:'Target: clearance at least 10% at 2 hours (SSC 2021).'}],null);setTimeout(checkActions,200);
-  }else if(type==='cath'){if(!G.actionsTaken.includes('cath'))G.actionsTaken.push('cath');openDrawer('Urinary catheter inserted',[{p:'o',t:'IDC inserted. Hourly drainage chart started. Target at least 0.5 mL/kg/hr.'}],null);setTimeout(checkActions,200);
+  }else if(type==='cath'){if(!G.actionsTaken.includes('cath'))G.actionsTaken.push('cath');openDrawer('Urinary catheter inserted',[{p:'o',t:'Foley catheter inserted. Hourly drainage chart started. Target at least 0.5 mL/kg/hr.'}],null);setTimeout(checkActions,200);
   }else if(type==='vfreq_d2'){if(!G.actionsTaken.includes('vfreq_d2'))G.actionsTaken.push('vfreq_d2');openDrawer('Continuous monitoring',[{p:'o',t:'Continuous: arterial BP, HR, SpO2. Temp q1h. GCS q30min.'}],null);setTimeout(checkActions,200);
   }else if(type==='family_d2'){if(!G.actionsTaken.includes('family_d2'))G.actionsTaken.push('family_d2');SFX.init();SFX.chime();openDrawer('Family updated',[{p:'o',t:'He has a serious infection and his blood pressure is low. We are treating him urgently.'}],null);setTimeout(checkActions,200);
   }else if(type==='charge_d2'){if(!G.actionsTaken.includes('charge_d2'))G.actionsTaken.push('charge_d2');SFX.init();SFX.chime();openDrawer('Charge nurse notified',[{p:'o',t:'Bed 3, Mr. Chen, septic shock. Bundle started. Physician called.'}],null);setTimeout(checkActions,200);
   }else if(type==='chart_d2'){
     if(!G.actionsTaken.includes('chart_d2'))G.actionsTaken.push('chart_d2');
     document.getElementById('cd-title').textContent='Write nursing note -- Sepsis';
-    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="5">[TIME] Mr. Chen Bed 3. New confusion GCS 13. Febrile 39.1C. BP 86/50 MAP 62 trending. HR 118. SpO2 95% on 2L. Lactate 3.2. UO 18mL/hr. Wound erythema, cloudy drain, abdomen guarded.\nInterventions: O2 6L SM. Fluid bolus 500mL. Blood cultures x2. Pip-Tazo 3.375g IV. IDC. Repeat lactate x2h.\nDr. Yuen notified. Charge Park notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="5">[TIME] Mr. Chen Bed 3. New confusion GCS 13. Febrile 39.1C. BP 86/50 MAP 62 trending. HR 118. SpO2 95% on 2L. Lactate 3.2. UO 18mL/hr. Wound erythema, cloudy drain, abdomen guarded.\nInterventions: O2 6L SM. Fluid bolus 500mL. Blood cultures x2. Pip-Tazo 3.375g IV. Foley catheter. Repeat lactate x2h.\nDr. Yuen notified. Charge Park notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }else if(type==='tylenol_d2'){
     if(!G.actionsTaken.includes('tylenol_d2'))G.actionsTaken.push('tylenol_d2');
@@ -2633,6 +2982,16 @@ function doAction(type){
       {p:'w',t:'Recheck BGL at 15 minutes. Target >4.0 mmol/L. If still low -- repeat D50W.'},
     ],'D50W + patent IV = fastest glucose delivery possible. You did not wait and his brain is intact because of it.');
     setTimeout(checkActions,200);
+  }else if(type==='juice_d5'){
+    if(!G.actionsTaken.includes('juice_d5'))G.actionsTaken.push('juice_d5');
+    SFX.init();SFX.flatline();
+    openDrawer('⚠ Oral glucose -- unsafe at GCS 10',[
+      {p:'w',t:'GCS 10 means he cannot follow commands and swallow reflex is unreliable.'},
+      {p:'w',t:'Orange juice or glucose gel by mouth at this level of consciousness = aspiration risk.'},
+      {p:'c',t:'Rule: oral route is only safe when patient is conscious, alert, and able to swallow on command (GCS 15).'},
+      {p:'o',t:'IV access is patent. Use D50W 50mL IV push -- faster, safer, more reliable.'},
+    ],'Oral glucose in an altered patient causes aspiration pneumonia. The IV route is always preferred when access is available.');
+    setTimeout(checkActions,200);
   }else if(type==='nil_oral_d5'){
     if(!G.actionsTaken.includes('nil_oral_d5'))G.actionsTaken.push('nil_oral_d5');
     openDrawer('NPO -- oral route unsafe',[
@@ -2778,13 +3137,83 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note -- Anaphylaxis';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Jamie Chen 21F ER Bay 2. Bee sting parking lot. Documented bee allergy. EpiPen not with patient.\nStridor, angioedema, urticaria spreading. BP 84/52 dropping. HR 128. SpO2 93% trending down.\nInterventions: Epi 0.3mg IM right outer thigh [TIME]. O2 15L NRB. Supine legs elevated. 16G IV x2 antecubital.\nFluids 0.9% NaCl 1L wide open. Diphenhydramine 50mg IV. Hydrocortisone 200mg IV.\nDr. Kowalski notified [TIME]. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  }else if(type==='safety_d9'){
+    if(!G.actionsTaken.includes('safety_d9'))G.actionsTaken.push('safety_d9');SFX.init();SFX.confirm();
+    openDrawer('Safety first -- least restrictive',[
+      {p:'o',t:'Bed lowered to its lowest position. Bed-exit alarm on. IV lines tidied out of reach. Path cleared, call bell in his hand.'},
+      {p:'c',t:'This is how you prevent a fall in a delirious patient -- environment and presence, not restraint.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='reorient_d9'){
+    if(!G.actionsTaken.includes('reorient_d9'))G.actionsTaken.push('reorient_d9');SFX.init();SFX.chime();
+    openDrawer('Calm reorientation',[
+      {p:'o',t:'You lower the lights, sit at eye level, soften your voice: "You are in the hospital, Mr. Tremblay. It is night. You are safe. I am right here."'},
+      {p:'w',t:'He settles a little. He still drifts -- but the fear eases when he is not alone. Do not argue with the confusion; reassure the person inside it.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='vitals_d9'){
+    if(!G.actionsTaken.includes('vitals_d9'))G.actionsTaken.push('vitals_d9');SFX.init();SFX.tapFind();
+    addLabResult('Temp','38.5 C','crit',true);
+    openDrawer('Full vitals',[
+      {p:'c',t:'Temp 38.5 (was 37.9). HR 104 (was 88). BP 108/62. RR 20. SpO2 96%.'},
+      {p:'w',t:'Fever + rising HR + softening BP in a UTI admission -- infection is progressing. This is the engine of the delirium.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='glucose_d9'){
+    if(!G.actionsTaken.includes('glucose_d9'))G.actionsTaken.push('glucose_d9');SFX.init();SFX.tapFind();
+    addLabResult('BGL','6.1 mmol/L','ok',true);
+    openDrawer('Blood glucose 6.1 mmol/L',[
+      {p:'o',t:'Glucose 6.1 -- normal. Hypoglycemia ruled out as the cause of the confusion.'},
+      {p:'c',t:'Always check a glucose in acute confusion. It is fast, reversible, and mimics everything. Ruling it out narrows the differential.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='cam_d9'){
+    if(!G.actionsTaken.includes('cam_d9'))G.actionsTaken.push('cam_d9');SFX.init();SFX.tapFind();
+    openDrawer('CAM -- positive',[
+      {p:'c',t:'Acute onset + fluctuating yes. Inattention yes (cannot recite the months backward, drifts off). Disorganised thinking yes. CAM positive = delirium.'},
+      {p:'o',t:'Naming it matters: this is delirium (reversible, urgent), not dementia (chronic). Different problem, different response.'},
+    ],'CAM converts a vague "confused" into a specific, actionable diagnosis: delirium.');setTimeout(checkActions,200);
+  }else if(type==='fluids_d9'){
+    if(!G.actionsTaken.includes('fluids_d9'))G.actionsTaken.push('fluids_d9');SFX.init();SFX.o2Flow();
+    openDrawer('IV fluids restarted',[
+      {p:'o',t:'IV maintenance fluids restarted (bolus then maintenance per orders). His missed evening fluids are being made up.'},
+      {p:'w',t:'Dehydration alone causes delirium in the elderly. Rehydration is treatment, not just supportive care.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='urine_d9'){
+    if(!G.actionsTaken.includes('urine_d9'))G.actionsTaken.push('urine_d9');SFX.init();SFX.tapFind();
+    openDrawer('Repeat urinalysis + culture sent',[
+      {p:'o',t:'Repeat urinalysis and culture sent. Cloudy, concentrated, foul urine supports a worsening UTI.'},
+      {p:'c',t:'Culture guides targeted antibiotics. Send it before escalation when you can.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='cna_d9'){
+    if(!G.actionsTaken.includes('cna_d9'))G.actionsTaken.push('cna_d9');SFX.init();SFX.chime();
+    openDrawer('CNA at the bedside',[
+      {p:'o',t:'The CNA stays with Mr. Tremblay -- a calm, familiar presence. Safer than any restraint, and it frees you to call the MD.'},
+      {p:'c',t:'Delegating a sitter for a delirious patient is a recognised fall-prevention strategy, not a luxury.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='call_d9'){gotoSBAR();
+  }else if(type==='restraint_d9'){
+    if(!G.actionsTaken.includes('restraint_d9'))G.actionsTaken.push('restraint_d9');SFX.init();SFX.urgentAlarm();
+    openDrawer('Restraints -- he fights harder',[
+      {p:'w',t:'As the wrist restraints go on, he panics -- pulls, twists, cries out for his wife. His heart rate climbs. The risk of injury and aspiration just went UP, not down.'},
+      {p:'c',t:'Restraints do not treat the cause and they worsen delirium. They are a last resort, with an order and continuous 1:1 monitoring, only after less restrictive measures fail.'},
+      {p:'o',t:'Better path: low bed, exit alarm, a sitter, reorientation -- and treat the infection and dehydration driving this. (CCSMH / Choosing Wisely Canada / RNAO)'},
+    ],'Restraints feel like safety. For a delirious elder they usually add harm and never fix the cause.');setTimeout(checkActions,200);
+  }else if(type==='antipsych_d9'){
+    if(!G.actionsTaken.includes('antipsych_d9'))G.actionsTaken.push('antipsych_d9');SFX.init();SFX.flatline();
+    openDrawer('Quetiapine / Loxapine -- wrong first move',[
+      {p:'w',t:'A PRN antipsychotic might flatten the agitation -- but it does not touch the infection or the dehydration, and now his mental status is chemically clouded so you cannot tell if he is improving or worsening.'},
+      {p:'c',t:'In older adults, antipsychotics increase falls, stroke, and death. Choosing Wisely Canada: do NOT use them as a first choice for behavioural symptoms.'},
+      {p:'o',t:'Reserve low-dose antipsychotics for severe distress or danger only after non-drug measures fail -- never as the opening move. Treat the cause first. (Choosing Wisely Canada -- Geriatrics / CCSMH / Health Canada)'},
+    ],'Chemical settling is not treatment. It hides the picture while the real problem -- sepsis -- keeps moving.');setTimeout(checkActions,200);
+  }else if(type==='chart_d9'){
+    if(!G.actionsTaken.includes('chart_d9'))G.actionsTaken.push('chart_d9');
+    document.getElementById('cd-title').textContent='Write nursing note -- Acute delirium';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Mr. Tremblay 89M 4 West Bed 12. Admitted UTI + dehydration. Baseline A&O x3 per daughter, no dementia.\nAcute change overnight: fluctuating confusion, inattention, climbing OOB, pulling IV. CAM positive.\nTemp 38.5 (was 37.9), HR 104, BP 108/62, RR 20, SpO2 96%. BGL 6.1 (normal). Cloudy concentrated urine UO 18 mL/hr. Dry mucous membranes.\nInterventions: bed lowered + exit alarm, CNA 1:1 at bedside, reoriented, IV fluids restarted, repeat UA + culture sent. NO restraints, NO sedation.\nDr. Singh notified [TIME] -- ?worsening urosepsis. Orders: fluids, repeat cultures, escalate antibiotics. Daughter updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }
 }
-function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'chart_d3':G.currentDay===4?'chart_d4':G.currentDay===5?'chart_d5':G.currentDay===6?'chart_d6':G.currentDay===7?'chart_d7':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
+function submitChart(){const key=DAY().chartKey||'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
 
 // === SBAR ===
 function gotoSBAR(){
-  if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}
+  clearDayTimers();
   if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
   wipeGo(()=>{showScreen('sbar');renderSBAR();});
@@ -2880,17 +3309,19 @@ function answerChoice(idx){
   }
 }
 function continueAfterFail(){wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
-function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
+function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;clearDayTimers();resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
 
 // === HANDOFF 2 ===
 const HO2_ITEMS={
   1:['Patient: Mrs. Delgado, 58F, Bay 4 -- suspected PE, post-op Day 2 hip replacement','SpO2 91% trending -- O2 applied, targeting >94%','Physician called -- CT-PA and heparin pending','Missed enoxaparin today -- DVT history, high risk','IV rate corrected 150 to 80 mL/hr','Right calf swollen and tender -- DVT source likely','Monitoring q15min','Family aware'],
-  2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- IDC inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
+  2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- Foley catheter inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
   3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- distension, guarding, shoulder tip pain','JP drain 50 mL dark red in last hour -- was 12 mL prior 4h combined','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern','IV fluid challenge 250 mL. Type and crossmatch ordered','Dr. Martinez notified -- may return to theatre','Family aware'],
   6:['Patient: Mrs. Rivera, 71F, Room 312A -- post-op Day 3 colorectal resection, surgical site infection','BP trending down: 122/80 → 118/74 → 104/68 over 8 hours -- early sepsis pattern','HR 92, Temp 38.2C, RR 20, SpO2 96%, UO 7mL/hr -- oliguria','Wound: dark yellow-green drainage, erythema, periwound warmth','Blood cultures x2 drawn before antibiotics. Penicillin allergy documented -- avoid beta-lactams','IV fluid challenge 250mL Hartmann\'s -- BP responding to 110/72','Dr. Osei (Gen Surg) notified -- gentamicin ordered, on his way','NPO -- possible return to theatre for wound washout','Daughter present -- escalation de-escalated, charge nurse aware','Q15min monitoring active -- alert thresholds set'],
   5:['Patient: Mr. Park, 62M, Room 305 -- severe hypoglycemia, Type 2 DM','BGL 2.1 mmol/L on arrival -- D50W 50mL IV given, BGL now 6.8','GCS 10 on arrival -- improving, now GCS 14','Insulin Glargine withheld -- pending physician dose review','NPO until GCS 15 and safe swallow confirmed','Monitoring BGL q15min -- next check due','Dr. Abara notified -- reviewing insulin regimen at 06:00','Family educated -- insulin and meal timing explained','Aspiration precautions in place -- lateral positioning','Medication incident form to be completed -- missed meal + insulin given'],
   4:['Patient: Jamie Chen, 21F, ER Bay 2 -- anaphylaxis, bee sting','Epinephrine 0.3mg IM given outer thigh -- response observed','BP 84/52 on arrival -- trending up after epi and fluids','SpO2 93% on arrival -- improved on 15L NRB','Stridor and angioedema -- reducing. Airway trolley at bedside','IV access 16G x2 -- IV fluids 0.9% NaCl 1L running','Dr. Kowalski notified and on the way','Diphenhydramine and hydrocortisone given -- adjunct therapy','Biphasic reaction monitoring required -- observe minimum 4 hours','Family aware -- EpiPen prescription to be reviewed at discharge'],
   7:['Patient: Mr. Kowalski, 54M, ER Bay 6 -- right leg cellulitis, Penicillin allergy (anaphylaxis)','Amoxicillin order identified -- penicillin class, contraindicated. Medication held BEFORE administration','Allergy confirmed: RED wristband, MAR allergy flag, patient verbal confirmation','Discussed with Dr. Chen (ER Physician, ext. 2240) -- order changed to Clindamycin 600mg IV q8h','Cross-class allergy reference verified -- pharmacy consulted','Near-miss incident report filed -- ISMP Canada format','Charge nurse notified -- safety event documented','Vitals stable: HR 88, BP 132/84, SpO2 99%, Temp 37.8C','IV access patent 18G right antecubital -- Clindamycin starting next dose cycle','Patient educated -- penicillin class allergy, always disclose to all providers'],
+  8:['Room 14: Ms. Doyle, 51F -- intubated post-overdose, acute airway emergency this shift','Room 14: RT called immediately for high peak pressure + biting tube -- airway cleared, re-sedated','Room 14: SpO2 recovered after suction + sedation -- vent settings reviewed','Room 12: Mr. Adeyemi, 74M -- septic shock, norepinephrine running, MAP dropped to 54','Room 12: Charge RN + intensivist escalated -- second pressor (vasopressin) + fluid bolus added','Room 12: MAP recovering, repeat lactate ordered','Team mobilized early -- RT to airway, charge/MD to circulation, CNA repeat vitals, float RN med prep','Priority rationale documented: airway (Room 14) before circulation (Room 12)','Both patients stable at handover -- continuous monitoring, q15min vitals','Charge nurse aware of workload -- support continued into day shift'],
+  9:['Patient: Mr. Tremblay, 89M, 4 West Bed 12 -- admitted UTI + dehydration, NO dementia (baseline A&O x3)','Acute new delirium overnight -- CAM positive (acute/fluctuating + inattention)','Vitals: Temp 38.5 (up from 37.9), HR 104, BP 108/62, RR 20, SpO2 96%','BGL 6.1 -- hypoglycemia ruled out','Cloudy concentrated urine, UO 18 mL/hr -- ?worsening urosepsis. Repeat UA + culture sent','Dry mucous membranes -- evening IV fluids were missed, now restarted','Safety: bed lowered + exit alarm, CNA 1:1 sitter, reoriented -- NO restraints, NO sedation','Dr. Singh notified -- fluids + antibiotic escalation ordered, will review','Daughter updated -- confirmed acute change from baseline','Reassess mental status + vitals q1-2h overnight'],
 };
 function buildHandoff2(){
   const items=HO2_ITEMS[G.currentDay]||HO2_ITEMS[1];G.handoffSel=[];
@@ -2911,7 +3342,9 @@ function buildEndShift(){
   const xpGain=good?120:60;G.xp+=xpGain;const xpEl=document.getElementById('xp-score');if(xpEl)xpEl.textContent='+'+xpGain;const xpBd=document.getElementById('xp-bd');if(xpBd)xpBd.textContent='Day '+G.currentDay+' -- '+(good?'Correct decision':'Learning opportunity');
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
   const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'},6:{good:'She was not angry. She was scared. Naming the right emotion -- "scared," not "frustrated" -- is what changed the room. Moving toward her, not back, is what made her trust you. Words matter. Posture matters.',bad:'The assessment happened. The communication did not. When families feel unheard, they escalate -- not because they are difficult, but because they are terrified and no one has named it yet.'},
-7:{good:'You held the medication and spoke up before it reached the patient. That is the entire job. Medication safety is not about catching someone -- it is about the five seconds of doubt that saves a life. You had the doubt. You acted on it.',bad:'The wristband, the MAR, and the patient all said the same thing: stop. The order came from a physician. The responsibility to hold it came from you. Those two facts are not in conflict. They are the standard of care.'}};
+7:{good:'You held the medication and spoke up before it reached the patient. That is the entire job. Medication safety is not about catching someone -- it is about the five seconds of doubt that saves a life. You had the doubt. You acted on it.',bad:'The wristband, the MAR, and the patient all said the same thing: stop. The order came from a physician. The responsibility to hold it came from you. Those two facts are not in conflict. They are the standard of care.'},
+8:{good:'Airway beats circulation when both are failing at once -- Room 14 (SpO2 78, biting the tube) was the immediate threat and you put RT there fast. Then you escalated Room 12 instead of soloing it. Prioritize by what kills first, delegate by scope, escalate early.',bad:'Two crashing patients cannot be run by one nurse. The airway emergency in Room 14 could not wait while you worked Room 12. The skill is not speed of hands -- it is speed of mobilizing the team: RT to the airway, charge/MD to the pressor, you coordinating.'},
+9:{good:'Confusion is a symptom, not a diagnosis. Acute + fluctuating + inattention = delirium -- always ask WHY tonight. Secure safety without restraint, check a glucose, find and treat the reversible cause (here: UTI + dehydration), and escalate the change.',bad:'"Confused old man" is the trap. He had a sharp baseline yesterday and an acute change tonight with fever and dehydration. Restraints and antipsychotics are last resorts that hide the cause -- delirium is the brain showing you the body is failing.'}};
   // References: always use current Canadian/North American sources (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC, CCS) (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC)
   const srcs={
     1:'ACCP CHEST Guidelines 2021 (VTE) / Wells PS, Lancet 1997 / CTS Venous Thromboembolism Management',
@@ -2920,7 +3353,9 @@ function buildEndShift(){
     4:'WAO Anaphylaxis Guidelines 2020 / CSACI Anaphylaxis Position Statement / Anaphylaxis Canada Clinical Resource',
     5:'Diabetes Canada Clinical Practice Guidelines 2023 / Cryer PE, NEJM 2013 / RNAO BPG: Diabetes Management',
     6:'RNAO BPG: Therapeutic Communication 2020 / CPI Non-Violent Crisis Intervention / CAMH Trauma-Informed Care / SSC 2021 Post-op Sepsis',
-    7:'ISMP Canada Medication Safety Guidelines / CNA Code of Ethics 2017 / RNAO BPG: Safe Medication Administration / Health Canada Drug Monograph: Amoxicillin / CRNBC Professional Standards'
+    7:'ISMP Canada Medication Safety Guidelines / CNA Code of Ethics 2017 / RNAO BPG: Safe Medication Administration / Health Canada Drug Monograph: Amoxicillin / CRNBC Professional Standards',
+    8:'CACCN Standards for Critical Care Nursing / CCCS Canadian Critical Care Guidelines / CNA-CCCN Delegation & Assignment Framework / RNAO BPG: Care Transitions / Surviving Sepsis Campaign 2021',
+    9:'CCSMH Canadian Guidelines on the Assessment & Treatment of Delirium in Older Adults / RNAO BPG: Delirium, Dementia & Depression in Older Adults (2016) / Inouye SK et al., Confusion Assessment Method, Ann Intern Med 1990 / Choosing Wisely Canada -- Geriatrics (antipsychotics)'
   };
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
@@ -2934,6 +3369,8 @@ const END_MSGS={
   2:{good:["qSOFA 3/3, MAP under 65 -- you recognised septic shock and you started the bundle. Blood cultures first, then antibiotics. The order matters.","You initiated resuscitation before the physician arrived. That is nursing.","The 1-hour bundle runs in parallel. You understood that under pressure. That is clinical judgment."],bad:["Sepsis is one of the hardest clinical pictures to act on decisively. Come back.","Cultures before antibiotics. Two minutes. You know now why it matters.","Today you learned what the bundle looks like. Come back and run it."]},
   3:{good:["The vitals looked normal. The trend was not. You read the trend. That is the skill that takes most nurses months to build -- and you found it on Day 3.","You held the morphine. Assessment before medication -- one of the hardest calls in nursing. You made it correctly.","Shoulder tip pain. Distension. A tripling drain. Each alone has an explanation. Together they told a story. You listened."],bad:["Trending vitals are more important than a single value. HR 88 to 98 over 6 hours is what you are looking for next time.","Assessment before medication. Always. The order was valid. The morphine was not appropriate. Those are two different things.","Post-operative haemorrhage hides in plain sight. Normal numbers, wrong direction. You have seen it now. You will not miss it again."]},
   7:{good:["You caught it before it reached him. Red wristband, MAR, patient verbal -- three sources said the same thing, and you listened to all three. That is medication safety working exactly as it should.","The physician wrote the order. You held the medication. Both of those things are true, and neither one is wrong. Professional accountability lives in the space between them. You stood in that space today.","You said something. That is not always easy. It is always right."],bad:["Three sources of allergy documentation. One order that ignored them. The safeguard is you -- not the system, not the chart. You. Come back.","A RED wristband is not a suggestion. It is the last line of protection before a preventable anaphylaxis. You know what it means now. Come back.","Knowing something is wrong and acting on it are two different skills. You have the first one. Come back and build the second."]},
+  8:{good:["Two patients crashing and you did not freeze. You put RT on the airway, sent the charge nurse to escalate the pressor, and kept yourself free to coordinate. That is ICU thinking.","Airway first. You saw that Room 14 could not wait and you acted on it. Prioritization under pressure is the hardest skill in critical care -- and you used it tonight.","You asked for help in the first minute. New nurses think that is weakness. It is the opposite. It is exactly what kept both of them alive."],bad:["No one can run two crashing patients alone -- not you, not the most senior nurse on the unit. The lesson is not to be faster. It is to call the team sooner. Come back.","The airway in Room 14 was the emergency that could not wait. Next shift you will hear it first. Come back and run it again.","You carried too much by yourself tonight. That instinct to protect everyone comes from a good place -- but in the ICU it has to become: who do I send where, right now. Come back."]},
+  9:{good:["It was 3 AM and you were exhausted -- and you still saw that he was different. That is the whole skill. You found the infection behind the confusion.","You kept him safe without tying him down, checked the glucose, found the UTI and the missed fluids, and called it in clearly. Quiet, careful, exactly right.","His daughter said 'thank you for noticing he was different.' You turned a vague 'confused' into a treated cause. That is nursing at its best."],bad:["Delirium hides behind the word 'confused.' Next shift you will ask the better question: why is he suddenly confused tonight? Come back.","Restraints and sedation feel like control at 3 AM -- they hide the cause. You will reach for safety, assessment, and escalation next time. Come back.","An acute change in an elder is a red flag, not background noise. You know that now. Come back and catch it earlier."]},
 };
 const END_SUBS={good:["Go home. You earned it.","That shift is done. You are not the same nurse who started it.","Rest well. Come back tomorrow."],bad:["Come back. It will be different next time.","One step further than yesterday. Always.","Rest. Then come back."]};
 function getEndMsg(day,outcome){const pool=(END_MSGS[day]||END_MSGS[1])[outcome==='good'?'good':'bad'];const msg=pool[Math.floor(Math.random()*pool.length)];const sub=END_SUBS[outcome==='good'?'good':'bad'][Math.floor(Math.random()*END_SUBS.good.length)];return {msg,sub};}
@@ -3005,7 +3442,7 @@ function showDayDetail(day){
 // === HUD MENU ===
 function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
-function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
+function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;clearDayTimers();resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
 function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
 
 const VACATIONS=[
@@ -3044,6 +3481,261 @@ function gotoVacation(){
   wipeGo(()=>showScreen('vacation'));
 }
 function returnFromVacation(){wipeGo(gotoCalendar);}
+
+// =====================================================================
+// === DAY 8 — ICU TWO-PATIENT DELEGATION ENGINE =======================
+// =====================================================================
+const ICU2={
+  T0:480, t:0, iv:null, focus:14, ended:false,
+  log:[], _to:[], soloMoves:0, delegatedEarly:false,
+  team:{rt:'idle',charge:'idle',cna:'idle',float:'idle'},
+  r12:{escalated:false,pressor2:false,fluid:false,map:54,hr:132,spo2:92,stable:false,dead:false},
+  r14:{rtThere:false,suctioned:false,sedated:false,airwayCleared:false,spo2:78,hr:140,stable:false,dead:false},
+};
+function icu2Reset(){
+  ICU2.t=0;ICU2.focus=14;ICU2.ended=false;ICU2.log=[];ICU2.soloMoves=0;ICU2.delegatedEarly=false;
+  ICU2._to.forEach(t=>clearTimeout(t));ICU2._to=[];
+  ICU2.team={rt:'idle',charge:'idle',cna:'idle',float:'idle'};
+  ICU2.r12={escalated:false,pressor2:false,fluid:false,map:54,hr:132,spo2:92,stable:false,dead:false};
+  ICU2.r14={rtThere:false,suctioned:false,sedated:false,airwayCleared:false,spo2:78,hr:140,stable:false,dead:false};
+}
+function icu2After(sec,fn){const h=setTimeout(()=>{if(!ICU2.ended)fn();},sec*1000);ICU2._to.push(h);}
+function icu2Log(txt,cls){ICU2.log.unshift({t:icu2Clock(),txt:txt,cls:cls||''});if(ICU2.log.length>14)ICU2.log.pop();}
+function icu2Clock(){const r=Math.max(0,ICU2.T0-ICU2.t);return Math.floor(r/60)+':'+(r%60<10?'0':'')+(r%60);}
+function gotoICU2(){
+  icu2Reset();
+  icu2Log('05:12 — two patients deteriorating at once. You are one nurse. Use the team.','warn');
+  wipeGo(()=>{showScreen('icu2');icu2Render();
+    if(ICU2.iv)clearInterval(ICU2.iv);
+    ICU2.iv=setInterval(icu2Tick,1000);
+    SFX.init();if(SFX.startICULoop)SFX.startICULoop();
+  });
+}
+function icu2Stop(){if(ICU2.iv){clearInterval(ICU2.iv);ICU2.iv=null;}ICU2._to.forEach(t=>clearTimeout(t));ICU2._to=[];if(SFX.stopMonitorLoop)SFX.stopMonitorLoop();}
+function icu2Tick(){
+  if(ICU2.ended)return;
+  ICU2.t++;
+  const a=ICU2.r14,b=ICU2.r12;
+  // ROOM 14 — airway emergency (the immediate life threat)
+  if(!a.airwayCleared&&!a.dead){
+    const helped=a.rtThere||a.suctioned;
+    if(helped){
+      a.spo2=Math.min(97,a.spo2+3);a.hr=Math.max(96,a.hr-3);
+      if(a.spo2>=94&&(a.rtThere||a.sedated)){a.airwayCleared=true;a.stable=true;icu2Log('Room 14 — airway cleared, SpO2 recovering. Patient stable.','good');SFX.init();if(SFX.resolve)SFX.resolve();}
+    }else{
+      a.spo2=Math.max(40,a.spo2-1);
+      if(a.spo2<=72&&a.spo2>50&&ICU2.t%4===0)icu2Log('Room 14 — SpO2 '+a.spo2+'%, desaturating. Airway not addressed.','bad');
+      if(a.spo2<=50){a.dead=true;icu2Log('Room 14 — SpO2 critical. Patient arrested. CODE BLUE.','bad');SFX.init();if(SFX.codeBlueAlarm)SFX.codeBlueAlarm();return icu2End();}
+    }
+  }
+  // ROOM 12 — septic shock on pressors (needs escalation, slower clock)
+  if(!b.stable&&!b.dead){
+    if(b.escalated&&(b.pressor2||b.fluid)){
+      b.map=Math.min(70,b.map+1);
+      if(b.map>=65){b.stable=true;icu2Log('Room 12 — MAP ≥65 with second agent + fluid. Patient stable.','good');SFX.init();if(SFX.resolve)SFX.resolve();}
+    }else{
+      if(ICU2.t%6===0)b.map=Math.max(38,b.map-1);
+      if(b.map<=42){b.dead=true;icu2Log('Room 12 — refractory shock, cardiac arrest.','bad');SFX.init();if(SFX.codeBlueAlarm)SFX.codeBlueAlarm();return icu2End();}
+    }
+  }
+  if(a.stable&&b.stable){return icu2End();}
+  if(ICU2.t>=ICU2.T0){icu2Log('07:00 — day shift arriving. Time is up.','warn');return icu2End();}
+  icu2RenderLive();
+}
+function icu2VitClass(metric,v){
+  if(metric==='spo2')return v<85?'crit':v<92?'warn':'ok';
+  if(metric==='map')return v<60?'crit':v<65?'warn':'ok';
+  if(metric==='hr')return v>130?'crit':v>110?'warn':'ok';
+  return 'ok';
+}
+function icu2RoomMeta(id){
+  const r=id===14?ICU2.r14:ICU2.r12;
+  if(r.dead)return{cls:'dead',tag:'CODE',tagcls:'dead'};
+  if(r.stable)return{cls:'stable',tag:'STABLE',tagcls:'stable'};
+  if(id===14)return{cls:'crit',tag:'AIRWAY',tagcls:'crit'};
+  return{cls:(ICU2.r12.map<60?'crit':'warn'),tag:'SHOCK',tagcls:(ICU2.r12.map<60?'crit':'warn')};
+}
+function icu2RoomInfo(id){return id===14?{title:'Room 14 — Ms. Doyle, 51F',sub:'Intubated post-overdose · vent crisis'}:{title:'Room 12 — Mr. Adeyemi, 74M',sub:'Septic shock · norepinephrine running'};}
+function icu2Vitals(id){
+  if(id===14){const r=ICU2.r14;return [{l:'SpO2',v:r.spo2+'%',c:icu2VitClass('spo2',r.spo2)},{l:'HR',v:r.hr,c:icu2VitClass('hr',r.hr)},{l:'Peak P',v:r.airwayCleared?'OK':'HIGH',c:r.airwayCleared?'ok':'crit'}];}
+  const r=ICU2.r12;return [{l:'MAP',v:r.map,c:icu2VitClass('map',r.map)},{l:'HR',v:r.hr,c:icu2VitClass('hr',r.hr)},{l:'SpO2',v:r.spo2+'%',c:icu2VitClass('spo2',r.spo2)}];
+}
+function icu2KeyVitals(id){const v=icu2Vitals(id);return id===14?[v[0],v[2]]:[v[0],v[1]];}
+function icu2AlarmTxt(tag){return tag==='AIRWAY'?'🚨 VENT ALARM':tag==='SHOCK'?'⚠ PRESSOR UNSTABLE':tag==='STABLE'?'✓ STABLE':tag==='CODE'?'CODE BLUE':tag;}
+function icu2SecStaffTxt(id){
+  const t=ICU2.team,lines=[];
+  if(id===14){if(t.rt!=='idle')lines.push('RT: '+t.rt);if(t.charge==='done')lines.push('Charge: helping');}
+  else{if(t.charge!=='idle')lines.push('Charge: '+t.charge);}
+  if(t.float!=='idle')lines.push('Float RN: '+t.float);
+  if(t.cna!=='idle')lines.push('CNA: '+t.cna);
+  return lines.length?lines.join('<br>'):'No staff assigned here';
+}
+function icu2PrimaryHTML(id){
+  const info=icu2RoomInfo(id),m=icu2RoomMeta(id),vs=icu2Vitals(id);
+  return '<div class="icu2-phead"><div><div class="icu2-ptitle">'+info.title+'</div><div class="icu2-psub">'+info.sub+'</div></div><div class="icu2-rtag '+m.tagcls+'" id="icu2-pri-tag">'+m.tag+'</div></div>'+
+    '<div class="icu2-vits">'+vs.map((x,i)=>'<div class="icu2-vit"><div class="icu2-vl">'+x.l+'</div><div class="icu2-vv '+x.c+'" id="icu2-pri-v'+i+'">'+x.v+'</div></div>').join('')+'</div>'+
+    '<div class="icu2-status" id="icu2-pri-status">'+icu2RoomStatusTxt(id)+'</div>'+
+    '<div class="icu2-section-lbl">What do you do here, right now?</div>'+
+    '<div class="icu2-actions">'+icu2RoomActions(id)+'</div>'+
+    '<button class="icu2-deleg-btn" style="margin-top:12px;" onclick="icu2OpenDelegate()">Delegate to the team &rarr;</button>'+
+    '<div class="icu2-section-lbl">Team</div>'+icu2TeamHTML()+
+    icu2LogHTML();
+}
+function icu2SecondaryHTML(id){
+  const info=icu2RoomInfo(id),m=icu2RoomMeta(id),kv=icu2KeyVitals(id);
+  return '<div class="icu2-sec-swap">Other patient</div>'+
+    '<div><div class="icu2-sec-room">'+(id===14?'ROOM 14':'ROOM 12')+'</div><div class="icu2-sec-name">'+info.sub+'</div></div>'+
+    '<div class="icu2-sec-vits">'+kv.map((x,i)=>'<div class="icu2-sec-vit"><span class="icu2-sec-vl">'+x.l+'</span><span class="icu2-sec-vv '+x.c+'" id="icu2-sec-v'+i+'">'+x.v+'</span></div>').join('')+'</div>'+
+    '<div class="icu2-sec-alarm '+m.tagcls+'" id="icu2-sec-alarm">'+icu2AlarmTxt(m.tag)+'</div>'+
+    '<div class="icu2-sec-staff" id="icu2-sec-staff">'+icu2SecStaffTxt(id)+'</div>'+
+    '<div class="icu2-sec-tapcue">tap to switch focus →</div>';
+}
+function icu2RoomStatusTxt(id){
+  if(id===14){const r=ICU2.r14;
+    if(r.dead)return 'Arrested — code in progress.';
+    if(r.stable)return 'Airway cleared. Sedated. Vent synchronised.';
+    if(r.rtThere)return 'RT at bedside managing the airway.';
+    if(r.suctioned)return 'You suctioned + are bagging — holding for now. Needs definitive help.';
+    return 'Biting the tube, high peak pressure, SpO2 falling. This is the airway emergency.';
+  }
+  const r=ICU2.r12;
+  if(r.dead)return 'Arrested — refractory shock.';
+  if(r.stable)return 'Second pressor + fluid running. MAP holding.';
+  if(r.escalated)return 'Intensivist escalated — orders coming.';
+  return 'MAP 54 on max norepinephrine. Needs escalation, not solo titration.';
+}
+function icu2TeamRows(){
+  const lbl={rt:'RT',charge:'Charge RN',cna:'CNA',float:'Float ICU RN'};
+  return Object.keys(lbl).map(k=>'<div class="icu2-trole"><div class="icu2-tname">'+lbl[k]+'</div><div class="icu2-tstate '+ICU2.team[k]+'">'+ICU2.team[k]+'</div></div>').join('');
+}
+function icu2TeamHTML(){return '<div class="icu2-team" id="icu2-teambox">'+icu2TeamRows()+'</div>';}
+function icu2LogHTML(){
+  return '<div class="icu2-log" id="icu2-logbox">'+ICU2.log.map(l=>'<div class="icu2-logline '+l.cls+'"><span class="lt">'+l.t+'</span> '+l.txt+'</div>').join('')+'</div>';
+}
+function icu2Render(){
+  const dEl=document.getElementById('icu2-day');if(dEl)dEl.textContent='Day 8 · ICU · Night shift';
+  const pri=document.getElementById('icu2-primary'),sec=document.getElementById('icu2-secondary');
+  if(!pri||!sec)return;
+  const f=ICU2.focus,o=(f===14?12:14);
+  pri.innerHTML=icu2PrimaryHTML(f);
+  sec.innerHTML=icu2SecondaryHTML(o);
+  icu2RenderLive();
+}
+function icu2SwapFocus(){
+  if(ICU2.ended)return;
+  ICU2.focus=ICU2.focus===14?12:14;
+  const sp=document.getElementById('icu2-split');
+  if(sp){sp.classList.add('switching');setTimeout(()=>{const s=document.getElementById('icu2-split');if(s)s.classList.remove('switching');},260);}
+  SFX.init();if(SFX.chime)SFX.chime();if(SFX.stopMonitorLoop)SFX.stopMonitorLoop();if(SFX.startICULoop)setTimeout(()=>{if(!ICU2.ended)SFX.startICULoop();},120);
+  icu2Render();
+}
+function icu2RoomActions(id){
+  const A=[];
+  if(id===14){
+    const r=ICU2.r14;
+    A.push(icu2ActBtn('p_suction14',r.suctioned?'Suctioning + bagging — airway held':'Suction + bag-mask now','You stabilise the airway yourself — buys time until definitive help',r.suctioned||r.airwayCleared,true));
+    A.push(icu2ActBtn('p_sed14',r.sedated?'Sedation bolus given':'Give sedation bolus (stop the biting)',ICU2.team.float==='done'||r.sedated?'Sedation prepared — safe to give':'Needs meds prepped — assign Float RN first',r.sedated||r.airwayCleared,ICU2.team.float==='done'));
+    A.push(icu2ActBtn('p_solo12','Leave 14 and handle Room 12 yourself','Room 14 is the airway emergency — leaving it now is dangerous',false,false,'warn'));
+  }else{
+    const r=ICU2.r12;
+    A.push(icu2ActBtn('p_fluid12',r.fluid?'Fluid bolus running':'Start fluid bolus','Supports MAP — adjunct while escalation happens',r.fluid||r.stable,true));
+    A.push(icu2ActBtn('p_titrate12','Titrate norepinephrine yourself','Already near max — a second agent needs a physician order',false,false,'warn'));
+    A.push(icu2ActBtn('p_solo14','Leave 12 and run Room 14 alone too','You cannot personally cover both crashing rooms',false,false,'warn'));
+  }
+  return A.join('');
+}
+function icu2ActBtn(key,ttl,meta,done,enabled,tone){
+  const cls='icu2-act'+(tone==='warn'?'':' ')+(done?' done':'')+(tone==='p1'?' p1':'');
+  const dis=(done||enabled===false)?' disabled':'';
+  return '<button class="'+cls+'"'+dis+' onclick="icu2PersonalAction(\''+key+'\')"><span class="ttl">'+ttl+'</span><span class="meta">'+meta+'</span></button>';
+}
+function icu2PersonalAction(key){
+  if(ICU2.ended)return;SFX.init();
+  if(key==='p_suction14'){ICU2.r14.suctioned=true;icu2Log('You suction Room 14 and bag-mask — SpO2 starting to hold. Get definitive help.','warn');if(SFX.o2Flow)SFX.o2Flow();}
+  else if(key==='p_sed14'){if(ICU2.team.float!=='done'){icu2Log('No sedation prepared yet — assign the Float RN to prep meds first.','bad');}else{ICU2.r14.sedated=true;icu2Log('Sedation bolus given — she stops biting the tube.','good');}}
+  else if(key==='p_fluid12'){ICU2.r12.fluid=true;icu2Log('Fluid bolus started in Room 12 — adjunct support while you escalate.','warn');if(SFX.o2Flow)SFX.o2Flow();}
+  else if(key==='p_titrate12'||key==='p_solo12'||key==='p_solo14'){ICU2.soloMoves++;icu2Log('Trying to do it alone — the other room is losing time. This is the trap.','bad');if(SFX.tapWrong)SFX.tapWrong();}
+  icu2Render();
+}
+// ---- Delegation ----
+function icu2OpenDelegate(){
+  const ov=document.getElementById('icu2-overlay');if(!ov)return;
+  const rows=[
+    {role:'rt',name:'Respiratory Therapist',opts:[
+      {t:'rt14',ttl:'Send RT to Room 14 — airway / vent',meta:'Scope: airway. The right call for the desaturating tube.',ok:true},
+      {t:'rt12',ttl:'Send RT to Room 12 — septic shock',meta:'RT does not manage pressors — wrong scope.',ok:false}]},
+    {role:'charge',name:'Charge RN',opts:[
+      {t:'ch12',ttl:'Charge → escalate Room 12 to intensivist',meta:'Gets MD + a second pressor order + extra hands.',ok:true},
+      {t:'ch14',ttl:'Charge → take over Room 14 airway',meta:'Charge can help but cannot manage the vent like RT.',ok:'meh'}]},
+    {role:'cna',name:'CNA / HCA',opts:[
+      {t:'cn_v',ttl:'CNA → repeat vitals both rooms',meta:'In scope. Frees you, gives live numbers.',ok:true},
+      {t:'cn_air',ttl:'CNA → manage Room 14 airway',meta:'Out of scope — unsafe delegation.',ok:false}]},
+    {role:'float',name:'Float ICU RN',opts:[
+      {t:'fl_med',ttl:'Float RN → prep meds (sedation + pressor)',meta:'Enables sedation for 14 and second pressor for 12.',ok:true},
+      {t:'fl_chart',ttl:'Float RN → sit and chart the shift',meta:'Wastes a clinical RN during a double crash.',ok:false}]},
+  ];
+  ov.innerHTML='<div class="icu2-ov-title">Delegate to the team</div><div class="icu2-ov-sub">Right person, right task, right scope. Wrong-scope delegation is unsafe and costs you trust.</div>'+
+    rows.map(r=>'<div class="icu2-section-lbl">'+r.name+' &middot; '+ICU2.team[r.role]+'</div><div class="icu2-actions">'+
+      r.opts.map(o=>'<button class="icu2-act'+(ICU2.team[r.role]!=='idle'?' done':'')+'"'+(ICU2.team[r.role]!=='idle'?' disabled':'')+' onclick="icu2Delegate(\''+r.role+'\',\''+o.t+'\')"><span class="ttl">'+o.ttl+'</span><span class="meta">'+o.meta+'</span></button>').join('')+'</div>').join('')+
+    '<button class="icu2-back" style="margin-top:14px;" onclick="icu2CloseDelegate()">&larr; Close</button>';
+  ov.classList.add('on');
+}
+function icu2CloseDelegate(){const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');icu2Render();}
+function icu2Delegate(role,target){
+  if(ICU2.ended)return;SFX.init();
+  if(ICU2.team[role]!=='idle'){return;}
+  if(ICU2.t<=60)ICU2.delegatedEarly=true;
+  ICU2.team[role]='busy';
+  const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');
+  // resolve by target
+  if(target==='rt14'){icu2Log('RT dispatched to Room 14 for the airway.','good');icu2After(8,()=>{ICU2.team.rt='done';ICU2.r14.rtThere=true;icu2Log('RT at Room 14 — finds a mucus plug + tube-biting. Suctioning, re-sedating.','good');icu2Render();});}
+  else if(target==='rt12'){icu2Log('RT sent to Room 12 — but RT cannot manage septic shock. Wasted.','bad');ICU2.soloMoves++;icu2After(10,()=>{ICU2.team.rt='idle';icu2Log('RT returns from Room 12 — nothing in their scope to do there.','warn');icu2Render();});}
+  else if(target==='ch12'){icu2Log('Charge RN escalating Room 12 to the intensivist.','good');icu2After(14,()=>{ICU2.team.charge='done';ICU2.r12.escalated=true;ICU2.r12.pressor2=true;icu2Log('Intensivist adds vasopressin (2nd pressor) + fluid. Room 12 turning around.','good');icu2Render();});}
+  else if(target==='ch14'){icu2Log('Charge RN to Room 14 — helps hold the airway but it is not their specialty.','warn');icu2After(12,()=>{ICU2.team.charge='done';ICU2.r14.suctioned=true;icu2Log('Charge bags Room 14 — buys time, but RT is still the right call.','warn');icu2Render();});}
+  else if(target==='cn_v'){icu2Log('CNA repeating vitals in both rooms.','good');icu2After(8,()=>{ICU2.team.cna='done';icu2Log('CNA reports vitals — your picture is current.','good');icu2Render();});}
+  else if(target==='cn_air'){ICU2.team.cna='idle';icu2Log('You cannot delegate airway management to a CNA — out of scope. Reassign.','bad');ICU2.soloMoves++;}
+  else if(target==='fl_med'){icu2Log('Float ICU RN preparing sedation + pressor.','good');icu2After(9,()=>{ICU2.team.float='done';icu2Log('Float RN: sedation and second pressor are prepped and ready.','good');icu2Render();});}
+  else if(target==='fl_chart'){ICU2.team.float='idle';icu2Log('Float RN sent to chart — a clinical nurse wasted during a double crash.','bad');ICU2.soloMoves++;}
+  icu2Render();
+}
+function icu2RenderLive(){
+  const c=document.getElementById('icu2-clock');
+  if(c){c.textContent=icu2Clock();const left=ICU2.T0-ICU2.t;c.className='icu2-clock'+(left<60?' crit':left<150?' warn':'');}
+  const bf=document.getElementById('icu2-barfill');
+  if(bf){const pct=Math.max(0,100*(ICU2.T0-ICU2.t)/ICU2.T0);bf.style.width=pct+'%';bf.style.background=pct<25?'var(--alarm)':pct<45?'var(--amber)':'var(--teal)';}
+  const f=ICU2.focus,o=(f===14?12:14);
+  // PRIMARY (focused room)
+  icu2Vitals(f).forEach((x,i)=>{const el=document.getElementById('icu2-pri-v'+i);if(el){el.textContent=x.v;el.className='icu2-vv '+x.c;}});
+  const pm=icu2RoomMeta(f);const ptag=document.getElementById('icu2-pri-tag');if(ptag){ptag.textContent=pm.tag;ptag.className='icu2-rtag '+pm.tagcls;}
+  const ps=document.getElementById('icu2-pri-status');if(ps)ps.textContent=icu2RoomStatusTxt(f);
+  // SECONDARY (peripheral room)
+  icu2KeyVitals(o).forEach((x,i)=>{const el=document.getElementById('icu2-sec-v'+i);if(el){el.textContent=x.v;el.className='icu2-sec-vv '+x.c;}});
+  const sm=icu2RoomMeta(o);const secEl=document.getElementById('icu2-secondary');if(secEl)secEl.className='icu2-secondary '+sm.cls;
+  const sa=document.getElementById('icu2-sec-alarm');if(sa){sa.className='icu2-sec-alarm '+sm.tagcls;sa.textContent=icu2AlarmTxt(sm.tag);}
+  const sst=document.getElementById('icu2-sec-staff');if(sst)sst.innerHTML=icu2SecStaffTxt(o);
+  // team + log
+  const tb=document.getElementById('icu2-teambox');if(tb)tb.innerHTML=icu2TeamRows();
+  const lb=document.getElementById('icu2-logbox');if(lb)lb.innerHTML=ICU2.log.map(l=>'<div class="icu2-logline '+l.cls+'"><span class="lt">'+l.t+'</span> '+l.txt+'</div>').join('');
+}
+function icu2End(){
+  if(ICU2.ended)return;ICU2.ended=true;icu2Stop();
+  const both=ICU2.r14.stable&&ICU2.r12.stable;
+  const good=both&&ICU2.soloMoves<=1;
+  G.outcome=good?'good':'bad';
+  G.clues=[];G.actionsTaken=[];
+  const ov=document.getElementById('icu2-overlay');
+  if(ov){
+    const r14=ICU2.r14,r12=ICU2.r12;
+    const line=(lab,r)=>{const ok=r.stable;const dead=r.dead;return '<div class="icu2-logline '+(dead?'bad':ok?'good':'warn')+'" style="font-size:11px;">'+lab+': '+(dead?'CODE / lost':ok?'stabilised':'unstable at handover')+'</div>';};
+    ov.innerHTML='<div class="icu2-ov-title">'+(good?'Both rooms held.':'A hard shift.')+'</div>'+
+      '<div class="icu2-ov-sub">'+(good?'You put the right people in the right rooms fast — airway to RT, circulation to the charge/MD, and you coordinated.':'Two crashing patients cannot be run by one person. The airway in Room 14 was the threat that could not wait.')+'</div>'+
+      line('Room 14 (airway)',r14)+line('Room 12 (shock)',r12)+
+      '<button class="icu2-deleg-btn" style="margin-top:18px;" onclick="icu2Finish()">Continue to handover &rarr;</button>';
+    ov.classList.add('on');
+  }
+  SFX.init();if(good){if(SFX.resolve)SFX.resolve();}else{if(SFX.flatline)SFX.flatline();}
+}
+function icu2Finish(){const ov=document.getElementById('icu2-overlay');if(ov)ov.classList.remove('on');wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
 function closeHudConfirm(){const el=document.getElementById('hud-confirm');if(el)el.remove();}
 function showHudConfirm(title,msg,confirmLabel,onConfirm){const old=document.getElementById('hud-confirm');if(old)old.remove();const overlay=document.createElement('div');overlay.id='hud-confirm';overlay.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:500;display:flex;align-items:center;justify-content:center;';const box=document.createElement('div');box.style.cssText='background:var(--ink2);border:1px solid var(--wire2);padding:20px 18px;max-width:280px;width:90%;';box.innerHTML='<div style="font-family:var(--serif);font-size:17px;font-weight:700;color:var(--text);margin-bottom:6px;">'+title+'</div><div style="font-family:var(--body);font-size:13px;color:var(--muted2);font-weight:300;line-height:1.6;margin-bottom:16px;">'+msg+'</div><div style="display:flex;gap:8px;"><button id="hud-confirm-yes" style="flex:1;padding:11px;background:var(--amber);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.12em;border:none;cursor:pointer;text-transform:uppercase;">'+confirmLabel+'</button><button onclick="closeHudConfirm()" style="flex:1;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:11px;cursor:pointer;text-transform:uppercase;">Cancel</button></div>';overlay.appendChild(box);document.getElementById('app').appendChild(overlay);document.getElementById('hud-confirm-yes').onclick=()=>{overlay.remove();onConfirm();};}
 
