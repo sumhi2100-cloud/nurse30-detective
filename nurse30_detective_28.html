@@ -533,6 +533,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
           <div class="monitem"><div class="monlbl">RR</div><div class="monval warn" id="mo-rr">--</div></div>
           <div class="monitem"><div class="monlbl">Temp</div><div class="monval ok" id="mo-temp-d1">--</div></div>
           <div class="monitem"><div class="monlbl">GCS</div><div class="monval warn" id="mo-gcs-d1">--</div></div>
+          <div class="monitem" id="mo-uo-d1-wrap" style="display:none;"><div class="monlbl">UO/hr</div><div class="monval crit" id="mo-uo-d1">--</div></div>
         </div>
         <div class="monrow-grid-d2" id="mon-grid-d2" style="display:none;">
           <div class="monitem"><div class="monlbl">BP</div><div class="monval crit" id="mo-bp-d2">--</div></div>
@@ -626,7 +627,7 @@ const G={
   highestDay:1,dayResults:{},
   fluidRunning:false,fluidMl:0,fluidRate:'KVO',fluidName:'0.9% NaCl 1L',
   abxRunning:false,abxProgress:0,abxName:'',codeBluePending:false,
-  labsDrawn:false,interruptFired:false,interruptChoice:null,
+  labsDrawn:false,interruptFired:false,interrupt2Fired:false,interruptChoice:null,
   patientState:'deteriorating',o2Saturation:91,skinFlush:0,
   diaphoresis:0.3,mottle:0,confusion:false,ecgChaos:0.15,
   timerIv:null,animFrame:null,ecgT:0,
@@ -1020,7 +1021,7 @@ SCENARIOS[6]={
   handoff:[
     {delay:500,from:'Charge Nurse Patel',txt:'312A -- Mrs. Rivera, 71F. <span class="hk">Post-op Day 3</span> colorectal resection. Her daughter Ana has been here since 06:00. She is upset. But listen -- she said <span class="hk">her mom seems different today</span>. That part is worth hearing.'},
     {delay:1900,from:'Night Nurse Sanders',txt:'I did check her at 22:00. She was <span class="hk">38.1C</span>. I put it down to post-op inflammation. The daughter <span class="hk">asked me twice to call the doctor</span> and I said I would monitor. <span class="hk">I did not call.</span>'},
-    {delay:3200,from:'Charge Nurse Patel',txt:'Ana is not unreasonable -- she is scared. Her mom has cancer and this is Day 3. She has been watching her mom get quieter all morning and nobody has explained anything. Keep that in mind when you walk in.'},
+    {delay:3200,from:'Charge Nurse Patel',txt:'Ana\'s fear is completely valid. Her mother has cancer. She has watched her get quieter all morning while three different nurses walked past without stopping. Walk in ready for <span class="hk">both of them</span>.'},
     {delay:4300,from:'You',txt:'Understood. On my way.',you:true},
     {delay:5000,alert:true,txt:'312A -- Daughter requesting manager -- "Nobody is listening to me"'},
   ],
@@ -1760,9 +1761,11 @@ function updateVitals(chg={}){
   }else{
     const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
     if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':G.currentDay===4?'Monitor ER Bay 2':G.currentDay===5?'Monitor Room 305':G.currentDay===6?'Monitor Room 312A':G.currentDay===7?'Monitor ER Bay 6':'Monitor Bay 4';
-    const sc1v=(SCENARIOS[1]||{}).vitals||{};
+    const sc1v=(SCENARIOS[G.currentDay]||{}).vitals||{};
     if(sc1v.temp){const te=document.getElementById('mo-temp-d1');if(te){te.textContent=sc1v.temp.val;te.className='monval '+sc1v.temp.state;}}
     if(sc1v.gcs){const ge=document.getElementById('mo-gcs-d1');if(ge){ge.textContent=sc1v.gcs.val;ge.className='monval '+sc1v.gcs.state;}}
+    const uoW=document.getElementById('mo-uo-d1-wrap'),uoE=document.getElementById('mo-uo-d1');
+    if(sc1v.uo&&uoW&&uoE){uoW.style.display='';uoE.textContent=sc1v.uo.val;uoE.className='monval '+sc1v.uo.state;}else if(uoW){uoW.style.display='none';}
   }
   const alarm=document.getElementById('alarm-badge');
   if(alarm)alarm.classList.toggle('show',Object.values(VS).some(v=>typeof v==='object'&&v.state==='crit'));
@@ -1979,6 +1982,10 @@ function handleTap(tap){
     G.interruptFired=true;
     setTimeout(()=>showInterrupt(),1200);
   }
+  if(G.currentDay===6&&G.clues.includes('wound')&&G.interruptFired&&!G.interrupt2Fired){
+    G.interrupt2Fired=true;
+    setTimeout(()=>showInterrupt2(),2000);
+  }
 }
 function handleWrongTap(tap){
   G.touchesLeft--;renderPips();SFX.init();SFX.tapWrong();
@@ -2015,6 +2022,47 @@ const INTERRUPTS={
     ],
   },
 };
+const INTERRUPTS2={
+  6:{
+    tag:'Mrs. Rivera — patient',
+    quote:'"Excuse me." Her voice is quiet, careful. "I know Ana is... a lot right now. But she is right. I have been feeling strange since yesterday. Not just tired. Wrong strange. Cold inside."',
+    sub:'She is trying to tell you something. How do you respond?',
+    choices:[
+      {key:'A',lbl:'"I hear you. Can you tell me more -- what does wrong feel like?" [Stop. Make eye contact. Listen.]',
+       result:'good',
+       fb:'Good. You stopped and listened. "Cold inside" in a post-op Day 3 patient is a haemodynamic red flag. Pallor + subjective cold = poor peripheral perfusion. She just gave you the most important clue of the shift -- and you heard it.',
+       clue:'Patient -- subjective cold + wrong feeling -- perfusion concern'},
+      {key:'B',lbl:'"I know -- I can see that. We are taking care of you right now." [Continue documenting]',
+       result:'neutral',
+       fb:'Your reassurance was kind but you missed the data. "Cold inside" is clinically significant. She was trying to describe hypoperfusion in her own words. You heard the emotion but not the symptom. Always ask: "Tell me more about that."',
+       clue:'Patient -- symptom partially heard'},
+      {key:'C',lbl:'"I understand. I am nearly done with your assessment." [Continue without exploring further]',
+       result:'bad',
+       fb:'She told you she felt wrong. You acknowledged and moved on. "Wrong strange. Cold inside." That is a patient describing early shock in lay terms. Dismissing subjective symptoms in post-op patients costs lives. The most important question you never asked: "Tell me more."',
+       clue:'Patient -- symptom dismissed'},
+    ],
+  },
+};
+function showInterrupt2(){
+  if(G.currentDay!==6)return;
+  const int=INTERRUPTS2[G.currentDay];if(!int)return;
+  const ov=document.getElementById('interrupt-overlay');
+  const box=document.getElementById('interrupt-box');
+  if(!ov||!box)return;
+  const tagCl='color:var(--amber)';
+  box.innerHTML=`<div style="font-family:var(--mono);font-size:8px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;${tagCl}">${int.tag}</div><div class="int-quote">${int.quote}</div><div style="font-family:var(--mono);font-size:9px;color:var(--muted2);margin-bottom:14px;">${int.sub}</div><div style="display:flex;flex-direction:column;gap:8px;">${int.choices.map((c,i)=>`<button class="int-choice" onclick="answerInterrupt2(${i})">${c.lbl}</button>`).join('')}</div><div id="int2-fb" style="margin-top:12px;"></div>`;
+  ov.classList.add('show');SFX.init();SFX.chime();
+}
+function answerInterrupt2(idx){
+  const int=INTERRUPTS2[G.currentDay];if(!int)return;
+  const ch=int.choices[idx];
+  document.querySelectorAll('.int-choice').forEach((b,i)=>{b.setAttribute('disabled','');if(i===idx)b.style.cssText+=ch.result==='good'?';border-color:var(--teal);color:var(--teal);':ch.result==='bad'?';border-color:var(--alarm);color:var(--alarm);':';border-color:var(--amber);color:var(--amber);';});
+  const fb=document.getElementById('int2-fb');
+  if(fb)fb.innerHTML=`<div style="font-family:var(--body);font-size:12px;color:var(--text);line-height:1.6;border-left:2px solid ${ch.result==='good'?'var(--teal)':ch.result==='bad'?'var(--alarm)':'var(--amber)'};padding-left:10px;">${ch.fb}</div>`;
+  if(ch.clue&&!G.clues.includes('patient_voice'))G.clues.push('patient_voice');
+  G.interrupt2Choice=ch.result;
+  setTimeout(()=>{const ov=document.getElementById('interrupt-overlay');if(ov)ov.classList.remove('show');checkActions();},3000);
+}
 function showInterrupt(){
   const int=INTERRUPTS[G.currentDay];if(!int)return;
   const ov=document.getElementById('interrupt-overlay');
@@ -2182,7 +2230,7 @@ function gotoHandoff(){
   G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;
   G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];
   G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.fluidName='0.9% NaCl 1L';
-  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;G.interruptFired=false;G.interruptChoice=null;
+  G.abxRunning=false;G.abxProgress=0;G.abxName='';G.codeBluePending=false;G.labsDrawn=false;G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;G._phoneRing=null;
   stopScene();if(G.timerIv)clearInterval(G.timerIv);
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
@@ -2217,6 +2265,10 @@ function gotoInvestigate(){
     if(G.currentDay===3){
       G._d3Tv1=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'106/68',state:'warn'},hr:{val:'104',state:'warn'}});SFX.init();SFX.urgentAlarm();}},120000);
       G._d3Tv2=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'90/58',state:'crit'},hr:{val:'112',state:'crit'}});SFX.init();SFX.urgentAlarm();}},180000);
+    }
+    if(G.currentDay===6){
+      G._d6Tv1=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'96/60',state:'crit'},hr:{val:'102',state:'warn'}});SFX.init();SFX.urgentAlarm();}},180000);
+      G._d6Tv2=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'84/54',state:'crit'},hr:{val:'112',state:'crit'}});SFX.init();SFX.urgentAlarm();}},300000);
     }
   },100);});
 }
@@ -2802,7 +2854,7 @@ function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'c
 
 // === SBAR ===
 function gotoSBAR(){
-  if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}
+  if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}if(G._d6Tv1){clearTimeout(G._d6Tv1);G._d6Tv1=null;}if(G._d6Tv2){clearTimeout(G._d6Tv2);G._d6Tv2=null;}
   if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
   wipeGo(()=>{showScreen('sbar');renderSBAR();});
@@ -2898,7 +2950,7 @@ function answerChoice(idx){
   }
 }
 function continueAfterFail(){wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
-function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
+function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}if(G._d6Tv1){clearTimeout(G._d6Tv1);G._d6Tv1=null;}if(G._d6Tv2){clearTimeout(G._d6Tv2);G._d6Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
 
 // === HANDOFF 2 ===
 const HO2_ITEMS={
@@ -3023,7 +3075,7 @@ function showDayDetail(day){
 // === HUD MENU ===
 function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
-function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
+function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}if(G._d6Tv1){clearTimeout(G._d6Tv1);G._d6Tv1=null;}if(G._d6Tv2){clearTimeout(G._d6Tv2);G._d6Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
 function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
 
 const VACATIONS=[
