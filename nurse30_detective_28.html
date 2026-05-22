@@ -1688,15 +1688,54 @@ const ACTS_D4=[
    done:()=>G.actionsTaken.includes('chart_d4'),unlock:3,need:null},
 ];
 
-function getACTS(){
-  if(G.currentDay===2)return ACTS_D2;
-  if(G.currentDay===3)return ACTS_D3;
-  if(G.currentDay===4)return ACTS_D4;
-  if(G.currentDay===5)return ACTS_D5;
-  if(G.currentDay===6)return ACTS_D6;
-  if(G.currentDay===7)return ACTS_D7;
-  return ACTS;
-}
+// === DAY REGISTRY (data-driven per-day config) ===
+// Adding a new day = add one DAYS[N] entry + SCENARIOS[N] + ACTS_DN. No more scattered if(currentDay===N).
+const VC=(b,h,bs,hs)=>({bp:{val:b,state:bs},hr:{val:h,state:hs}}); // vitals-change shorthand for timers
+const DAYS={
+  1:{acts:()=>ACTS, monitorTitle:'Monitor Bay 4', sfxLoop:'monitor', chartKey:'chart',
+     hudDay:'Day 1 Bay 4', hudPt:'Mrs. Delgado, 58F', handoffSub:'Day 1 Bay 4 23:42',
+     handoffVitalsLabel:'Last recorded vitals',
+     handoffVitalsGrid:'<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:91,skinFlush:0,diaphoresis:0.3,mottle:0,confusion:false,ecgChaos:0.15},
+     ivReset:()=>{if(SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='150 mL/hr';SCENARIOS[1].iv.main.state='crit';SCENARIOS[1].iv.main.note='Prescribed 80 mL/hr -- running too fast';}}},
+  2:{acts:()=>ACTS_D2, monitorTitle:'Monitor ICU', sfxLoop:'icu', chartKey:'chart_d2',
+     hudDay:'Day 2 ICU Bed 3', hudPt:'Mr. Chen, 67M', handoffSub:'Day 2 ICU Bed 3 06:14',
+     handoffVitalsLabel:'Last recorded vitals 30 min ago',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:95,skinFlush:0.7,diaphoresis:0.8,mottle:0.4,confusion:true,ecgChaos:0.3},
+     drawIVFluid:true, tickMottle:true, codeBlue:{at:180,guard:'fluids'}},
+  3:{acts:()=>ACTS_D3, monitorTitle:'Monitor Room 214', sfxLoop:'monitor', chartKey:'chart_d3',
+     hudDay:'Day 3 Room 214', hudPt:'Tyler, 45M', handoffSub:'Day 3 Room 214 05:30',
+     handoffVitalsLabel:'Last recorded vitals -- trending',
+     handoffVitalsGrid:'<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">50mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:97,skinFlush:0,diaphoresis:0.3,mottle:0.1,confusion:false,ecgChaos:0.1},
+     timers:[{at:120000,vitals:VC('106/68','104','warn','warn'),guard:'call_md'},{at:180000,vitals:VC('90/58','112','crit','crit'),guard:'call_md'}]},
+  4:{acts:()=>ACTS_D4, monitorTitle:'Monitor ER Bay 2', sfxLoop:'monitor', chartKey:'chart_d4',
+     hudDay:'Day 4 ER Bay 2', hudPt:'Jamie Chen, 21F', handoffSub:'Day 4 ER Bay 2 14:05',
+     handoffVitalsLabel:'Triage vitals -- 5 min ago',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv crit">84/52</div></div><div><div class="vcl">HR</div><div class="vcv crit">128</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">93%</div></div><div><div class="vcl">RR</div><div class="vcv crit">26</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.0C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:93,skinFlush:0.9,diaphoresis:0.2,mottle:0.2,confusion:false,ecgChaos:0.2},
+     ivReset:()=>{if(SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='No IV access';SCENARIOS[4].iv.main.vol='--';SCENARIOS[4].iv.main.rate='--';SCENARIOS[4].iv.main.state='crit';SCENARIOS[4].iv.main.note='Large bore IV needed -- urgent';}}},
+  5:{acts:()=>ACTS_D5, monitorTitle:'Monitor Room 305', sfxLoop:'monitor', chartKey:'chart_d5',
+     hudDay:'Day 5 Room 305', hudPt:'Mr. Park, 62M', handoffSub:'Day 5 Room 305 02:30',
+     handoffVitalsLabel:'Vitals taken by aide 02:30',
+     handoffVitalsGrid:'<div><div class="vcl">BGL</div><div class="vcv crit">2.1 mmol</div></div><div><div class="vcl">GCS</div><div class="vcv crit">10</div></div><div><div class="vcl">HR</div><div class="vcv warn">106</div></div><div><div class="vcl">BP</div><div class="vcv ok">124/78</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">98%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:98,skinFlush:0,diaphoresis:0.8,mottle:0.1,confusion:true,ecgChaos:0.1}},
+  6:{acts:()=>ACTS_D6, monitorTitle:'Monitor Room 312A', sfxLoop:'monitor', chartKey:'chart_d6',
+     hudDay:'Day 6 Room 312A', hudPt:'Mrs. Rivera, 71F', handoffSub:'Day 6 Room 312A 07:15',
+     handoffVitalsLabel:'Vitals trending -- last 8 hours',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv crit">104/68</div></div><div><div class="vcl">HR</div><div class="vcv warn">92</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.2C</div></div><div><div class="vcl">RR</div><div class="vcv warn">20</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">96%</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">7 mL</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:96,skinFlush:0,diaphoresis:0.4,mottle:0.2,confusion:false,ecgChaos:0.1},
+     ivReset:()=>{if(SCENARIOS[6]&&SCENARIOS[6].iv&&SCENARIOS[6].iv.main){SCENARIOS[6].iv.main.rate='80 mL/hr';SCENARIOS[6].iv.main.state='warn';SCENARIOS[6].iv.main.note='Review rate -- UO declining';}},
+     timers:[{at:180000,vitals:VC('96/60','102','crit','warn'),guard:'call_md'},{at:300000,vitals:VC('84/54','112','crit','crit'),guard:'call_md'}]},
+  7:{acts:()=>ACTS_D7, monitorTitle:'Monitor ER Bay 6', sfxLoop:'monitor', chartKey:'chart_d7',
+     hudDay:'Day 7 ER Bay 6', hudPt:'Mr. Kowalski, 54M', handoffSub:'Day 7 ER Bay 6 10:51',
+     handoffVitalsLabel:'Vitals on arrival -- ER',
+     handoffVitalsGrid:'<div><div class="vcl">BP</div><div class="vcv ok">118/78</div></div><div><div class="vcl">HR</div><div class="vcv warn">96</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.4C</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div>',
+     visual:{patientState:'stable',o2Saturation:99,skinFlush:0.3,diaphoresis:0.1,mottle:0,confusion:false,ecgChaos:0.05}},
+};
+function DAY(){return DAYS[G.currentDay]||DAYS[1];}
+function getACTS(){const d=DAYS[G.currentDay];return d&&d.acts?d.acts():ACTS;}
 function getSC(){return SCENARIOS[G.currentDay]||SCENARIOS[1];}
 function getSBAR(){return SBAR_DATA[G.currentDay]||SBAR_DATA[1];}
 function isSBARDragMode(){return (G.currentDay||1)<=5;}
@@ -1731,10 +1770,8 @@ function getVSForDay(day){
 }
 function resetVSForDay(day){
   Object.assign(VS,getVSForDay(day));
-  if(day===1&&SCENARIOS[1]&&SCENARIOS[1].iv&&SCENARIOS[1].iv.main){SCENARIOS[1].iv.main.rate='150 mL/hr';SCENARIOS[1].iv.main.state='crit';SCENARIOS[1].iv.main.note='Prescribed 80 mL/hr -- running too fast';}
   if(SCENARIOS[2]&&SCENARIOS[2].vitals){SCENARIOS[2].vitals.lac=null;}
-  if(day===6&&SCENARIOS[6]&&SCENARIOS[6].iv&&SCENARIOS[6].iv.main){SCENARIOS[6].iv.main.rate='80 mL/hr';SCENARIOS[6].iv.main.state='warn';SCENARIOS[6].iv.main.note='Review rate -- UO declining';}
-  if(day===4&&SCENARIOS[4]&&SCENARIOS[4].iv&&SCENARIOS[4].iv.main){SCENARIOS[4].iv.main.name='No IV access';SCENARIOS[4].iv.main.vol='--';SCENARIOS[4].iv.main.rate='--';SCENARIOS[4].iv.main.state='crit';SCENARIOS[4].iv.main.note='Large bore IV needed -- urgent';}
+  if(DAYS[day]&&DAYS[day].ivReset)DAYS[day].ivReset();
   renderIVPanel(day);
   const labRows=document.getElementById('lab-rows');if(labRows)labRows.innerHTML='';
   const labsPanel=document.getElementById('labs-panel');if(labsPanel)labsPanel.classList.remove('show');
@@ -1760,7 +1797,7 @@ function updateVitals(chg={}){
     if(scv.gcs){const ge=document.getElementById('mo-gcs');if(ge){ge.textContent=scv.gcs.val;ge.className='monval '+scv.gcs.state;}}
   }else{
     const g1=document.getElementById('mon-grid-d1'),g2=document.getElementById('mon-grid-d2'),mt=document.getElementById('mon-title');
-    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=G.currentDay===3?'Monitor Room 214':G.currentDay===4?'Monitor ER Bay 2':G.currentDay===5?'Monitor Room 305':G.currentDay===6?'Monitor Room 312A':G.currentDay===7?'Monitor ER Bay 6':'Monitor Bay 4';
+    if(g1)g1.style.display='';if(g2)g2.style.display='none';if(mt)mt.textContent=DAY().monitorTitle;
     const sc1v=(SCENARIOS[G.currentDay]||{}).vitals||{};
     if(sc1v.temp){const te=document.getElementById('mo-temp-d1');if(te){te.textContent=sc1v.temp.val;te.className='monval '+sc1v.temp.state;}}
     if(sc1v.gcs){const ge=document.getElementById('mo-gcs-d1');if(ge){ge.textContent=sc1v.gcs.val;ge.className='monval '+sc1v.gcs.state;}}
@@ -1776,7 +1813,7 @@ function updateVitals(chg={}){
   if(chg.hr&&SFX._beepIv){
     SFX.stopMonitorLoop();
     setTimeout(()=>{
-      if(G.currentDay===2)SFX.startICULoop();
+      if(DAY().sfxLoop==='icu')SFX.startICULoop();
       else SFX.startMonitorLoop();
     },50);
   }
@@ -1818,39 +1855,16 @@ function labRowHTML(id,name,val,state,isNew){return '<div class="lab-row" id="'+
 
 // === VISUAL STATE ===
 function initVisualState(day){
-  if(day===2){G.patientState='deteriorating';G.o2Saturation=95;G.skinFlush=0.7;G.diaphoresis=0.8;G.mottle=0.4;G.confusion=true;G.ecgChaos=0.3;}
-  else if(day===3){
-    G.patientState='deteriorating';G.o2Saturation=97;
-    G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0.1;G.confusion=false;G.ecgChaos=0.1;
-    // Day 3: pale skin, slightly clammy, restless -- not dramatic
-  }
-  else if(day===4){
-    G.patientState='deteriorating';G.o2Saturation=93;
-    G.skinFlush=0.9;G.diaphoresis=0.2;G.mottle=0.2;G.confusion=false;G.ecgChaos=0.2;
-    // Day 4: anaphylaxis -- flushed, urticaria, tachycardic, hypotensive
-  }
-  else if(day===5){
-    G.patientState='deteriorating';G.o2Saturation=98;
-    G.skinFlush=0;G.diaphoresis=0.8;G.mottle=0.1;G.confusion=true;G.ecgChaos=0.1;
-  }
-  else if(day===6){
-    G.patientState='deteriorating';G.o2Saturation=96;
-    G.skinFlush=0;G.diaphoresis=0.4;G.mottle=0.2;G.confusion=false;G.ecgChaos=0.1;
-    // Day 6: early sepsis -- pale, slightly diaphoretic, subtle deterioration
-  }
-  else if(day===7){
-    G.patientState='stable';G.o2Saturation=99;
-    G.skinFlush=0.3;G.diaphoresis=0.1;G.mottle=0;G.confusion=false;G.ecgChaos=0.05;
-    // Day 7: right leg cellulitis -- stable vitals, mild warmth/erythema, no acute deterioration
-  }
-  else{G.patientState='deteriorating';G.o2Saturation=91;G.skinFlush=0;G.diaphoresis=0.3;G.mottle=0;G.confusion=false;G.ecgChaos=0.15;}
+  const v=(DAYS[day]&&DAYS[day].visual)||DAYS[1].visual;
+  G.patientState=v.patientState;G.o2Saturation=v.o2Saturation;G.skinFlush=v.skinFlush;
+  G.diaphoresis=v.diaphoresis;G.mottle=v.mottle;G.confusion=v.confusion;G.ecgChaos=v.ecgChaos;
 }
 function applyVisualImprovement(type){
   if(type==='o2'||type==='o2_d2')G.o2Saturation=Math.min(99,G.o2Saturation+4);
   if(type==='fluids')setTimeout(()=>{G.mottle=Math.max(0,G.mottle-0.3);},3000);
 }
 function tickVisualDeterioration(){
-  if(G.currentDay===2&&!G.actionsTaken.includes('fluids')){G.mottle=Math.min(1,G.mottle+0.02);G.ecgChaos=Math.min(0.8,G.ecgChaos+0.01);}
+  if(DAY().tickMottle&&!G.actionsTaken.includes('fluids')){G.mottle=Math.min(1,G.mottle+0.02);G.ecgChaos=Math.min(0.8,G.ecgChaos+0.01);}
   if(!G.actionsTaken.includes('o2')&&!G.actionsTaken.includes('o2_d2'))G.o2Saturation=Math.max(82,G.o2Saturation-0.05);
 }
 
@@ -1906,7 +1920,7 @@ function drawPatient(ctx,W,H){
   if(G.patientState==='stable'){ctx.beginPath();ctx.arc(cx,cy-28+breathY,5,0.2,Math.PI-0.2);ctx.stroke();}
   else{ctx.beginPath();ctx.moveTo(cx-5,cy-27+breathY);ctx.lineTo(cx+5,cy-27+breathY);ctx.stroke();}
   if(G.o2Device)drawO2(ctx,cx,cy+breathY,G.o2Device);
-  if(G.currentDay===2)drawIVFluid(ctx,W,H);
+  if(DAY().drawIVFluid)drawIVFluid(ctx,W,H);
 }
 function drawO2(ctx,cx,cy,dev){
   if(dev==='prong'){ctx.strokeStyle='rgba(100,200,255,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(cx-20,cy-32);ctx.bezierCurveTo(cx-15,cy-38,cx-8,cy-38,cx-6,cy-34);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+20,cy-32);ctx.bezierCurveTo(cx+15,cy-38,cx+8,cy-38,cx+6,cy-34);ctx.stroke();ctx.beginPath();ctx.moveTo(cx-6,cy-34);ctx.bezierCurveTo(cx-3,cy-30,cx+3,cy-30,cx+6,cy-34);ctx.stroke();ctx.fillStyle='rgba(100,200,255,.8)';ctx.font="bold 7px 'DM Mono'";ctx.fillText('NC 2L',cx-18,cy-44);}
@@ -2238,15 +2252,9 @@ function gotoHandoff(){
 }
 function startHandoff(){
   const chat=document.getElementById('ho-chat');if(chat)chat.innerHTML='';
-  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=G.currentDay===2?'Day 2 ICU Bed 3 06:14':G.currentDay===3?'Day 3 Room 214 05:30':G.currentDay===4?'Day 4 ER Bay 2 14:05':G.currentDay===5?'Day 5 Room 305 02:30':G.currentDay===6?'Day 6 Room 312A 07:15':G.currentDay===7?'Day 7 ER Bay 6 10:51':'Day 1 Bay 4 23:42';
+  const subEl=document.getElementById('ho-sub');if(subEl)subEl.textContent=DAY().handoffSub;
   const lbl=document.getElementById('ho-vitals-lbl');const grid=document.getElementById('ho-vitals-grid');
-  if(G.currentDay===2){if(lbl)lbl.textContent='Last recorded vitals 30 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">86/50</div></div><div><div class="vcl">MAP</div><div class="vcv crit">62</div></div><div><div class="vcl">HR</div><div class="vcv warn">118</div></div><div><div class="vcl">RR</div><div class="vcv warn">22</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv warn">39.1C</div></div><div><div class="vcl">GCS</div><div class="vcv crit">13</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">18 mL</div></div>';}
-  else if(G.currentDay===3){if(lbl)lbl.textContent='Last recorded vitals -- trending';if(grid)grid.innerHTML='<div><div class="vcl">HR</div><div class="vcv warn">98</div></div><div><div class="vcl">BP</div><div class="vcv ok">118/76</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Temp</div><div class="vcv ok">36.8C</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div><div><div class="vcl">Drain</div><div class="vcv warn">50mL dark</div></div><div><div class="vcl">Pain</div><div class="vcv warn">7/10</div></div>';}
-  else if(G.currentDay===4){if(lbl)lbl.textContent='Triage vitals -- 5 min ago';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">84/52</div></div><div><div class="vcl">HR</div><div class="vcv crit">128</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">93%</div></div><div><div class="vcl">RR</div><div class="vcv crit">26</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.0C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
-  else if(G.currentDay===5){if(lbl)lbl.textContent='Vitals taken by aide 02:30';if(grid)grid.innerHTML='<div><div class="vcl">BGL</div><div class="vcv crit">2.1 mmol</div></div><div><div class="vcl">GCS</div><div class="vcv crit">10</div></div><div><div class="vcl">HR</div><div class="vcv warn">106</div></div><div><div class="vcl">BP</div><div class="vcv ok">124/78</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">98%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div>';}
-  else if(G.currentDay===6){if(lbl)lbl.textContent='Vitals trending -- last 8 hours';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv crit">104/68</div></div><div><div class="vcl">HR</div><div class="vcv warn">92</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.2C</div></div><div><div class="vcl">RR</div><div class="vcv warn">20</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">96%</div></div><div><div class="vcl">UO/hr</div><div class="vcv crit">7 mL</div></div>';}
-  else if(G.currentDay===7){if(lbl)lbl.textContent='Vitals on arrival -- ER';if(grid)grid.innerHTML='<div><div class="vcl">BP</div><div class="vcv ok">118/78</div></div><div><div class="vcl">HR</div><div class="vcv warn">96</div></div><div><div class="vcl">Temp</div><div class="vcv warn">38.4C</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">97%</div></div><div><div class="vcl">GCS</div><div class="vcv ok">15</div></div>';}
-  else{if(lbl)lbl.textContent='Last recorded vitals';if(grid)grid.innerHTML='<div><div class="vcl">SpO2</div><div class="vcv crit">91%</div></div><div><div class="vcl">HR</div><div class="vcv warn">104</div></div><div><div class="vcl">RR</div><div class="vcv warn">24</div></div><div><div class="vcl">BP</div><div class="vcv warn">138/90</div></div><div><div class="vcl">Temp</div><div class="vcv ok">37.2C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>';}
+  if(lbl)lbl.textContent=DAY().handoffVitalsLabel;if(grid)grid.innerHTML=DAY().handoffVitalsGrid;
   const vc=document.getElementById('ho-vitals');if(vc)vc.style.display='none';
   const sc=getSC();let i=0;
   function next(){if(i>=sc.handoff.length)return;const msg=sc.handoff[i++];setTimeout(()=>{
@@ -2256,20 +2264,13 @@ function startHandoff(){
     next();},msg.delay||800);
   }next();
 }
+function clearDayTimers(){if(G._dayTimers){G._dayTimers.forEach(t=>clearTimeout(t));}G._dayTimers=[];}
 function gotoInvestigate(){
-  const dayHud=G.currentDay===2?'Day 2 ICU Bed 3':G.currentDay===3?'Day 3 Room 214':G.currentDay===4?'Day 4 ER Bay 2':G.currentDay===5?'Day 5 Room 305':G.currentDay===6?'Day 6 Room 312A':G.currentDay===7?'Day 7 ER Bay 6':'Day 1 Bay 4';
-  const ptHud=G.currentDay===2?'Mr. Chen, 67M':G.currentDay===3?'Tyler, 45M':G.currentDay===4?'Jamie Chen, 21F':G.currentDay===5?'Mr. Park, 62M':G.currentDay===6?'Mrs. Rivera, 71F':G.currentDay===7?'Mr. Kowalski, 54M':'Mrs. Delgado, 58F';
-  const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=dayHud;if(pe)pe.textContent=ptHud;
+  const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=DAY().hudDay;if(pe)pe.textContent=DAY().hudPt;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
-  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(G.currentDay===2)SFX.startICULoop();else SFX.startMonitorLoop();},700);
-    if(G.currentDay===3){
-      G._d3Tv1=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'106/68',state:'warn'},hr:{val:'104',state:'warn'}});SFX.init();SFX.urgentAlarm();}},120000);
-      G._d3Tv2=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'90/58',state:'crit'},hr:{val:'112',state:'crit'}});SFX.init();SFX.urgentAlarm();}},180000);
-    }
-    if(G.currentDay===6){
-      G._d6Tv1=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'96/60',state:'crit'},hr:{val:'102',state:'warn'}});SFX.init();SFX.urgentAlarm();}},180000);
-      G._d6Tv2=setTimeout(()=>{if(!G.actionsTaken.includes('call_md')){updateVitals({bp:{val:'84/54',state:'crit'},hr:{val:'112',state:'crit'}});SFX.init();SFX.urgentAlarm();}},300000);
-    }
+  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(DAY().sfxLoop==='icu')SFX.startICULoop();else SFX.startMonitorLoop();},700);
+    clearDayTimers();const tmrs=DAY().timers;
+    if(tmrs)tmrs.forEach(tm=>{G._dayTimers.push(setTimeout(()=>{if(!tm.guard||!G.actionsTaken.includes(tm.guard)){updateVitals(tm.vitals);SFX.init();SFX.urgentAlarm();}},tm.at));});
   },100);});
 }
 
@@ -2328,7 +2329,7 @@ function startTimer(resume=false){
     if(G.timerSec===180){SFX.init();SFX.deterioration();}
     if(G.timerSec===90){SFX.init();SFX.urgentAlarm();}
     if(G.timerSec%10===0)tickVisualDeterioration();
-    if(G.currentDay===2&&G.timerSec===180&&!G.actionsTaken.includes('fluids')){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
+    const cb=DAY().codeBlue;if(cb&&G.timerSec===cb.at&&!G.actionsTaken.includes(cb.guard)){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
     if(G.timerSec<=0){clearInterval(G.timerIv);resetTimerPressure();stopScene();gotoAction();}
   },1000);
 }
@@ -2850,11 +2851,11 @@ function doAction(type){
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }
 }
-function submitChart(){const key=G.currentDay===2?'chart_d2':G.currentDay===3?'chart_d3':G.currentDay===4?'chart_d4':G.currentDay===5?'chart_d5':G.currentDay===6?'chart_d6':G.currentDay===7?'chart_d7':'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
+function submitChart(){const key=DAY().chartKey||'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
 
 // === SBAR ===
 function gotoSBAR(){
-  if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}if(G._d6Tv1){clearTimeout(G._d6Tv1);G._d6Tv1=null;}if(G._d6Tv2){clearTimeout(G._d6Tv2);G._d6Tv2=null;}
+  clearDayTimers();
   if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
   wipeGo(()=>{showScreen('sbar');renderSBAR();});
@@ -2950,7 +2951,7 @@ function answerChoice(idx){
   }
 }
 function continueAfterFail(){wipeGo(()=>{showScreen('handoff2');buildHandoff2();});}
-function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}if(G._d6Tv1){clearTimeout(G._d6Tv1);G._d6Tv1=null;}if(G._d6Tv2){clearTimeout(G._d6Tv2);G._d6Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
+function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;clearDayTimers();resetVSForDay(G.currentDay);initVisualState(G.currentDay);wipeGo(()=>{showScreen('handoff');startHandoff();});}
 
 // === HANDOFF 2 ===
 const HO2_ITEMS={
@@ -3075,7 +3076,7 @@ function showDayDetail(day){
 // === HUD MENU ===
 function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
-function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;if(G._d3Tv1){clearTimeout(G._d3Tv1);G._d3Tv1=null;}if(G._d3Tv2){clearTimeout(G._d3Tv2);G._d3Tv2=null;}if(G._d6Tv1){clearTimeout(G._d6Tv1);G._d6Tv1=null;}if(G._d6Tv2){clearTimeout(G._d6Tv2);G._d6Tv2=null;}resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
+function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;clearDayTimers();resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
 function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
 
 const VACATIONS=[
