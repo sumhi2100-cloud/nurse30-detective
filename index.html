@@ -1353,6 +1353,84 @@ SCENARIOS[8]={
     headline:'You tried to carry both. No one can.',
     story:'You went room to room doing everything yourself. While you were titrating the pressor in 12, Room 14 desaturated into a code -- the airway was the emergency and it could not wait for you. The lesson is hard but it is the whole job in the ICU: the strongest nurse is not the one who does everything. It is the one who mobilizes the team in the first sixty seconds.'},
 };
+SCENARIOS[9]={
+  handoff:[
+    {delay:500,from:'Charge RN Dubois',txt:'4 West, Bed 12 -- Mr. Tremblay, 89. Admitted two days ago with a <span class="hk">UTI and dehydration</span>. Start of shift he was <span class="hk">alert and oriented</span>, did his crossword. The last few hours he has changed.'},
+    {delay:2300,from:'Charge RN Dubois',txt:'He is <span class="hk">confused, restless, trying to climb out of bed</span> and pulling at his IV. He keeps asking for his wife -- she passed three years ago. This is <span class="hk">new tonight</span>.'},
+    {delay:3900,from:'You',txt:'Was he like this on admission?',you:true},
+    {delay:4700,from:'Charge RN Dubois',txt:'No -- <span class="hk">baseline alert and independent</span> at home per his daughter. She is on the phone now: "that is NOT my father." And his <span class="hk">evening IV fluids were missed</span> in the handover gap.'},
+    {delay:6100,from:'Charge RN Dubois',txt:'We are short tonight -- him plus three others. I know you are tired. <span class="hk">Go see him first.</span>'},
+    {delay:7400,alert:true,txt:'Bed 12 -- BED EXIT ALARM -- patient attempting to climb over the rail'},
+  ],
+  taps:[
+    {id:'patient',lbl:'Observe',x:'38%',y:'30%',
+     finds:[
+       {p:'c',t:'He is sitting up, one leg over the rail, pulling at his IV. He looks <strong>frightened, not aggressive.</strong> "I need to go home. Where is my wife?"'},
+       {p:'w',t:'He does not recognise the room. His attention drifts mid-sentence, then suddenly fixes on you: <em>"Please... please don\'t leave me."</em>'},
+       {p:'c',t:'Acute onset, fluctuating, inattention -- this is the picture of <strong>delirium</strong>, not baseline dementia and not just "a confused old man."'},
+     ],
+     insight:'Acute onset + fluctuating course + inattention = delirium until proven otherwise. The question is not "is he confused" -- it is "WHY, tonight."',
+     clue:'Acute fluctuating confusion + inattention -- delirium pattern'},
+    {id:'foley',lbl:'Foley',x:'62%',y:'66%',
+     finds:[
+       {p:'c',t:'Foley bag: urine is <strong>cloudy, dark, concentrated, strong-smelling.</strong> Output low -- about 18 mL/hr.'},
+       {p:'w',t:'He was admitted for a UTI. Cloudy concentrated urine + low output = infection likely worsening AND ongoing dehydration.'},
+     ],
+     insight:'Cloudy concentrated urine + low output. The UTI he was admitted for may be driving both the delirium and the dehydration.',
+     clue:'Cloudy concentrated urine, UO 18 mL/hr -- worsening UTI + dehydration'},
+    {id:'vitals',lbl:'Monitor',x:'80%',y:'34%',
+     finds:[
+       {p:'c',t:'Temp <strong>38.5C</strong> -- up from 37.9 earlier. HR <strong>104</strong>, up from 88. BP 108/62, soft. RR 20.'},
+       {p:'w',t:'Low-grade fever + rising HR + softening BP in a patient admitted with a UTI -- think early sepsis as a delirium driver.'},
+     ],
+     insight:'Fever 38.5 + HR 104 + softening BP. Infection is progressing. Delirium is the brain showing you the body is sick.',
+     clue:'Temp 38.5 + HR 104 + BP 108/62 -- infection progressing'},
+    {id:'mouth',lbl:'Hydration',x:'46%',y:'42%',
+     finds:[
+       {p:'c',t:'Mucous membranes <strong>dry</strong>, tongue furrowed. Skin tents when pinched. Eyes slightly sunken.'},
+       {p:'w',t:'Clinical dehydration. His evening IV fluids were missed and overnight oral intake is poor.'},
+     ],
+     insight:'Dry membranes + skin tenting + missed fluids. Dehydration alone causes delirium in the elderly -- here it is stacked on top of infection.',
+     clue:'Dry membranes + skin tenting -- dehydration (missed evening fluids)'},
+    {id:'chart',lbl:'Chart',x:'82%',y:'20%',
+     finds:[
+       {p:'w',t:'Admitted 2 days ago: UTI + dehydration. Baseline per daughter: <strong>alert, oriented, independent, does the daily crossword.</strong> No dementia diagnosis.'},
+       {p:'c',t:'Meds: no new sedatives, no opioids, no benzodiazepines. <strong>Evening IV maintenance fluids: NOT given</strong> (handover gap). Last BGL 6.1 at 20:00.'},
+       {p:'c',t:'No alcohol history (withdrawal unlikely). No fall, no anticoagulant, no focal neuro signs charted (stroke less likely -- but keep it on the list).'},
+     ],
+     insight:'Sharp baseline + no culprit medications + missed fluids + active UTI. The reversible causes are right here: infection and dehydration.',
+     clue:'Baseline alert (no dementia) -- missed IV fluids -- active UTI, no sedatives'},
+    {id:'daughter',lbl:'Daughter',x:'20%',y:'30%',
+     finds:[
+       {p:'c',t:'Daughter, on the phone, voice shaking: <em>"He did the crossword with me yesterday. He is NOT like this. Something is wrong."</em>'},
+       {p:'w',t:'Family who say "this is not them" are giving you the single most important piece of data: a reliable baseline. Believe them.'},
+     ],
+     insight:'"This is not his normal." A reliable collateral baseline is gold -- it turns "confused old man" into "acute change that needs a cause."',
+     clue:'Daughter: "This is NOT his normal" -- reliable baseline = acute change'},
+    {id:'tv',x:'18%',y:'62%',wrong:true,wrongTxt:'The television is not a clinical cue. He is frightened and overstimulated -- if anything, reduce noise and light, do not add to it.'},
+    {id:'restraintkit',x:'85%',y:'74%',wrong:true,wrongTxt:'Reaching for restraints first is the reflex to resist. Restraints increase agitation, injury, and delirium duration. Safety comes from assessment and presence, not restraint. (CCSMH / Choosing Wisely Canada)'},
+  ],
+  question:'It is 03:12. Mr. Tremblay is frightened, confused, and trying to climb over the rail. You are exhausted and you have three other patients. What is the safest, most appropriate approach right now?',
+  sub:'Confusion is a symptom, not a diagnosis.',
+  choices:[
+    {key:'A',lbl:'Apply physical restraints to keep him from falling, then carry on with your other patients.',desc:'He is a fall risk -- restrain him for his own safety.',correct:false,
+     exp:'Restraints are not a safety intervention here -- they increase agitation, injury, aspiration, and prolong delirium, and they never treat the cause. Physical restraint is a last resort after less restrictive measures fail, with an order and continuous monitoring -- not a first reflex on a frightened, confused elder. (CCSMH National Delirium Guidelines; Choosing Wisely Canada; RNAO Delirium BPG)'},
+    {key:'B',lbl:'Make him immediately safe without restraint (lower bed, exit alarm, reorient, ask the CNA to sit with him), assess and treat the reversible causes -- glucose, hydration, infection -- then SBAR the MD about an acute change in mental status.',desc:'Safety first without restraint, find and treat the cause, escalate.',correct:true,
+     exp:'Correct. Delirium is acute brain failure from a reversible cause. Secure safety with the least restrictive measures (low bed, alarm, presence, reduced stimulation), rule out the fast killer (check glucose), and treat what you find -- here, worsening UTI and dehydration -- while escalating the acute change. Restraints and antipsychotics are last resorts, not first moves. (CCSMH 2014/2024; RNAO BPG Delirium; CAM)'},
+    {key:'C',lbl:'Give a PRN dose of quetiapine (or loxapine) to settle him before he hurts himself.',desc:'Chemical settling is faster and avoids physical restraint.',correct:false,
+     exp:'Antipsychotics are not first-line for delirium. They do not treat the cause, they increase falls, stroke, and mortality in older adults, and they cloud the very mental status you are trying to follow. Reserve low-dose antipsychotics only for severe distress or danger when non-pharmacological measures have failed -- never as the opening move. (Choosing Wisely Canada -- Geriatrics; CCSMH; Health Canada antipsychotic warnings)'},
+    {key:'D',lbl:'He is 89 and confused at night -- this is likely sundowning/dementia. Document "confused" and continue your rounds.',desc:'Age-related night confusion is expected; reassess in the morning.',correct:false,
+     exp:'This is the most dangerous option because it does nothing. He has no dementia diagnosis, a sharp baseline yesterday, and an acute change tonight with fever and dehydration. Labelling it "dementia/sundowning" misses the sepsis. "Confused" is not a diagnosis -- it is a symptom demanding a cause. (RNAO Delirium BPG; CCSMH)'},
+  ],
+  outcomeGood:{statDeltas:{judgment:14,confidence:11,communication:11,resilience:8,fatigue:12},
+    headline:'You saw the change -- and the cause.',
+    story:'You lowered the bed, put the alarm on, and sat with him while you worked. Glucose normal. Cloudy urine, fever 38.5, dry as a bone, missed fluids. You restarted his fluids, sent a repeat urine, and called the MD with a clear SBAR: acute delirium, likely worsening urosepsis. Antibiotics escalated, fluids running. By morning he was calmer and knew his daughter\'s voice. She said: "Thank you for noticing he was different." You were exhausted -- and you still saw him.'},
+  outcomeBad:{statDeltas:{judgment:6,confidence:-3,communication:5,resilience:7,fatigue:16},
+    headline:'Confusion is a symptom. It needed a cause.',
+    story:'It was 3 AM with three other patients. It was easy to call it "just confusion" -- or to settle him and move on. But the fever and dehydration kept climbing behind the label. Delirium is the brain telling you the body is failing. Next time: secure safety without restraint, check the glucose, find the infection, escalate the change. You will hear the daughter\'s words differently then -- "this is not him" is a clinical finding.'},
+  patient:{name:'Mr. Tremblay',age:'89M',dx:'UTI + dehydration -- acute delirium',room:'4 West Bed 12'},
+  vitals:{spo2:{val:'96%',state:'ok'},hr:{val:'104',state:'warn'},rr:{val:'20',state:'warn'},bp:{val:'108/62',state:'warn'},temp:{val:'38.5C',state:'crit'},gcs:{val:'A&O x1',state:'crit'},uo:{val:'18 mL/hr',state:'warn'},lac:null},
+};
 
 const SBAR_DATA={
   1:{doctor:'Dr. Okonkwo',role:'Responsible Medical Officer',phone:'ext. 4421',
@@ -1414,6 +1492,21 @@ const SBAR_DATA={
     md_response:{delay:1600,
       text:'"You are right -- I overrode the alert without reading it. Good catch. Give clindamycin 300mg PO TID times seven days. And -- document this as a near-miss, please. It should go through the safety system."',
       followup:'Order corrected to clindamycin. Near-miss documented. Mr. Kowalski will receive the safe antibiotic. You were the last check -- and you did your job.'},
+  },
+  9:{doctor:'Dr. Singh',role:'Internal Medicine Resident',phone:'ext. 3340',
+    cards:[
+      {id:'s9',zone:'s',text:'I am calling about Mr. Tremblay in 4 West Bed 12. I am concerned about an acute change in mental status -- new delirium overnight.'},
+      {id:'b9',zone:'b',text:'89-year-old male, admitted 2 days ago with a UTI and dehydration. Baseline alert and oriented, independent at home, no dementia. His evening IV maintenance fluids were missed.'},
+      {id:'a9',zone:'a',text:'Acute fluctuating confusion, inattention, climbing out of bed. Temp 38.5, HR 104, BP 108/62, SpO2 96%. Cloudy concentrated urine, UO 18 mL/hr. Glucose 6.1 -- normal. No focal neuro signs.'},
+      {id:'r9',zone:'r',text:'Bed lowered, exit alarm on, CNA at bedside, IV fluids restarted, repeat urinalysis sent. I think his UTI is worsening. I need you to review, with orders for fluids and antibiotic escalation.'},
+    ],
+    s:{title:'Situation',hint:'What is the acute change?'},
+    b:{title:'Background',hint:'Baseline and what is missing?'},
+    a:{title:'Assessment',hint:'Mental status, vitals, what you ruled out?'},
+    r:{title:'Recommendation',hint:'What you have done and what you need?'},
+    md_response:{delay:1800,
+      text:'"Agree -- this is delirium from worsening urosepsis and dehydration. Give a 500 mL bolus then maintenance, repeat cultures, escalate to IV ceftriaxone, and keep him safe without restraints. Good catch on the glucose. I will come review."',
+      followup:'Dr. Singh notified. Fluids and antibiotics escalated. Non-pharmacological safety in place. You found the cause behind the confusion.'},
   },
   6:{doctor:'Dr. Osei',role:'General Surgery Resident',phone:'ext. 4418',
     cards:[
@@ -1802,6 +1895,57 @@ const ACTS_D4=[
    done:()=>G.actionsTaken.includes('chart_d4'),unlock:3,need:null},
 ];
 
+const ACTS_D9=[
+  {key:'safety_d9',pri:1,sec:'Immediate -- Safety',
+   getL:()=>G.actionsTaken.includes('safety_d9')?'Bed lowered + alarm on -- fall precautions':'Make him safe -- lower bed, exit alarm, clear lines',
+   desc:'Lowest bed height, bed/chair exit alarm on, tidy tubing he can pull, call bell in hand, clear path. Least restrictive fall prevention -- safety without restraint.',
+   done:()=>G.actionsTaken.includes('safety_d9'),unlock:1,need:null},
+  {key:'reorient_d9',pri:1,sec:'Immediate -- Communication',
+   getL:()=>G.actionsTaken.includes('reorient_d9')?'Reoriented -- calm presence':'Reorient calmly -- name, place, reassure',
+   desc:'Eye level, low calm voice: "You are in hospital, it is night, you are safe, I am right here." Reduce noise and light. Repeat as needed. Do not argue with the confusion.',
+   done:()=>G.actionsTaken.includes('reorient_d9'),unlock:1,need:null},
+  {key:'vitals_d9',pri:1,sec:'Immediate -- Assessment',
+   getL:()=>G.actionsTaken.includes('vitals_d9')?'Full vitals -- febrile, tachycardic':'Take full vitals',
+   desc:'Temp, HR, BP, RR, SpO2. Fever and tachycardia point to infection as the delirium driver.',
+   done:()=>G.actionsTaken.includes('vitals_d9'),unlock:1,need:null},
+  {key:'glucose_d9',pri:1,sec:'Immediate -- Rule out',
+   getL:()=>G.actionsTaken.includes('glucose_d9')?'BGL 6.1 -- hypoglycemia ruled out':'Check blood glucose -- rule out hypoglycemia',
+   desc:'Always check a glucose in any acute confusion -- hypoglycemia is fast, reversible, and looks exactly like this. One fast killer ruled out.',
+   done:()=>G.actionsTaken.includes('glucose_d9'),unlock:1,need:null},
+  {key:'cam_d9',pri:2,sec:'Urgent -- Assessment',
+   getL:()=>G.actionsTaken.includes('cam_d9')?'CAM positive -- delirium confirmed':'Screen with CAM (Confusion Assessment Method)',
+   desc:'CAM: acute onset + fluctuating course, AND inattention, PLUS disorganised thinking OR altered consciousness. Names the problem: delirium, not dementia.',
+   done:()=>G.actionsTaken.includes('cam_d9'),unlock:2,need:'patient'},
+  {key:'fluids_d9',pri:2,sec:'Urgent -- Treat cause',
+   getL:()=>G.actionsTaken.includes('fluids_d9')?'IV fluids restarted':'Restart IV fluids -- treat dehydration',
+   desc:'His evening maintenance fluids were missed and he is clinically dry. Restart IV fluids per orders. Rehydration alone often improves delirium.',
+   done:()=>G.actionsTaken.includes('fluids_d9'),unlock:2,need:'mouth'},
+  {key:'urine_d9',pri:2,sec:'Urgent -- Investigate',
+   getL:()=>G.actionsTaken.includes('urine_d9')?'Repeat urinalysis + culture sent':'Send repeat urinalysis + culture',
+   desc:'Cloudy concentrated urine in a UTI admission -- send repeat urinalysis and culture to confirm worsening infection and guide antibiotics.',
+   done:()=>G.actionsTaken.includes('urine_d9'),unlock:2,need:'foley'},
+  {key:'cna_d9',pri:2,sec:'Urgent -- Delegation',
+   getL:()=>G.actionsTaken.includes('cna_d9')?'CNA staying with patient':'Ask CNA to sit with him (1:1 presence)',
+   desc:'A calm familiar presence is the safest fall prevention for a frightened delirious patient -- and it frees you to escalate. Delegation is a safety tool.',
+   done:()=>G.actionsTaken.includes('cna_d9'),unlock:2,need:null},
+  {key:'call_d9',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Dr. Singh notified':'Call MD -- acute change in mental status',
+   desc:'Escalate the acute change with a clear SBAR: new delirium, likely worsening urosepsis + dehydration, glucose normal. Ask for review, fluids, antibiotic escalation.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'restraint_d9',pri:3,sec:'Caution -- Last resort',
+   getL:()=>G.actionsTaken.includes('restraint_d9')?'Restraint attempted -- he is more distressed':'Apply physical restraints',
+   desc:'WARNING: restraints are a last resort, not a first move. Expect more agitation and injury -- and the cause is still untreated.',
+   done:()=>G.actionsTaken.includes('restraint_d9'),unlock:1,need:null},
+  {key:'antipsych_d9',pri:3,sec:'Caution -- Last resort',
+   getL:()=>G.actionsTaken.includes('antipsych_d9')?'Antipsychotic given -- picture now clouded':'Give PRN quetiapine / loxapine',
+   desc:'WARNING: antipsychotics do not treat delirium and raise falls, stroke, and mortality in elders. Last resort only, for severe danger after non-drug measures fail.',
+   done:()=>G.actionsTaken.includes('antipsych_d9'),unlock:1,need:null},
+  {key:'chart_d9',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d9')?'Nursing note written':'Document assessment + CAM + actions',
+   desc:'Time-stamp the acute change, CAM result, vitals, glucose, what you found and did, who you called, and that least-restrictive safety measures were used.',
+   done:()=>G.actionsTaken.includes('chart_d9'),unlock:3,need:null},
+];
+
 // === DAY REGISTRY (data-driven per-day config) ===
 // Adding a new day = add one DAYS[N] entry + SCENARIOS[N] + ACTS_DN. No more scattered if(currentDay===N).
 const VC=(b,h,bs,hs)=>({bp:{val:b,state:bs},hr:{val:h,state:hs}}); // vitals-change shorthand for timers
@@ -1852,6 +1996,11 @@ const DAYS={
      handoffVitalsLabel:'Two unstable patients -- last vitals',
      handoffVitalsGrid:'<div><div class="vcl">12 BP</div><div class="vcv crit">78/42</div></div><div><div class="vcl">12 MAP</div><div class="vcv crit">54</div></div><div><div class="vcl">12 SpO2</div><div class="vcv warn">92%</div></div><div><div class="vcl">14 SpO2</div><div class="vcv crit">78%</div></div><div><div class="vcl">14 HR</div><div class="vcv crit">140</div></div><div><div class="vcl">14 Peak</div><div class="vcv crit">HIGH</div></div>',
      visual:{patientState:'deteriorating',o2Saturation:92,skinFlush:0,diaphoresis:0.5,mottle:0.3,confusion:false,ecgChaos:0.3}, custom:'icu2'},
+  9:{acts:()=>ACTS_D9, monitorTitle:'Monitor 4 West', sfxLoop:'monitor', chartKey:'chart_d9',
+     hudDay:'Day 9 4 West 03:12', hudPt:'Mr. Tremblay, 89M', handoffSub:'Day 9 Medical Unit 03:12',
+     handoffVitalsLabel:'Vitals 2 hours ago -- he was settled then',
+     handoffVitalsGrid:'<div><div class="vcl">Temp</div><div class="vcv warn">37.9C</div></div><div><div class="vcl">HR</div><div class="vcv ok">88</div></div><div><div class="vcl">BP</div><div class="vcv ok">122/70</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">96%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Orient</div><div class="vcv ok">A&O x3</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:96,skinFlush:0,diaphoresis:0.2,mottle:0,confusion:true,ecgChaos:0.08}},
 };
 function DAY(){return DAYS[G.currentDay]||DAYS[1];}
 function getACTS(){const d=DAYS[G.currentDay];return d&&d.acts?d.acts():ACTS;}
@@ -2111,7 +2260,7 @@ function handleTap(tap){
   if(G.currentDay===5&&tap.id==='glucose'){addLabResult('BGL','2.1 mmol/L','crit',true);SFX.init();SFX.urgentAlarm();}
   // Day 6 interrupt: daughter speaks mid-assessment after 2nd valid clue
   const validSoFar=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
-  if(G.currentDay===6&&validSoFar.length===2&&!G.interruptFired){
+  if((G.currentDay===6||G.currentDay===9)&&validSoFar.length===2&&!G.interruptFired){
     G.interruptFired=true;
     setTimeout(()=>showInterrupt(),1200);
   }
@@ -2152,6 +2301,25 @@ const INTERRUPTS={
        result:'bad',
        fb:'Two problems. First: you lied. Things do NOT look okay. When the truth comes out -- and it will -- Ana will remember you said "okay" and lost trust completely. Second: not looking up while speaking signals dismissal. False reassurance is one of the most damaging things a nurse can say to a scared family. (CAMH: false reassurance breaks therapeutic trust)',
        clue:'Family -- false reassurance given'},
+    ],
+  },
+  9:{
+    tag:'Night shift — the unit does not pause',
+    quote:'A call bell chimes in Bed 14. An IV pump alarms in Bed 10. The CNA leans in: "Sorry — Bed 14 needs the commode and Bed 10\'s pump keeps beeping. Can you come?" Mr. Tremblay is still half over the rail.',
+    sub:'It is 3 AM, you are one nurse, and everything happens at once. What do you do?',
+    choices:[
+      {key:'A',lbl:'"Please take Bed 14 to the commode and silence Bed 10\'s pump — I\'ll check it after. Right now I need you back here to sit with Mr. Tremblay; he is not safe alone."',
+       result:'good',
+       fb:'Good. You triaged: the confused patient climbing over the rail is the highest fall risk and cannot be left. You delegated the lower-acuity tasks and kept a sitter on the unsafe patient. Clear, calm, prioritised.',
+       clue:'Unit triage -- protected the highest-risk patient, delegated the rest'},
+      {key:'B',lbl:'Leave Mr. Tremblay for a minute to handle the pump and the commode yourself, then come back.',
+       result:'neutral',
+       fb:'Understandable at 3 AM — but you left the highest fall-risk patient alone and unmonitored. The tasks got done; the most dangerous gap was the empty chair beside the confused man on the rail. Delegate the small things; stay with the unsafe patient.',
+       clue:'Fragmented -- left the confused patient briefly unattended'},
+      {key:'C',lbl:'Tell the CNA you are too busy and try to manage everything in the room at once while the alarms keep going.',
+       result:'bad',
+       fb:'Trying to hold every thread alone is how things fall through. The pump and call bell are tasks you can delegate; the patient on the rail can be on the floor in seconds. Name the priority and share the load.',
+       clue:'Overloaded -- no delegation, attention split too thin'},
     ],
   },
 };
@@ -2969,6 +3137,76 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note -- Anaphylaxis';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Jamie Chen 21F ER Bay 2. Bee sting parking lot. Documented bee allergy. EpiPen not with patient.\nStridor, angioedema, urticaria spreading. BP 84/52 dropping. HR 128. SpO2 93% trending down.\nInterventions: Epi 0.3mg IM right outer thigh [TIME]. O2 15L NRB. Supine legs elevated. 16G IV x2 antecubital.\nFluids 0.9% NaCl 1L wide open. Diphenhydramine 50mg IV. Hydrocortisone 200mg IV.\nDr. Kowalski notified [TIME]. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  }else if(type==='safety_d9'){
+    if(!G.actionsTaken.includes('safety_d9'))G.actionsTaken.push('safety_d9');SFX.init();SFX.confirm();
+    openDrawer('Safety first -- least restrictive',[
+      {p:'o',t:'Bed lowered to its lowest position. Bed-exit alarm on. IV lines tidied out of reach. Path cleared, call bell in his hand.'},
+      {p:'c',t:'This is how you prevent a fall in a delirious patient -- environment and presence, not restraint.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='reorient_d9'){
+    if(!G.actionsTaken.includes('reorient_d9'))G.actionsTaken.push('reorient_d9');SFX.init();SFX.chime();
+    openDrawer('Calm reorientation',[
+      {p:'o',t:'You lower the lights, sit at eye level, soften your voice: "You are in the hospital, Mr. Tremblay. It is night. You are safe. I am right here."'},
+      {p:'w',t:'He settles a little. He still drifts -- but the fear eases when he is not alone. Do not argue with the confusion; reassure the person inside it.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='vitals_d9'){
+    if(!G.actionsTaken.includes('vitals_d9'))G.actionsTaken.push('vitals_d9');SFX.init();SFX.tapFind();
+    addLabResult('Temp','38.5 C','crit',true);
+    openDrawer('Full vitals',[
+      {p:'c',t:'Temp 38.5 (was 37.9). HR 104 (was 88). BP 108/62. RR 20. SpO2 96%.'},
+      {p:'w',t:'Fever + rising HR + softening BP in a UTI admission -- infection is progressing. This is the engine of the delirium.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='glucose_d9'){
+    if(!G.actionsTaken.includes('glucose_d9'))G.actionsTaken.push('glucose_d9');SFX.init();SFX.tapFind();
+    addLabResult('BGL','6.1 mmol/L','ok',true);
+    openDrawer('Blood glucose 6.1 mmol/L',[
+      {p:'o',t:'Glucose 6.1 -- normal. Hypoglycemia ruled out as the cause of the confusion.'},
+      {p:'c',t:'Always check a glucose in acute confusion. It is fast, reversible, and mimics everything. Ruling it out narrows the differential.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='cam_d9'){
+    if(!G.actionsTaken.includes('cam_d9'))G.actionsTaken.push('cam_d9');SFX.init();SFX.tapFind();
+    openDrawer('CAM -- positive',[
+      {p:'c',t:'Acute onset + fluctuating yes. Inattention yes (cannot recite the months backward, drifts off). Disorganised thinking yes. CAM positive = delirium.'},
+      {p:'o',t:'Naming it matters: this is delirium (reversible, urgent), not dementia (chronic). Different problem, different response.'},
+    ],'CAM converts a vague "confused" into a specific, actionable diagnosis: delirium.');setTimeout(checkActions,200);
+  }else if(type==='fluids_d9'){
+    if(!G.actionsTaken.includes('fluids_d9'))G.actionsTaken.push('fluids_d9');SFX.init();SFX.o2Flow();
+    openDrawer('IV fluids restarted',[
+      {p:'o',t:'IV maintenance fluids restarted (bolus then maintenance per orders). His missed evening fluids are being made up.'},
+      {p:'w',t:'Dehydration alone causes delirium in the elderly. Rehydration is treatment, not just supportive care.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='urine_d9'){
+    if(!G.actionsTaken.includes('urine_d9'))G.actionsTaken.push('urine_d9');SFX.init();SFX.tapFind();
+    openDrawer('Repeat urinalysis + culture sent',[
+      {p:'o',t:'Repeat urinalysis and culture sent. Cloudy, concentrated, foul urine supports a worsening UTI.'},
+      {p:'c',t:'Culture guides targeted antibiotics. Send it before escalation when you can.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='cna_d9'){
+    if(!G.actionsTaken.includes('cna_d9'))G.actionsTaken.push('cna_d9');SFX.init();SFX.chime();
+    openDrawer('CNA at the bedside',[
+      {p:'o',t:'The CNA stays with Mr. Tremblay -- a calm, familiar presence. Safer than any restraint, and it frees you to call the MD.'},
+      {p:'c',t:'Delegating a sitter for a delirious patient is a recognised fall-prevention strategy, not a luxury.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='call_d9'){gotoSBAR();
+  }else if(type==='restraint_d9'){
+    if(!G.actionsTaken.includes('restraint_d9'))G.actionsTaken.push('restraint_d9');SFX.init();SFX.urgentAlarm();
+    openDrawer('Restraints -- he fights harder',[
+      {p:'w',t:'As the wrist restraints go on, he panics -- pulls, twists, cries out for his wife. His heart rate climbs. The risk of injury and aspiration just went UP, not down.'},
+      {p:'c',t:'Restraints do not treat the cause and they worsen delirium. They are a last resort, with an order and continuous 1:1 monitoring, only after less restrictive measures fail.'},
+      {p:'o',t:'Better path: low bed, exit alarm, a sitter, reorientation -- and treat the infection and dehydration driving this. (CCSMH / Choosing Wisely Canada / RNAO)'},
+    ],'Restraints feel like safety. For a delirious elder they usually add harm and never fix the cause.');setTimeout(checkActions,200);
+  }else if(type==='antipsych_d9'){
+    if(!G.actionsTaken.includes('antipsych_d9'))G.actionsTaken.push('antipsych_d9');SFX.init();SFX.flatline();
+    openDrawer('Quetiapine / Loxapine -- wrong first move',[
+      {p:'w',t:'A PRN antipsychotic might flatten the agitation -- but it does not touch the infection or the dehydration, and now his mental status is chemically clouded so you cannot tell if he is improving or worsening.'},
+      {p:'c',t:'In older adults, antipsychotics increase falls, stroke, and death. Choosing Wisely Canada: do NOT use them as a first choice for behavioural symptoms.'},
+      {p:'o',t:'Reserve low-dose antipsychotics for severe distress or danger only after non-drug measures fail -- never as the opening move. Treat the cause first. (Choosing Wisely Canada -- Geriatrics / CCSMH / Health Canada)'},
+    ],'Chemical settling is not treatment. It hides the picture while the real problem -- sepsis -- keeps moving.');setTimeout(checkActions,200);
+  }else if(type==='chart_d9'){
+    if(!G.actionsTaken.includes('chart_d9'))G.actionsTaken.push('chart_d9');
+    document.getElementById('cd-title').textContent='Write nursing note -- Acute delirium';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Mr. Tremblay 89M 4 West Bed 12. Admitted UTI + dehydration. Baseline A&O x3 per daughter, no dementia.\nAcute change overnight: fluctuating confusion, inattention, climbing OOB, pulling IV. CAM positive.\nTemp 38.5 (was 37.9), HR 104, BP 108/62, RR 20, SpO2 96%. BGL 6.1 (normal). Cloudy concentrated urine UO 18 mL/hr. Dry mucous membranes.\nInterventions: bed lowered + exit alarm, CNA 1:1 at bedside, reoriented, IV fluids restarted, repeat UA + culture sent. NO restraints, NO sedation.\nDr. Singh notified [TIME] -- ?worsening urosepsis. Orders: fluids, repeat cultures, escalate antibiotics. Daughter updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }
 }
 function submitChart(){const key=DAY().chartKey||'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
@@ -3083,6 +3321,7 @@ const HO2_ITEMS={
   4:['Patient: Jamie Chen, 21F, ER Bay 2 -- anaphylaxis, bee sting','Epinephrine 0.3mg IM given outer thigh -- response observed','BP 84/52 on arrival -- trending up after epi and fluids','SpO2 93% on arrival -- improved on 15L NRB','Stridor and angioedema -- reducing. Airway trolley at bedside','IV access 16G x2 -- IV fluids 0.9% NaCl 1L running','Dr. Kowalski notified and on the way','Diphenhydramine and hydrocortisone given -- adjunct therapy','Biphasic reaction monitoring required -- observe minimum 4 hours','Family aware -- EpiPen prescription to be reviewed at discharge'],
   7:['Patient: Mr. Kowalski, 54M, ER Bay 6 -- right leg cellulitis, Penicillin allergy (anaphylaxis)','Amoxicillin order identified -- penicillin class, contraindicated. Medication held BEFORE administration','Allergy confirmed: RED wristband, MAR allergy flag, patient verbal confirmation','Discussed with Dr. Chen (ER Physician, ext. 2240) -- order changed to Clindamycin 600mg IV q8h','Cross-class allergy reference verified -- pharmacy consulted','Near-miss incident report filed -- ISMP Canada format','Charge nurse notified -- safety event documented','Vitals stable: HR 88, BP 132/84, SpO2 99%, Temp 37.8C','IV access patent 18G right antecubital -- Clindamycin starting next dose cycle','Patient educated -- penicillin class allergy, always disclose to all providers'],
   8:['Room 14: Ms. Doyle, 51F -- intubated post-overdose, acute airway emergency this shift','Room 14: RT called immediately for high peak pressure + biting tube -- airway cleared, re-sedated','Room 14: SpO2 recovered after suction + sedation -- vent settings reviewed','Room 12: Mr. Adeyemi, 74M -- septic shock, norepinephrine running, MAP dropped to 54','Room 12: Charge RN + intensivist escalated -- second pressor (vasopressin) + fluid bolus added','Room 12: MAP recovering, repeat lactate ordered','Team mobilized early -- RT to airway, charge/MD to circulation, CNA repeat vitals, float RN med prep','Priority rationale documented: airway (Room 14) before circulation (Room 12)','Both patients stable at handover -- continuous monitoring, q15min vitals','Charge nurse aware of workload -- support continued into day shift'],
+  9:['Patient: Mr. Tremblay, 89M, 4 West Bed 12 -- admitted UTI + dehydration, NO dementia (baseline A&O x3)','Acute new delirium overnight -- CAM positive (acute/fluctuating + inattention)','Vitals: Temp 38.5 (up from 37.9), HR 104, BP 108/62, RR 20, SpO2 96%','BGL 6.1 -- hypoglycemia ruled out','Cloudy concentrated urine, UO 18 mL/hr -- ?worsening urosepsis. Repeat UA + culture sent','Dry mucous membranes -- evening IV fluids were missed, now restarted','Safety: bed lowered + exit alarm, CNA 1:1 sitter, reoriented -- NO restraints, NO sedation','Dr. Singh notified -- fluids + antibiotic escalation ordered, will review','Daughter updated -- confirmed acute change from baseline','Reassess mental status + vitals q1-2h overnight'],
 };
 function buildHandoff2(){
   const items=HO2_ITEMS[G.currentDay]||HO2_ITEMS[1];G.handoffSel=[];
@@ -3104,7 +3343,8 @@ function buildEndShift(){
   setTimeout(()=>{const fill=document.getElementById('xp-fill');if(fill)fill.style.width=Math.min(100,(G.xp%1000)/10)+'%';},300);
   const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'},6:{good:'She was not angry. She was scared. Naming the right emotion -- "scared," not "frustrated" -- is what changed the room. Moving toward her, not back, is what made her trust you. Words matter. Posture matters.',bad:'The assessment happened. The communication did not. When families feel unheard, they escalate -- not because they are difficult, but because they are terrified and no one has named it yet.'},
 7:{good:'You held the medication and spoke up before it reached the patient. That is the entire job. Medication safety is not about catching someone -- it is about the five seconds of doubt that saves a life. You had the doubt. You acted on it.',bad:'The wristband, the MAR, and the patient all said the same thing: stop. The order came from a physician. The responsibility to hold it came from you. Those two facts are not in conflict. They are the standard of care.'},
-8:{good:'Airway beats circulation when both are failing at once -- Room 14 (SpO2 78, biting the tube) was the immediate threat and you put RT there fast. Then you escalated Room 12 instead of soloing it. Prioritize by what kills first, delegate by scope, escalate early.',bad:'Two crashing patients cannot be run by one nurse. The airway emergency in Room 14 could not wait while you worked Room 12. The skill is not speed of hands -- it is speed of mobilizing the team: RT to the airway, charge/MD to the pressor, you coordinating.'}};
+8:{good:'Airway beats circulation when both are failing at once -- Room 14 (SpO2 78, biting the tube) was the immediate threat and you put RT there fast. Then you escalated Room 12 instead of soloing it. Prioritize by what kills first, delegate by scope, escalate early.',bad:'Two crashing patients cannot be run by one nurse. The airway emergency in Room 14 could not wait while you worked Room 12. The skill is not speed of hands -- it is speed of mobilizing the team: RT to the airway, charge/MD to the pressor, you coordinating.'},
+9:{good:'Confusion is a symptom, not a diagnosis. Acute + fluctuating + inattention = delirium -- always ask WHY tonight. Secure safety without restraint, check a glucose, find and treat the reversible cause (here: UTI + dehydration), and escalate the change.',bad:'"Confused old man" is the trap. He had a sharp baseline yesterday and an acute change tonight with fever and dehydration. Restraints and antipsychotics are last resorts that hide the cause -- delirium is the brain showing you the body is failing.'}};
   // References: always use current Canadian/North American sources (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC, CCS) (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC)
   const srcs={
     1:'ACCP CHEST Guidelines 2021 (VTE) / Wells PS, Lancet 1997 / CTS Venous Thromboembolism Management',
@@ -3114,7 +3354,8 @@ function buildEndShift(){
     5:'Diabetes Canada Clinical Practice Guidelines 2023 / Cryer PE, NEJM 2013 / RNAO BPG: Diabetes Management',
     6:'RNAO BPG: Therapeutic Communication 2020 / CPI Non-Violent Crisis Intervention / CAMH Trauma-Informed Care / SSC 2021 Post-op Sepsis',
     7:'ISMP Canada Medication Safety Guidelines / CNA Code of Ethics 2017 / RNAO BPG: Safe Medication Administration / Health Canada Drug Monograph: Amoxicillin / CRNBC Professional Standards',
-    8:'CACCN Standards for Critical Care Nursing / CCCS Canadian Critical Care Guidelines / CNA-CCCN Delegation & Assignment Framework / RNAO BPG: Care Transitions / Surviving Sepsis Campaign 2021'
+    8:'CACCN Standards for Critical Care Nursing / CCCS Canadian Critical Care Guidelines / CNA-CCCN Delegation & Assignment Framework / RNAO BPG: Care Transitions / Surviving Sepsis Campaign 2021',
+    9:'CCSMH Canadian Guidelines on the Assessment & Treatment of Delirium in Older Adults / RNAO BPG: Delirium, Dementia & Depression in Older Adults (2016) / Inouye SK et al., Confusion Assessment Method, Ann Intern Med 1990 / Choosing Wisely Canada -- Geriatrics (antipsychotics)'
   };
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
@@ -3129,6 +3370,7 @@ const END_MSGS={
   3:{good:["The vitals looked normal. The trend was not. You read the trend. That is the skill that takes most nurses months to build -- and you found it on Day 3.","You held the morphine. Assessment before medication -- one of the hardest calls in nursing. You made it correctly.","Shoulder tip pain. Distension. A tripling drain. Each alone has an explanation. Together they told a story. You listened."],bad:["Trending vitals are more important than a single value. HR 88 to 98 over 6 hours is what you are looking for next time.","Assessment before medication. Always. The order was valid. The morphine was not appropriate. Those are two different things.","Post-operative haemorrhage hides in plain sight. Normal numbers, wrong direction. You have seen it now. You will not miss it again."]},
   7:{good:["You caught it before it reached him. Red wristband, MAR, patient verbal -- three sources said the same thing, and you listened to all three. That is medication safety working exactly as it should.","The physician wrote the order. You held the medication. Both of those things are true, and neither one is wrong. Professional accountability lives in the space between them. You stood in that space today.","You said something. That is not always easy. It is always right."],bad:["Three sources of allergy documentation. One order that ignored them. The safeguard is you -- not the system, not the chart. You. Come back.","A RED wristband is not a suggestion. It is the last line of protection before a preventable anaphylaxis. You know what it means now. Come back.","Knowing something is wrong and acting on it are two different skills. You have the first one. Come back and build the second."]},
   8:{good:["Two patients crashing and you did not freeze. You put RT on the airway, sent the charge nurse to escalate the pressor, and kept yourself free to coordinate. That is ICU thinking.","Airway first. You saw that Room 14 could not wait and you acted on it. Prioritization under pressure is the hardest skill in critical care -- and you used it tonight.","You asked for help in the first minute. New nurses think that is weakness. It is the opposite. It is exactly what kept both of them alive."],bad:["No one can run two crashing patients alone -- not you, not the most senior nurse on the unit. The lesson is not to be faster. It is to call the team sooner. Come back.","The airway in Room 14 was the emergency that could not wait. Next shift you will hear it first. Come back and run it again.","You carried too much by yourself tonight. That instinct to protect everyone comes from a good place -- but in the ICU it has to become: who do I send where, right now. Come back."]},
+  9:{good:["It was 3 AM and you were exhausted -- and you still saw that he was different. That is the whole skill. You found the infection behind the confusion.","You kept him safe without tying him down, checked the glucose, found the UTI and the missed fluids, and called it in clearly. Quiet, careful, exactly right.","His daughter said 'thank you for noticing he was different.' You turned a vague 'confused' into a treated cause. That is nursing at its best."],bad:["Delirium hides behind the word 'confused.' Next shift you will ask the better question: why is he suddenly confused tonight? Come back.","Restraints and sedation feel like control at 3 AM -- they hide the cause. You will reach for safety, assessment, and escalation next time. Come back.","An acute change in an elder is a red flag, not background noise. You know that now. Come back and catch it earlier."]},
 };
 const END_SUBS={good:["Go home. You earned it.","That shift is done. You are not the same nurse who started it.","Rest well. Come back tomorrow."],bad:["Come back. It will be different next time.","One step further than yesterday. Always.","Rest. Then come back."]};
 function getEndMsg(day,outcome){const pool=(END_MSGS[day]||END_MSGS[1])[outcome==='good'?'good':'bad'];const msg=pool[Math.floor(Math.random()*pool.length)];const sub=END_SUBS[outcome==='good'?'good':'bad'][Math.floor(Math.random()*END_SUBS.good.length)];return {msg,sub};}
