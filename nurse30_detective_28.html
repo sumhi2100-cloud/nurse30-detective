@@ -1052,9 +1052,9 @@ SCENARIOS[6]={
      clue:'Wound -- dark drainage + erythema -- surgical site infection'},
     {id:'urine',lbl:'Catheter',x:'65%',y:'68%',
      finds:[
-       {p:'c',t:'IDC in situ. Urine dark yellow, concentrated. Hourly output last 3 hours: 9, 6, 7mL. <strong>Average 7.3mL/hr.</strong>'},
+       {p:'c',t:'Foley catheter in situ. Urine dark yellow, concentrated. Hourly output last 3 hours: 9, 6, 7mL. <strong>Average 7.3mL/hr.</strong>'},
        {p:'w',t:'Normal: at least 0.5mL/kg/hr. For 68kg: at least 34mL/hr. She is making one-fifth of that.'},
-       {p:'c',t:'Strict hourly IDC chart shows a clear downtrend over the last 6 hours. This was not flagged.'},
+       {p:'c',t:'Strict hourly Foley output chart shows a clear downtrend over the last 6 hours. This was not flagged.'},
      ],
      insight:'UO 7mL/hr = oliguria. Combined with BP drop and fever = haemodynamic compromise. The kidneys know before the numbers shout.',
      clue:'UO 7mL/hr -- oliguria -- renal perfusion compromised'},
@@ -2486,14 +2486,14 @@ function doAction(type){
     ],null);setTimeout(checkActions,200);
   }else if(type==='call_d2'){gotoSBAR();
   }else if(type==='lactate_repeat'){if(!G.actionsTaken.includes('lactate_repeat'))G.actionsTaken.push('lactate_repeat');openDrawer('Repeat lactate ordered',[{p:'o',t:'Target: clearance at least 10% at 2 hours (SSC 2021).'}],null);setTimeout(checkActions,200);
-  }else if(type==='cath'){if(!G.actionsTaken.includes('cath'))G.actionsTaken.push('cath');openDrawer('Urinary catheter inserted',[{p:'o',t:'IDC inserted. Hourly drainage chart started. Target at least 0.5 mL/kg/hr.'}],null);setTimeout(checkActions,200);
+  }else if(type==='cath'){if(!G.actionsTaken.includes('cath'))G.actionsTaken.push('cath');openDrawer('Urinary catheter inserted',[{p:'o',t:'Foley catheter inserted. Hourly drainage chart started. Target at least 0.5 mL/kg/hr.'}],null);setTimeout(checkActions,200);
   }else if(type==='vfreq_d2'){if(!G.actionsTaken.includes('vfreq_d2'))G.actionsTaken.push('vfreq_d2');openDrawer('Continuous monitoring',[{p:'o',t:'Continuous: arterial BP, HR, SpO2. Temp q1h. GCS q30min.'}],null);setTimeout(checkActions,200);
   }else if(type==='family_d2'){if(!G.actionsTaken.includes('family_d2'))G.actionsTaken.push('family_d2');SFX.init();SFX.chime();openDrawer('Family updated',[{p:'o',t:'He has a serious infection and his blood pressure is low. We are treating him urgently.'}],null);setTimeout(checkActions,200);
   }else if(type==='charge_d2'){if(!G.actionsTaken.includes('charge_d2'))G.actionsTaken.push('charge_d2');SFX.init();SFX.chime();openDrawer('Charge nurse notified',[{p:'o',t:'Bed 3, Mr. Chen, septic shock. Bundle started. Physician called.'}],null);setTimeout(checkActions,200);
   }else if(type==='chart_d2'){
     if(!G.actionsTaken.includes('chart_d2'))G.actionsTaken.push('chart_d2');
     document.getElementById('cd-title').textContent='Write nursing note -- Sepsis';
-    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="5">[TIME] Mr. Chen Bed 3. New confusion GCS 13. Febrile 39.1C. BP 86/50 MAP 62 trending. HR 118. SpO2 95% on 2L. Lactate 3.2. UO 18mL/hr. Wound erythema, cloudy drain, abdomen guarded.\nInterventions: O2 6L SM. Fluid bolus 500mL. Blood cultures x2. Pip-Tazo 3.375g IV. IDC. Repeat lactate x2h.\nDr. Yuen notified. Charge Park notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="5">[TIME] Mr. Chen Bed 3. New confusion GCS 13. Febrile 39.1C. BP 86/50 MAP 62 trending. HR 118. SpO2 95% on 2L. Lactate 3.2. UO 18mL/hr. Wound erythema, cloudy drain, abdomen guarded.\nInterventions: O2 6L SM. Fluid bolus 500mL. Blood cultures x2. Pip-Tazo 3.375g IV. Foley catheter. Repeat lactate x2h.\nDr. Yuen notified. Charge Park notified. Family updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }else if(type==='tylenol_d2'){
     if(!G.actionsTaken.includes('tylenol_d2'))G.actionsTaken.push('tylenol_d2');
@@ -2955,7 +2955,7 @@ function tryAgainSameDay(){_answered=false;G.outcome=null;G.actionsTaken=[];G.pr
 // === HANDOFF 2 ===
 const HO2_ITEMS={
   1:['Patient: Mrs. Delgado, 58F, Bay 4 -- suspected PE, post-op Day 2 hip replacement','SpO2 91% trending -- O2 applied, targeting >94%','Physician called -- CT-PA and heparin pending','Missed enoxaparin today -- DVT history, high risk','IV rate corrected 150 to 80 mL/hr','Right calf swollen and tender -- DVT source likely','Monitoring q15min','Family aware'],
-  2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- IDC inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
+  2:['Patient: Mr. Chen, 67M, ICU Bed 3 -- septic shock, post-op Day 1 bowel resection','MAP 62 -- fluid bolus started, target MAP at least 65','Blood cultures drawn x2. Pip-Tazo given.','qSOFA 3/3 -- Temp 39.1, GCS 13, RR 22','Lactate elevated -- repeat ordered in 2 hours','UO 18 mL/hr -- Foley catheter inserted, strict hourly monitoring','Dr. Yuen notified -- vasopressor orders pending','Family aware'],
   3:['Patient: Tyler, 45M, Room 214 -- post-op Day 1 lap cholecystectomy','Suspected intra-abdominal haemorrhage -- distension, guarding, shoulder tip pain','JP drain 50 mL dark red in last hour -- was 12 mL prior 4h combined','HR trending 88 to 98. BP trending 128/84 to 118/76 over 6 hours','Morphine withheld -- haemodynamic concern','IV fluid challenge 250 mL. Type and crossmatch ordered','Dr. Martinez notified -- may return to theatre','Family aware'],
   6:['Patient: Mrs. Rivera, 71F, Room 312A -- post-op Day 3 colorectal resection, surgical site infection','BP trending down: 122/80 → 118/74 → 104/68 over 8 hours -- early sepsis pattern','HR 92, Temp 38.2C, RR 20, SpO2 96%, UO 7mL/hr -- oliguria','Wound: dark yellow-green drainage, erythema, periwound warmth','Blood cultures x2 drawn before antibiotics. Penicillin allergy documented -- avoid beta-lactams','IV fluid challenge 250mL Hartmann\'s -- BP responding to 110/72','Dr. Osei (Gen Surg) notified -- gentamicin ordered, on his way','NPO -- possible return to theatre for wound washout','Daughter present -- escalation de-escalated, charge nurse aware','Q15min monitoring active -- alert thresholds set'],
   5:['Patient: Mr. Park, 62M, Room 305 -- severe hypoglycemia, Type 2 DM','BGL 2.1 mmol/L on arrival -- D50W 50mL IV given, BGL now 6.8','GCS 10 on arrival -- improving, now GCS 14','Insulin Glargine withheld -- pending physician dose review','NPO until GCS 15 and safe swallow confirmed','Monitoring BGL q15min -- next check due','Dr. Abara notified -- reviewing insulin regimen at 06:00','Family educated -- insulin and meal timing explained','Aspiration precautions in place -- lateral positioning','Medication incident form to be completed -- missed meal + insulin given'],
