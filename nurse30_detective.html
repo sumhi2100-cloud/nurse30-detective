@@ -1431,7 +1431,82 @@ SCENARIOS[9]={
   patient:{name:'Mr. Tremblay',age:'89M',dx:'UTI + dehydration -- acute delirium',room:'4 West Bed 12'},
   vitals:{spo2:{val:'96%',state:'ok'},hr:{val:'104',state:'warn'},rr:{val:'20',state:'warn'},bp:{val:'108/62',state:'warn'},temp:{val:'38.5C',state:'crit'},gcs:{val:'A&O x1',state:'crit'},uo:{val:'18 mL/hr',state:'warn'},lac:null},
 };
-
+SCENARIOS[10]={
+  handoff:[
+    {delay:500,from:'Charge RN Okafor',txt:'Trauma Bay 1 -- he is here. <span class="hk">Dylan Reid, 24</span>, high-speed <span class="hk">MVC</span> about 30 minutes ago, prolonged extrication. EMS says he was <span class="hk">hypotensive in the field</span>.'},
+    {delay:2300,from:'Charge RN Okafor',txt:'Deep <span class="hk">laceration to the right thigh</span> -- bled heavily at the scene, the dressing is already soaked. Abdomen looks distended. <span class="hk">Only one 20-gauge IV</span> in so far.'},
+    {delay:3900,from:'You',txt:'What is he doing right now?',you:true},
+    {delay:4700,from:'Charge RN Okafor',txt:'HR 132, BP 86/68 and the gap is narrowing, RR 28, cold and pale. <span class="hk">FAST is positive</span> -- free fluid in the belly. He keeps saying he is thirsty. The trauma team is paged but <span class="hk">not here yet</span>.'},
+    {delay:6100,from:'Charge RN Okafor',txt:'You are the nurse in this bay right now. <span class="hk">Move.</span>'},
+    {delay:7300,alert:true,txt:'Trauma Bay 1 -- HR 132 -- BP 86/68 narrowing -- HEMORRHAGIC SHOCK'},
+  ],
+  taps:[
+    {id:'patient',lbl:'Observe',x:'40%',y:'30%',
+     finds:[
+       {p:'c',t:'Pale, cold, clammy, restless. He grabs your hand: <em>"I\'m so thirsty... am I going to be okay?"</em> Anxiety and thirst are <strong>early signs of shock</strong>, not just fear.'},
+       {p:'w',t:'Mentation is the earliest perfusion monitor. Anxious to confused to drowsy tracks blood loss. He is anxious now -- the window is open, but closing.'},
+     ],
+     insight:'Pale, cold, clammy, thirsty, anxious = Class III hemorrhagic shock, still compensating. Do not wait for the BP to crash -- that is a late sign.',
+     clue:'Pale, cold, clammy, thirsty, anxious -- hemorrhagic shock (compensating)'},
+    {id:'thigh',lbl:'R thigh',x:'58%',y:'62%',
+     finds:[
+       {p:'c',t:'Right thigh: deep laceration, dressing <strong>soaked through and dripping</strong>. Bright red, pulsatile -- active arterial bleeding you can actually control.'},
+       {p:'w',t:'This is the bleeding you can stop with your hands right now: firm direct pressure, then a pressure dressing, tourniquet if it will not stop.'},
+     ],
+     insight:'External arterial bleeding = controllable NOW. Direct pressure first. Stop the leak you can see while you resuscitate the one you cannot.',
+     clue:'R thigh -- active arterial bleeding through soaked dressing (controllable)'},
+    {id:'abdomen',lbl:'Abdomen',x:'46%',y:'52%',
+     finds:[
+       {p:'c',t:'Abdomen distended and firm, seatbelt bruising across the lower abdomen. He guards and winces. <strong>FAST positive</strong> -- free intra-abdominal fluid.'},
+       {p:'w',t:'This is the bleeding you cannot see or compress -- intra-abdominal hemorrhage. It needs blood products and a surgeon, not your hands.'},
+     ],
+     insight:'Distended abdomen + seatbelt sign + positive FAST = internal hemorrhage. The definitive fix is the OR. Your job: resuscitate and escalate fast.',
+     clue:'Distended abdomen + seatbelt sign + FAST positive -- intra-abdominal bleed'},
+    {id:'vitals',lbl:'Monitor',x:'80%',y:'34%',
+     finds:[
+       {p:'c',t:'HR <strong>132</strong>. BP <strong>86/68</strong> -- pulse pressure narrowing. RR 28. SpO2 95%.'},
+       {p:'c',t:'Temp <strong>35.6C</strong> -- he is cold. Hypothermia is one corner of the trauma "lethal triad" (hypothermia + acidosis + coagulopathy).'},
+     ],
+     insight:'Narrow pulse pressure + tachycardia + tachypnea + hypothermia. The numbers say major hemorrhage and the start of the lethal triad.',
+     clue:'HR 132, BP 86/68 narrowing, Temp 35.6 -- shock + hypothermia (lethal triad)'},
+    {id:'access',lbl:'IV access',x:'30%',y:'46%',
+     finds:[
+       {p:'w',t:'One 20-gauge IV in the left hand. <strong>Too small, and only one.</strong> You cannot resuscitate a major bleed through a single small line.'},
+       {p:'c',t:'He needs two large-bore IVs (14-16G) in the antecubital fossae now -- and bloods drawn off the first stick: type & crossmatch, CBC, coags, lactate.'},
+     ],
+     insight:'Resuscitation is rate-limited by access. Two large-bore lines + bloods (incl. type & crossmatch) is the foundation everything else runs through.',
+     clue:'Only one 20G IV -- inadequate access for massive transfusion'},
+    {id:'chart',lbl:'Chart',x:'82%',y:'20%',
+     finds:[
+       {p:'w',t:'24M, previously well. <strong>No anticoagulants</strong>, no known bleeding disorder. Weight ~80 kg. Tetanus uncertain.'},
+       {p:'c',t:'Large estimated scene blood loss, ongoing. A young heart compensates hard -- which is exactly why the crash, when it comes, is sudden and total.'},
+     ],
+     insight:'A fit young patient compensates until they suddenly do not. A near-normal BP in a 24-year-old bleeding this much is false reassurance. Act before the cliff.',
+     clue:'24M, no anticoagulants -- young patient compensating (crash will be sudden)'},
+    {id:'family',x:'18%',y:'66%',wrong:true,wrongTxt:'The family matter -- but not before the airway, the bleeding, and the blood. Update them once the resuscitation is underway, not instead of it.'},
+    {id:'xray',x:'85%',y:'72%',wrong:true,wrongTxt:'A full imaging work-up is not the priority while he is actively bleeding and hypotensive. FAST is already positive. Resuscitate and get him to the surgeon -- imaging does not stop hemorrhage.'},
+  ],
+  question:'Dylan is bleeding -- some you can see, most you cannot -- and he is in shock. The trauma team is still minutes away and you are the nurse in the bay. What is the priority approach right now?',
+  sub:'In hemorrhage, the fix is blood and a surgeon -- not litres of saline.',
+  choices:[
+    {key:'A',lbl:'Run 2-3 litres of crystalloid (normal saline / Ringer\'s) wide open to bring the blood pressure up.',desc:'Fill the tank with fluid until the BP recovers.',correct:false,
+     exp:'Flooding crystalloid is harmful in active hemorrhage: it dilutes clotting factors and platelets (dilutional coagulopathy), pops fresh clots by raising pressure, and worsens hypothermia and acidosis -- the lethal triad. Modern damage-control resuscitation minimises crystalloid and gives blood products instead, with permissive hypotension until the bleeding is controlled. (ATLS 10th ed.; Trauma Association of Canada MHP)'},
+    {key:'B',lbl:'Start norepinephrine to raise the blood pressure while you wait for the surgeon.',desc:'Use a vasopressor to support the pressure.',correct:false,
+     exp:'Vasopressors squeeze an empty tank -- they raise the number while perfusion and oxygen delivery keep falling, and they mask how much blood has been lost. The problem is volume (blood), not vascular tone. Replace blood and stop the bleeding; vasopressors are not a substitute for resuscitation in hemorrhagic shock. (ATLS; Damage Control Resuscitation)'},
+    {key:'C',lbl:'Control the external bleeding with direct pressure, get two large-bore IVs + bloods (type & crossmatch), activate the Massive Hemorrhage Protocol (balanced blood products), give TXA, keep him warm, and call the trauma surgeon now.',desc:'Stop the leak, replace blood in balance, escalate immediately.',correct:true,
+     exp:'Correct -- this is damage-control resuscitation. Control compressible bleeding, establish large-bore access, and activate the Massive Hemorrhage Protocol for balanced products (about 1:1:1 RBC:plasma:platelets) rather than crystalloid. Give TXA early (within 3 hours -- CRASH-2), prevent hypothermia, and escalate to the surgeon because the intra-abdominal source needs the OR. The nurse activates this protocol -- you do not wait. (ATLS 10th ed.; Trauma Association of Canada / Canadian Blood Services MHP; CRASH-2, Lancet 2010)'},
+    {key:'D',lbl:'Give one unit of O-negative blood and wait to see if the blood pressure responds before escalating further.',desc:'Try a single unit first, then decide.',correct:false,
+     exp:'One unit and "wait and see" is under-resuscitation for a patient bleeding actively in shock. O-negative is the right bridge while crossmatch is pending, but a single unit will not keep up with ongoing loss, and waiting wastes the narrow window before a young patient decompensates. Activate the protocol and escalate in parallel -- not one slow step at a time. (Trauma Association of Canada MHP)'},
+  ],
+  outcomeGood:{statDeltas:{judgment:15,confidence:13,communication:12,resilience:9,fatigue:11},
+    headline:'You ran the bleed before it ran him.',
+    story:'You packed the thigh and held pressure, got two 14-gauge lines and pulled bloods, and activated the Massive Hemorrhage Protocol before the team arrived. TXA in, fluids warmed, blanket on. When the trauma surgeon ran in, the cooler of products was already at the bedside and the picture was clear: positive FAST, balanced resuscitation underway. He went to the OR in minutes. Class III hemorrhage, 24 years old -- and he made it because the bay was ready before the cliff.'},
+  outcomeBad:{statDeltas:{judgment:7,confidence:-3,communication:6,resilience:8,fatigue:16},
+    headline:'The pressure looked okay -- until it did not.',
+    story:'The young heart held the number for a while, so it was tempting to pour in saline and wait. But crystalloid thinned his blood, the clot let go, and a 24-year-old fell off the cliff all at once. In hemorrhage the BP is the last thing to fall and the first thing to fool you. Next time: stop what you can compress, get big lines, activate the protocol for blood -- not saline -- give TXA, keep him warm, and call the surgeon in the first minute. You run the bleed; you do not chase it.'},
+  patient:{name:'Dylan Reid',age:'24M',dx:'MVC -- hemorrhagic shock (intra-abdominal + thigh)',room:'Trauma Bay 1'},
+  vitals:{spo2:{val:'95%',state:'warn'},hr:{val:'132',state:'crit'},rr:{val:'28',state:'crit'},bp:{val:'86/68',state:'crit'},temp:{val:'35.6C',state:'crit'},gcs:{val:'14',state:'warn'},uo:null,lac:null},
+};
 const SBAR_DATA={
   1:{doctor:'Dr. Okonkwo',role:'Responsible Medical Officer',phone:'ext. 4421',
     cards:[
@@ -1507,6 +1582,21 @@ const SBAR_DATA={
     md_response:{delay:1800,
       text:'"Agree -- this is delirium from worsening urosepsis and dehydration. Give a 500 mL bolus then maintenance, repeat cultures, escalate to IV ceftriaxone, and keep him safe without restraints. Good catch on the glucose. I will come review."',
       followup:'Dr. Singh notified. Fluids and antibiotics escalated. Non-pharmacological safety in place. You found the cause behind the confusion.'},
+  },
+  10:{doctor:'Dr. Haddad',role:'Trauma Surgeon',phone:'STAT page',
+    cards:[
+      {id:'s10',zone:'s',text:'Trauma Bay 1 -- Dylan Reid, 24, high-speed MVC. He is in hemorrhagic shock and I have activated the Massive Hemorrhage Protocol.'},
+      {id:'b10',zone:'b',text:'MVC ~30 minutes ago, prolonged extrication, hypotensive in the field. Deep right thigh laceration with arterial bleeding, distended abdomen with seatbelt sign. Previously well, no anticoagulants.'},
+      {id:'a10',zone:'a',text:'HR 132, BP 86/68 and narrowing, RR 28, Temp 35.6, GCS 14. FAST positive -- free intra-abdominal fluid. Pale, cold, clammy, thirsty.'},
+      {id:'r10',zone:'r',text:'Thigh packed with pressure, two 14-gauge IVs, type & crossmatch sent, MHP products running, TXA given, patient warmed. I need you in the bay now -- he needs the OR.'},
+    ],
+    s:{title:'Situation',hint:'What is happening and what did you activate?'},
+    b:{title:'Background',hint:'Mechanism and risk factors?'},
+    a:{title:'Assessment',hint:'Vitals, FAST, perfusion?'},
+    r:{title:'Recommendation',hint:'What you have done and what you need?'},
+    md_response:{delay:1500,
+      text:'"Good -- MHP and TXA were exactly right, and you did not flood him with saline. Keep the balanced products going and the room warm. I am scrubbing now -- bring him straight to OR 2. Page anaesthesia."',
+      followup:'Dr. Haddad on the way to OR 2. Balanced resuscitation underway. You activated the protocol before the team arrived -- that is what bought the time.'},
   },
   6:{doctor:'Dr. Osei',role:'General Surgery Resident',phone:'ext. 4418',
     cards:[
@@ -1946,6 +2036,53 @@ const ACTS_D9=[
    done:()=>G.actionsTaken.includes('chart_d9'),unlock:3,need:null},
 ];
 
+const ACTS_D10=[
+  {key:'pressure_d10',pri:1,sec:'Immediate -- Control bleeding',
+   getL:()=>G.actionsTaken.includes('pressure_d10')?'Direct pressure on thigh -- bleeding controlled':'Control the thigh bleed -- direct pressure',
+   desc:'Firm direct pressure on the soaked thigh dressing, then a pressure dressing; tourniquet above the wound if it will not stop. Stop the bleeding you can see while you resuscitate the one you cannot.',
+   done:()=>G.actionsTaken.includes('pressure_d10'),unlock:1,need:'thigh'},
+  {key:'access_d10',pri:1,sec:'Immediate -- Access + bloods',
+   getL:()=>G.actionsTaken.includes('access_d10')?'Two 14G IVs in -- bloods sent':'Two large-bore IVs + draw bloods',
+   desc:'Two 14-16G IVs in the antecubital fossae. Off the first stick draw type & crossmatch, CBC, coagulation, lactate, and a gas. Access is the rate limiter for everything else.',
+   done:()=>G.actionsTaken.includes('access_d10'),unlock:1,need:null},
+  {key:'mtp_d10',pri:1,sec:'Immediate -- Resuscitate',
+   getL:()=>G.actionsTaken.includes('mtp_d10')?'Massive Hemorrhage Protocol ACTIVATED':'Activate Massive Hemorrhage Protocol',
+   desc:'Call the blood bank and activate the MHP: balanced products (about 1:1:1 RBC:plasma:platelets), NOT crystalloid. The nurse can and should activate this -- do not wait for the surgeon.',
+   done:()=>G.actionsTaken.includes('mtp_d10'),unlock:1,need:null},
+  {key:'oneg_d10',pri:2,sec:'Urgent -- Bridge',
+   getL:()=>G.actionsTaken.includes('oneg_d10')?'O-negative hanging -- bridge to crossmatch':'Hang O-negative (uncrossmatched) blood',
+   desc:'While crossmatch is pending, give emergency O-negative as the bridge -- as part of the protocol, not a single unit and wait. Use a blood warmer and rapid infuser.',
+   done:()=>G.actionsTaken.includes('oneg_d10'),unlock:2,need:'access'},
+  {key:'txa_d10',pri:2,sec:'Urgent -- Medication',
+   getL:()=>G.actionsTaken.includes('txa_d10')?'TXA 1g given':'Give tranexamic acid (TXA) 1g',
+   desc:'TXA 1g IV over 10 minutes, then infusion. Most effective given early -- within 3 hours of injury (CRASH-2). It reduces death from bleeding.',
+   done:()=>G.actionsTaken.includes('txa_d10'),unlock:2,need:null},
+  {key:'warm_d10',pri:2,sec:'Urgent -- Lethal triad',
+   getL:()=>G.actionsTaken.includes('warm_d10')?'Patient + fluids warmed':'Keep him warm -- warmed products, blankets',
+   desc:'Hypothermia worsens coagulopathy and acidosis -- the lethal triad. Warm the room, forced-air blanket, and run all blood/fluids through a warmer. Temp is a clotting issue, not just comfort.',
+   done:()=>G.actionsTaken.includes('warm_d10'),unlock:2,need:'vitals'},
+  {key:'o2_d10',pri:2,sec:'Urgent -- Oxygenation',
+   getL:()=>G.actionsTaken.includes('o2_d10')?'High-flow O2 on':'Apply high-flow oxygen',
+   desc:'Maximise oxygen delivery to a patient losing his oxygen carriers. High-flow O2 / non-rebreather while you replace the blood.',
+   done:()=>G.actionsTaken.includes('o2_d10'),unlock:2,need:null},
+  {key:'call_d10',pri:2,sec:'Urgent -- Escalation',
+   getL:()=>G.actionsTaken.includes('call_md')?'Trauma surgeon called -- coming to bay':'Call trauma surgeon -- SBAR now',
+   desc:'The intra-abdominal bleed needs the OR. SBAR the trauma surgeon: hemorrhagic shock, MHP activated, FAST positive, needs theatre. Escalate in parallel with resuscitation, not after.',
+   done:()=>G.actionsTaken.includes('call_md'),unlock:2,need:null},
+  {key:'vfreq_d10',pri:3,sec:'Monitoring',
+   getL:()=>G.actionsTaken.includes('vfreq_d10')?'Continuous monitoring q5min':'Continuous monitoring -- q5min vitals',
+   desc:'Continuous HR, BP, SpO2; q5min cycle. Watch for the sudden decompensation a young patient hides until the end. Track response to products.',
+   done:()=>G.actionsTaken.includes('vfreq_d10'),unlock:2,need:null},
+  {key:'crystalloid_d10',pri:3,sec:'Caution -- Avoid',
+   getL:()=>G.actionsTaken.includes('crystalloid_d10')?'Crystalloid flooded -- coagulopathy worse':'Run 2L crystalloid wide open',
+   desc:'WARNING: flooding saline in active hemorrhage dilutes clotting factors, dislodges clot, and worsens hypothermia. Minimise crystalloid -- give blood.',
+   done:()=>G.actionsTaken.includes('crystalloid_d10'),unlock:1,need:null},
+  {key:'chart_d10',pri:3,sec:'Documentation',
+   getL:()=>G.actionsTaken.includes('chart_d10')?'Trauma documentation done':'Document -- times, products, response',
+   desc:'Time-stamp everything: bleeding control, access, MHP activation time, products given, TXA time, temp, vitals trend, surgeon notified. The trauma record matters clinically and medico-legally.',
+   done:()=>G.actionsTaken.includes('chart_d10'),unlock:3,need:null},
+];
+
 // === DAY REGISTRY (data-driven per-day config) ===
 // Adding a new day = add one DAYS[N] entry + SCENARIOS[N] + ACTS_DN. No more scattered if(currentDay===N).
 const VC=(b,h,bs,hs)=>({bp:{val:b,state:bs},hr:{val:h,state:hs}}); // vitals-change shorthand for timers
@@ -2001,6 +2138,12 @@ const DAYS={
      handoffVitalsLabel:'Vitals 2 hours ago -- he was settled then',
      handoffVitalsGrid:'<div><div class="vcl">Temp</div><div class="vcv warn">37.9C</div></div><div><div class="vcl">HR</div><div class="vcv ok">88</div></div><div><div class="vcl">BP</div><div class="vcv ok">122/70</div></div><div><div class="vcl">SpO2</div><div class="vcv ok">96%</div></div><div><div class="vcl">RR</div><div class="vcv ok">18</div></div><div><div class="vcl">Orient</div><div class="vcv ok">A&O x3</div></div>',
      visual:{patientState:'deteriorating',o2Saturation:96,skinFlush:0,diaphoresis:0.2,mottle:0,confusion:true,ecgChaos:0.08}},
+  10:{acts:()=>ACTS_D10, monitorTitle:'Monitor Trauma Bay 1', sfxLoop:'icu', chartKey:'chart_d10',
+     hudDay:'Day 10 Trauma Bay 1', hudPt:'Dylan Reid, 24M', handoffSub:'Day 10 ER Trauma Bay 1 19:25',
+     handoffVitalsLabel:'Triage vitals -- on arrival, 4 min ago',
+     handoffVitalsGrid:'<div><div class="vcl">HR</div><div class="vcv crit">132</div></div><div><div class="vcl">BP</div><div class="vcv crit">86/68</div></div><div><div class="vcl">RR</div><div class="vcv crit">28</div></div><div><div class="vcl">SpO2</div><div class="vcv warn">95%</div></div><div><div class="vcl">Temp</div><div class="vcv crit">35.6C</div></div><div><div class="vcl">GCS</div><div class="vcv warn">14</div></div>',
+     visual:{patientState:'deteriorating',o2Saturation:95,skinFlush:0,diaphoresis:0.7,mottle:0.4,confusion:false,ecgChaos:0.25},
+     timers:[{at:120000,vitals:VC('78/62','138','crit','crit'),guard:'mtp_d10'},{at:210000,vitals:VC('68/54','146','crit','crit'),guard:'mtp_d10'}]},
 };
 function DAY(){return DAYS[G.currentDay]||DAYS[1];}
 function getACTS(){const d=DAYS[G.currentDay];return d&&d.acts?d.acts():ACTS;}
@@ -3207,6 +3350,71 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note -- Acute delirium';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Mr. Tremblay 89M 4 West Bed 12. Admitted UTI + dehydration. Baseline A&O x3 per daughter, no dementia.\nAcute change overnight: fluctuating confusion, inattention, climbing OOB, pulling IV. CAM positive.\nTemp 38.5 (was 37.9), HR 104, BP 108/62, RR 20, SpO2 96%. BGL 6.1 (normal). Cloudy concentrated urine UO 18 mL/hr. Dry mucous membranes.\nInterventions: bed lowered + exit alarm, CNA 1:1 at bedside, reoriented, IV fluids restarted, repeat UA + culture sent. NO restraints, NO sedation.\nDr. Singh notified [TIME] -- ?worsening urosepsis. Orders: fluids, repeat cultures, escalate antibiotics. Daughter updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  }else if(type==='pressure_d10'){
+    if(!G.actionsTaken.includes('pressure_d10'))G.actionsTaken.push('pressure_d10');SFX.init();SFX.confirm();
+    openDrawer('Direct pressure -- right thigh',[
+      {p:'o',t:'You pack the wound and hold firm direct pressure, then apply a pressure dressing. The bright-red flow slows and stops. A tourniquet is ready above the wound if it breaks through again.'},
+      {p:'c',t:'Compressible bleeding is the one source you can fix with your hands in seconds. Always control the external leak while you resuscitate the internal one.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='access_d10'){
+    if(!G.actionsTaken.includes('access_d10'))G.actionsTaken.push('access_d10');SFX.init();SFX.tapFind();
+    addLabResult('Lactate','4.8 mmol/L','crit',true);addLabResult('Hb','71 g/L','crit',true);
+    openDrawer('Two large-bore IVs + bloods',[
+      {p:'o',t:'Two 14-gauge IVs in the antecubital fossae. Off the first stick: type & crossmatch, CBC, coagulation, lactate, gas.'},
+      {p:'c',t:'Early results: Lactate 4.8 (hypoperfusion), Hb 71 and falling. Access is the rate limiter -- everything else runs through these lines.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='mtp_d10'){
+    if(!G.actionsTaken.includes('mtp_d10'))G.actionsTaken.push('mtp_d10');SFX.init();SFX.confirm();
+    clearDayTimers();
+    applyVC({bp:{val:'96/70',state:'warn'}},5);applyVC({hr:{val:'116',state:'warn'}},6);
+    openDrawer('Massive Hemorrhage Protocol -- ACTIVATED',[
+      {p:'o',t:'Blood bank notified, MHP activated. The cooler is on its way: balanced products in roughly 1:1:1 ratio (RBC : plasma : platelets).'},
+      {p:'c',t:'Balanced resuscitation replaces what is lost -- whole-blood-like -- instead of diluting it with saline. As products run, the pressure starts to hold.'},
+      {p:'w',t:'The nurse activates the MHP. You do not wait for the surgeon to give permission -- you call it and they catch up.'},
+    ],'Activating the protocol early is the single highest-impact thing a nurse does in major hemorrhage.');setTimeout(checkActions,200);
+  }else if(type==='oneg_d10'){
+    if(!G.actionsTaken.includes('oneg_d10'))G.actionsTaken.push('oneg_d10');SFX.init();SFX.o2Flow();
+    openDrawer('O-negative -- emergency bridge',[
+      {p:'o',t:'Emergency O-negative hung through a blood warmer and rapid infuser while crossmatch is pending.'},
+      {p:'c',t:'O-neg is the bridge until type-specific/crossmatched product arrives -- given as part of the protocol, not as a single unit you then sit and watch.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='txa_d10'){
+    if(!G.actionsTaken.includes('txa_d10'))G.actionsTaken.push('txa_d10');SFX.init();SFX.tapFind();
+    openDrawer('Tranexamic acid (TXA) 1g',[
+      {p:'o',t:'TXA 1g IV over 10 minutes given, infusion to follow. Time of injury noted -- well within the 3-hour window.'},
+      {p:'c',t:'TXA stabilises clot by blocking its breakdown. Given early it reduces death from bleeding; given late (after 3h) it may harm. Timing is the whole point. (CRASH-2)'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='warm_d10'){
+    if(!G.actionsTaken.includes('warm_d10'))G.actionsTaken.push('warm_d10');SFX.init();SFX.chime();
+    openDrawer('Warm the patient -- break the triad',[
+      {p:'o',t:'Forced-air warming blanket on, room warmed, all blood and fluids running through a warmer.'},
+      {p:'w',t:'Hypothermia + acidosis + coagulopathy is the trauma "lethal triad" -- each feeds the others. A cold patient cannot clot, no matter how much product you give.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='o2_d10'){
+    if(!G.actionsTaken.includes('o2_d10'))G.actionsTaken.push('o2_d10');applyVC({spo2:{val:'98%',state:'ok'}},2);SFX.init();SFX.o2Flow();
+    openDrawer('High-flow oxygen',[
+      {p:'o',t:'Non-rebreather at 15 L. SpO2 to 98%. Maximise oxygen delivery while he is short on the cells that carry it.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='call_d10'){gotoSBAR();
+  }else if(type==='vfreq_d10'){
+    if(!G.actionsTaken.includes('vfreq_d10'))G.actionsTaken.push('vfreq_d10');
+    openDrawer('Continuous monitoring -- q5min',[
+      {p:'o',t:'Continuous HR, BP, SpO2; q5min cycle; track response to each unit of product and the temperature.'},
+      {p:'w',t:'A fit 24-year-old compensates until he suddenly does not. Watch the trend, not a single reassuring number.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='crystalloid_d10'){
+    if(!G.actionsTaken.includes('crystalloid_d10'))G.actionsTaken.push('crystalloid_d10');SFX.init();SFX.urgentAlarm();
+    applyVC({bp:{val:'92/74',state:'warn'}},2);applyVC({bp:{val:'74/58',state:'crit'},hr:{val:'140',state:'crit'}},9);
+    openDrawer('Crystalloid flooded -- it backfires',[
+      {p:'w',t:'Two litres of saline lift the pressure for a moment -- then it falls further. The pressure bump dislodged a forming clot and the dilution thinned his remaining clotting factors.'},
+      {p:'c',t:'Crystalloid in active hemorrhage worsens the lethal triad: dilutional coagulopathy, more bleeding, and colder blood. Damage-control resuscitation minimises crystalloid and gives blood.'},
+      {p:'o',t:'Switch now: activate the Massive Hemorrhage Protocol for balanced products, give TXA, keep him warm. (ATLS / Trauma Association of Canada MHP)'},
+    ],'In hemorrhage, saline buys a number for a minute and costs you the clot. Give blood, not litres of fluid.');setTimeout(checkActions,200);
+  }else if(type==='chart_d10'){
+    if(!G.actionsTaken.includes('chart_d10'))G.actionsTaken.push('chart_d10');
+    document.getElementById('cd-title').textContent='Write trauma documentation -- Hemorrhagic shock';
+    document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Dylan Reid 24M Trauma Bay 1. High-speed MVC ~30 min ago, prolonged extrication, hypotensive in field.\nHemorrhagic shock: HR 132, BP 86/68 narrowing, RR 28, Temp 35.6, GCS 14. FAST positive. R thigh arterial bleed.\nInterventions: direct pressure + pressure dressing R thigh [TIME]. Two 14G IVs. Type & crossmatch, CBC, coags, lactate sent (lactate 4.8, Hb 71).\nMassive Hemorrhage Protocol activated [TIME] -- balanced products 1:1:1, O-neg bridge, blood warmer. TXA 1g given [TIME]. Patient warmed. Minimal crystalloid.\nDr. Haddad (trauma surgeon) notified [TIME] -- to OR 2, anaesthesia paged. Continuous q5min monitoring.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
+    document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
   }
 }
 function submitChart(){const key=DAY().chartKey||'chart';if(!G.actionsTaken.includes(key))G.actionsTaken.push(key);closeDrawer();SFX.init();SFX.confirm();setTimeout(checkActions,200);}
@@ -3322,6 +3530,7 @@ const HO2_ITEMS={
   7:['Patient: Mr. Kowalski, 54M, ER Bay 6 -- right leg cellulitis, Penicillin allergy (anaphylaxis)','Amoxicillin order identified -- penicillin class, contraindicated. Medication held BEFORE administration','Allergy confirmed: RED wristband, MAR allergy flag, patient verbal confirmation','Discussed with Dr. Chen (ER Physician, ext. 2240) -- order changed to Clindamycin 600mg IV q8h','Cross-class allergy reference verified -- pharmacy consulted','Near-miss incident report filed -- ISMP Canada format','Charge nurse notified -- safety event documented','Vitals stable: HR 88, BP 132/84, SpO2 99%, Temp 37.8C','IV access patent 18G right antecubital -- Clindamycin starting next dose cycle','Patient educated -- penicillin class allergy, always disclose to all providers'],
   8:['Room 14: Ms. Doyle, 51F -- intubated post-overdose, acute airway emergency this shift','Room 14: RT called immediately for high peak pressure + biting tube -- airway cleared, re-sedated','Room 14: SpO2 recovered after suction + sedation -- vent settings reviewed','Room 12: Mr. Adeyemi, 74M -- septic shock, norepinephrine running, MAP dropped to 54','Room 12: Charge RN + intensivist escalated -- second pressor (vasopressin) + fluid bolus added','Room 12: MAP recovering, repeat lactate ordered','Team mobilized early -- RT to airway, charge/MD to circulation, CNA repeat vitals, float RN med prep','Priority rationale documented: airway (Room 14) before circulation (Room 12)','Both patients stable at handover -- continuous monitoring, q15min vitals','Charge nurse aware of workload -- support continued into day shift'],
   9:['Patient: Mr. Tremblay, 89M, 4 West Bed 12 -- admitted UTI + dehydration, NO dementia (baseline A&O x3)','Acute new delirium overnight -- CAM positive (acute/fluctuating + inattention)','Vitals: Temp 38.5 (up from 37.9), HR 104, BP 108/62, RR 20, SpO2 96%','BGL 6.1 -- hypoglycemia ruled out','Cloudy concentrated urine, UO 18 mL/hr -- ?worsening urosepsis. Repeat UA + culture sent','Dry mucous membranes -- evening IV fluids were missed, now restarted','Safety: bed lowered + exit alarm, CNA 1:1 sitter, reoriented -- NO restraints, NO sedation','Dr. Singh notified -- fluids + antibiotic escalation ordered, will review','Daughter updated -- confirmed acute change from baseline','Reassess mental status + vitals q1-2h overnight'],
+  10:['Patient: Dylan Reid, 24M, Trauma Bay 1 -- high-speed MVC, hemorrhagic shock','External: deep R thigh laceration -- direct pressure / pressure dressing, bleeding controlled','Internal: distended abdomen + seatbelt sign + FAST positive -- intra-abdominal hemorrhage','Vitals on arrival: HR 132, BP 86/68 narrowing, RR 28, Temp 35.6, GCS 14. Lactate 4.8, Hb 71','Two 14G IVs -- type & crossmatch, CBC, coags, lactate sent','Massive Hemorrhage Protocol activated -- balanced products (1:1:1), O-neg bridge, blood warmer','TXA 1g given within window (CRASH-2). Patient + all fluids warmed -- hypothermia prevented','Minimal crystalloid -- damage-control resuscitation, permissive hypotension','Dr. Haddad (trauma surgeon) at bedside -- to OR 2, anaesthesia paged','Continuous q5min monitoring -- watching for sudden decompensation'],
 };
 function buildHandoff2(){
   const items=HO2_ITEMS[G.currentDay]||HO2_ITEMS[1];G.handoffSel=[];
@@ -3344,7 +3553,8 @@ function buildEndShift(){
   const tips={1:{good:'Post-op Day 2 + swollen calf + sudden SOB + missed anticoag = PE until proven otherwise.',bad:'PE pattern: sudden SOB + pleuritic pain + calf swelling + missed anticoag. O2 first, call second.'},2:{good:'qSOFA 3/3 + MAP <65 + elevated lactate = septic shock. 1-hour bundle simultaneously.',bad:'Bundle in parallel, not sequential. Cultures before antibiotics -- always.'},3:{good:'Trending vitals are more important than a single value. HR 88-98 over 6 hours is the signal.',bad:'Assessment before medication. Always. The morphine order was valid. The morphine was not appropriate.'},4:{good:'Epinephrine IM is the only first-line treatment for anaphylaxis. Everything else is adjunct. Act before IV access.',bad:'Antihistamines treat symptoms. Epinephrine treats the emergency. The sequence matters -- antihistamine first is a preventable delay.'},5:{good:'BGL 2.1 + GCS 10 = IV glucose only. Oral route is closed when the patient cannot follow commands.',bad:'GCS 10 is not safe for swallowing. Aspiration from oral glucose in an altered patient causes preventable harm.'},6:{good:'She was not angry. She was scared. Naming the right emotion -- "scared," not "frustrated" -- is what changed the room. Moving toward her, not back, is what made her trust you. Words matter. Posture matters.',bad:'The assessment happened. The communication did not. When families feel unheard, they escalate -- not because they are difficult, but because they are terrified and no one has named it yet.'},
 7:{good:'You held the medication and spoke up before it reached the patient. That is the entire job. Medication safety is not about catching someone -- it is about the five seconds of doubt that saves a life. You had the doubt. You acted on it.',bad:'The wristband, the MAR, and the patient all said the same thing: stop. The order came from a physician. The responsibility to hold it came from you. Those two facts are not in conflict. They are the standard of care.'},
 8:{good:'Airway beats circulation when both are failing at once -- Room 14 (SpO2 78, biting the tube) was the immediate threat and you put RT there fast. Then you escalated Room 12 instead of soloing it. Prioritize by what kills first, delegate by scope, escalate early.',bad:'Two crashing patients cannot be run by one nurse. The airway emergency in Room 14 could not wait while you worked Room 12. The skill is not speed of hands -- it is speed of mobilizing the team: RT to the airway, charge/MD to the pressor, you coordinating.'},
-9:{good:'Confusion is a symptom, not a diagnosis. Acute + fluctuating + inattention = delirium -- always ask WHY tonight. Secure safety without restraint, check a glucose, find and treat the reversible cause (here: UTI + dehydration), and escalate the change.',bad:'"Confused old man" is the trap. He had a sharp baseline yesterday and an acute change tonight with fever and dehydration. Restraints and antipsychotics are last resorts that hide the cause -- delirium is the brain showing you the body is failing.'}};
+9:{good:'Confusion is a symptom, not a diagnosis. Acute + fluctuating + inattention = delirium -- always ask WHY tonight. Secure safety without restraint, check a glucose, find and treat the reversible cause (here: UTI + dehydration), and escalate the change.',bad:'"Confused old man" is the trap. He had a sharp baseline yesterday and an acute change tonight with fever and dehydration. Restraints and antipsychotics are last resorts that hide the cause -- delirium is the brain showing you the body is failing.'},
+10:{good:'Hemorrhage is treated with blood and a surgeon, not litres of saline. Control what you can compress, get large-bore access, activate the Massive Hemorrhage Protocol for balanced products, give TXA early, keep him warm, and escalate in the first minute. The nurse activates the protocol -- you do not wait.',bad:'In hemorrhage the BP is the last thing to fall and the first thing to fool you -- especially in the young. Crystalloid floods dilute and dislodge; vasopressors squeeze an empty tank. Stop the leak, replace blood in balance, give TXA, prevent hypothermia, call the surgeon.'}};
   // References: always use current Canadian/North American sources (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC, CCS) (CTS, CAEP, RNAO, Diabetes Canada, CSACI, ISMP Canada, CACCN, CCCS, Canadian Blood Services, ACCP/CHEST, ACS-ATLS, SSC)
   const srcs={
     1:'ACCP CHEST Guidelines 2021 (VTE) / Wells PS, Lancet 1997 / CTS Venous Thromboembolism Management',
@@ -3355,7 +3565,8 @@ function buildEndShift(){
     6:'RNAO BPG: Therapeutic Communication 2020 / CPI Non-Violent Crisis Intervention / CAMH Trauma-Informed Care / SSC 2021 Post-op Sepsis',
     7:'ISMP Canada Medication Safety Guidelines / CNA Code of Ethics 2017 / RNAO BPG: Safe Medication Administration / Health Canada Drug Monograph: Amoxicillin / CRNBC Professional Standards',
     8:'CACCN Standards for Critical Care Nursing / CCCS Canadian Critical Care Guidelines / CNA-CCCN Delegation & Assignment Framework / RNAO BPG: Care Transitions / Surviving Sepsis Campaign 2021',
-    9:'CCSMH Canadian Guidelines on the Assessment & Treatment of Delirium in Older Adults / RNAO BPG: Delirium, Dementia & Depression in Older Adults (2016) / Inouye SK et al., Confusion Assessment Method, Ann Intern Med 1990 / Choosing Wisely Canada -- Geriatrics (antipsychotics)'
+    9:'CCSMH Canadian Guidelines on the Assessment & Treatment of Delirium in Older Adults / RNAO BPG: Delirium, Dementia & Depression in Older Adults (2016) / Inouye SK et al., Confusion Assessment Method, Ann Intern Med 1990 / Choosing Wisely Canada -- Geriatrics (antipsychotics)',
+    10:'ATLS 10th Edition (American College of Surgeons) / Trauma Association of Canada -- Massive Hemorrhage Protocol / Canadian Blood Services MHP Toolkit / CRASH-2 Trial, Lancet 2010 (tranexamic acid)'
   };
   const tipEl=document.getElementById('es-tip');if(tipEl)tipEl.innerHTML='<div class="estiplbl">Day '+G.currentDay+' key learning</div><div class="estipmain">'+(tips[G.currentDay]||tips[1])[good?'good':'bad']+'</div><div class="estipsrc">'+(srcs[G.currentDay]||srcs[1])+'</div>';
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
@@ -3371,6 +3582,7 @@ const END_MSGS={
   7:{good:["You caught it before it reached him. Red wristband, MAR, patient verbal -- three sources said the same thing, and you listened to all three. That is medication safety working exactly as it should.","The physician wrote the order. You held the medication. Both of those things are true, and neither one is wrong. Professional accountability lives in the space between them. You stood in that space today.","You said something. That is not always easy. It is always right."],bad:["Three sources of allergy documentation. One order that ignored them. The safeguard is you -- not the system, not the chart. You. Come back.","A RED wristband is not a suggestion. It is the last line of protection before a preventable anaphylaxis. You know what it means now. Come back.","Knowing something is wrong and acting on it are two different skills. You have the first one. Come back and build the second."]},
   8:{good:["Two patients crashing and you did not freeze. You put RT on the airway, sent the charge nurse to escalate the pressor, and kept yourself free to coordinate. That is ICU thinking.","Airway first. You saw that Room 14 could not wait and you acted on it. Prioritization under pressure is the hardest skill in critical care -- and you used it tonight.","You asked for help in the first minute. New nurses think that is weakness. It is the opposite. It is exactly what kept both of them alive."],bad:["No one can run two crashing patients alone -- not you, not the most senior nurse on the unit. The lesson is not to be faster. It is to call the team sooner. Come back.","The airway in Room 14 was the emergency that could not wait. Next shift you will hear it first. Come back and run it again.","You carried too much by yourself tonight. That instinct to protect everyone comes from a good place -- but in the ICU it has to become: who do I send where, right now. Come back."]},
   9:{good:["It was 3 AM and you were exhausted -- and you still saw that he was different. That is the whole skill. You found the infection behind the confusion.","You kept him safe without tying him down, checked the glucose, found the UTI and the missed fluids, and called it in clearly. Quiet, careful, exactly right.","His daughter said 'thank you for noticing he was different.' You turned a vague 'confused' into a treated cause. That is nursing at its best."],bad:["Delirium hides behind the word 'confused.' Next shift you will ask the better question: why is he suddenly confused tonight? Come back.","Restraints and sedation feel like control at 3 AM -- they hide the cause. You will reach for safety, assessment, and escalation next time. Come back.","An acute change in an elder is a red flag, not background noise. You know that now. Come back and catch it earlier."]},
+  10:{good:["A 24-year-old came in bleeding out and you had the bay ready before the team arrived. Pressure, big lines, protocol, TXA, warm. That is trauma nursing.","You did not chase the blood pressure with saline -- you replaced blood and called the surgeon. Damage-control resuscitation under pressure, done right.","The cooler was at the bedside before the surgeon ran in. That minute you saved is the minute that saved him."],bad:["A young heart hides shock until the very end. Next time you act before the cliff -- protocol, not saline. Come back.","Blood, not crystalloid. A surgeon, not wait-and-see. You know the pattern now. Come back and run it.","Massive hemorrhage is a protocol you activate, not a permission you wait for. Next shift, you call it in the first minute."]},
 };
 const END_SUBS={good:["Go home. You earned it.","That shift is done. You are not the same nurse who started it.","Rest well. Come back tomorrow."],bad:["Come back. It will be different next time.","One step further than yesterday. Always.","Rest. Then come back."]};
 function getEndMsg(day,outcome){const pool=(END_MSGS[day]||END_MSGS[1])[outcome==='good'?'good':'bad'];const msg=pool[Math.floor(Math.random()*pool.length)];const sub=END_SUBS[outcome==='good'?'good':'bad'][Math.floor(Math.random()*END_SUBS.good.length)];return {msg,sub};}
