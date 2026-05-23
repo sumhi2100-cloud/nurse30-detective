@@ -277,12 +277,14 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .phone-status{font-family:var(--mono);font-size:8px;color:var(--amber);animation:blink .8s infinite;}
 .sbar-body{flex:1;overflow-y:auto;padding:0 14px 8px;scrollbar-width:none;}
 .sbar-body::-webkit-scrollbar{display:none;}
-.sbar-card{padding:8px 10px;background:var(--ink2);border:1px solid var(--wire2);cursor:grab;user-select:none;margin-bottom:5px;border-radius:2px;}
+.sbar-card{padding:8px 10px;background:var(--ink2);border:1px solid var(--wire2);cursor:pointer;user-select:none;margin-bottom:5px;border-radius:2px;transition:border-color .15s,background .15s,box-shadow .15s;}
+.sbar-card.selected{border-color:var(--amber);background:rgba(232,168,74,.14);box-shadow:0 0 0 1px var(--amber);}
 .sbar-card.placed{opacity:.2;pointer-events:none;border-style:dashed;}
 .sbar-card-text{font-family:var(--body);font-size:12px;color:var(--text);line-height:1.5;font-weight:300;}
-.sbar-zone{border:1.5px dashed var(--wire2);min-height:48px;padding:5px 10px;transition:all .2s;display:flex;align-items:center;gap:8px;border-radius:2px;margin-bottom:4px;}
+.sbar-zone{border:1.5px dashed var(--wire2);min-height:48px;padding:5px 10px;transition:all .2s;display:flex;align-items:center;gap:8px;border-radius:2px;margin-bottom:4px;cursor:pointer;}
 .sbar-zone *{pointer-events:none;}
-.sbar-zone.drag-over{border-color:var(--amber);background:rgba(232,168,74,.06);}
+.sbar-zone.drag-over,.sbar-zone.armed{border-color:var(--amber);background:rgba(232,168,74,.06);}
+.sbar-zone.armed{border-style:solid;}
 .sbar-zone.correct{border-color:var(--teal);border-style:solid;background:rgba(0,201,160,.06);}
 .sbar-zone.wrong{border-color:var(--red);border-style:solid;animation:shake .3s ease;}
 .zone-letter{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:11px;font-weight:700;flex-shrink:0;border:1.5px solid var(--wire2);}
@@ -3430,7 +3432,7 @@ function renderSBAR(){
   const sd=getSBAR();
   document.getElementById('phone-name').textContent=sd.doctor;document.getElementById('phone-role').textContent=sd.role+' '+sd.phone;
   document.getElementById('sbar-title').textContent='SBAR -- '+sd.doctor;
-  document.getElementById('sbar-sub').textContent='Drag each card to the correct section';
+  document.getElementById('sbar-sub').textContent='Tap a card, then tap its section (S/B/A/R)';
   if(!G._phoneRing)G._phoneRing=setInterval(()=>{SFX.init();SFX.pagerBuzz();},4000);
   const btn=document.getElementById('btn-sbar-deliver');
   if(btn){btn.textContent='Deliver SBAR (match all 4 first)';btn.disabled=true;btn.style.opacity='.35';btn.style.fontSize='9px';}
@@ -3439,9 +3441,19 @@ function renderSBAR(){
 function renderSBARDrag(sd){
   const body=document.getElementById('sbar-body');
   const cards=[...sd.cards].sort(()=>Math.random()-.5);
-  body.innerHTML='<div style="padding:6px 14px 4px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Drag each card to the correct section</div><div id="sbar-card-pool">'+cards.map(card=>'<div class="sbar-card" id="card-'+card.id+'" draggable="true" ontouchstart="touchStartCard(event,\''+card.id+'\')" ontouchmove="touchMoveCard(event)" ontouchend="touchEndCard(event,\''+card.id+'\')" ondragstart="dragStartCard(event,\''+card.id+'\')"><div class="sbar-card-text">'+card.text+'</div></div>').join('')+'</div></div><div style="padding:4px 14px 8px;">'+['s','b','a','r'].map(k=>'<div class="sbar-zone" id="zone-'+k+'" ondragover="event.preventDefault();this.classList.add(\'drag-over\')" ondragleave="if(!this.contains(event.relatedTarget))this.classList.remove(\'drag-over\')" ondrop="dropCard(event,\''+k+'\')"><div class="zone-letter '+k+'-letter" id="zletter-'+k+'">'+k.toUpperCase()+'</div><div style="flex:1;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">'+sd[k].title+'</div><div class="zone-hint" id="zone-hint-'+k+'">'+sd[k].hint+'</div><div class="zone-content" id="zone-content-'+k+'" style="display:none;"></div></div></div>').join('')+'</div>';
-  G._sbarPlaced={s:null,b:null,a:null,r:null};G._dragCardId=null;
+  body.innerHTML='<div style="padding:6px 14px 4px;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;">Tap a card, then tap its section &darr;</div><div id="sbar-card-pool">'+cards.map(card=>'<div class="sbar-card" id="card-'+card.id+'" onclick="selectCard(\''+card.id+'\')" draggable="true" ontouchstart="touchStartCard(event,\''+card.id+'\')" ontouchmove="touchMoveCard(event)" ontouchend="touchEndCard(event,\''+card.id+'\')" ondragstart="dragStartCard(event,\''+card.id+'\')"><div class="sbar-card-text">'+card.text+'</div></div>').join('')+'</div></div><div style="padding:4px 14px 8px;">'+['s','b','a','r'].map(k=>'<div class="sbar-zone" id="zone-'+k+'" onclick="zoneTap(\''+k+'\')" ondragover="event.preventDefault();this.classList.add(\'drag-over\')" ondragleave="if(!this.contains(event.relatedTarget))this.classList.remove(\'drag-over\')" ondrop="dropCard(event,\''+k+'\')"><div class="zone-letter '+k+'-letter" id="zletter-'+k+'">'+k.toUpperCase()+'</div><div style="flex:1;"><div style="font-family:var(--mono);font-size:8px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">'+sd[k].title+'</div><div class="zone-hint" id="zone-hint-'+k+'">'+sd[k].hint+'</div><div class="zone-content" id="zone-content-'+k+'" style="display:none;"></div></div></div>').join('')+'</div>';
+  G._sbarPlaced={s:null,b:null,a:null,r:null};G._dragCardId=null;G._selectedCard=null;
 }
+// Tap-to-place (mobile-friendly): tap a card to select, tap a section to place it
+function selectCard(cardId){
+  const el=document.getElementById('card-'+cardId);if(!el||el.classList.contains('placed'))return;
+  if(G._selectedCard===cardId){el.classList.remove('selected');G._selectedCard=null;armSbarZones(false);return;}
+  if(G._selectedCard){const prev=document.getElementById('card-'+G._selectedCard);if(prev)prev.classList.remove('selected');}
+  G._selectedCard=cardId;el.classList.add('selected');armSbarZones(true);SFX.init();SFX.tapFind();
+}
+function zoneTap(zone){if(!G._selectedCard)return;placeCard(G._selectedCard,zone);}
+function armSbarZones(on){['s','b','a','r'].forEach(k=>{const z=document.getElementById('zone-'+k);if(z)z.classList.toggle('armed',!!on&&!G._sbarPlaced[k]);});}
+function clearCardSelection(){if(G._selectedCard){const el=document.getElementById('card-'+G._selectedCard);if(el)el.classList.remove('selected');}G._selectedCard=null;armSbarZones(false);}
 function dragStartCard(e,cardId){G._dragCardId=cardId;e.dataTransfer.setData('text/plain',cardId);}
 function dropCard(e,zone){e.preventDefault();const zEl=document.getElementById('zone-'+zone);if(zEl)zEl.classList.remove('drag-over');const cardId=G._dragCardId||e.dataTransfer.getData('text/plain');if(!cardId)return;placeCard(cardId,zone);}
 let _touchCardId=null,_touchClone=null;
@@ -3456,7 +3468,8 @@ function placeCard(cardId,zone){
   if(isCorrect){
     G._sbarPlaced[zone]=cardId;
     if(zEl){zEl.classList.remove('wrong');zEl.classList.add('correct');}if(hEl)hEl.style.display='none';if(cEl){cEl.style.display='block';cEl.textContent=card.text;}if(lEl)lEl.classList.add('filled');
-    const cardEl=document.getElementById('card-'+cardId);if(cardEl){cardEl.classList.add('placed');cardEl.draggable=false;}
+    const cardEl=document.getElementById('card-'+cardId);if(cardEl){cardEl.classList.add('placed');cardEl.classList.remove('selected');cardEl.draggable=false;}
+    G._selectedCard=null;armSbarZones(false);
     SFX.init();SFX.tapFind();updateSBARPips();
     if(sd.cards.every(cd=>G._sbarPlaced[cd.zone]===cd.id)){const btn=document.getElementById('btn-sbar-deliver');if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.fontSize='';btn.textContent='Deliver SBAR';}SFX.init();SFX.chime();}
   }else{
