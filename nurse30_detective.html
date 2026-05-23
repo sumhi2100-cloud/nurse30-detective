@@ -486,7 +486,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
       <div class="tpills"><div class="tpill">&#128269; Find clues</div><div class="tpill">&#129520; Reason clinically</div><div class="tpill">&#9889; Act before it's too late</div></div>
     </div>
     <div class="tcta">
-      <button class="btnp" onclick="gotoCalendar()">Begin shift &rarr;</button>
+      <button class="btnp" onclick="SFX.init();gotoCalendar()">Begin shift &rarr;</button>
       <div class="tsnd" onclick="SFX.toggle()" id="snd-lbl">&#128266; <span id="snd-txt">Sound on</span></div>
     </div>
   </div>
@@ -3957,10 +3957,12 @@ function loadProgress(){try{const raw=localStorage.getItem('n30v3');if(!raw)retu
 
 // === SFX ===
 const SFX={
-  _ctx:null,_muted:false,_beepIv:null,
+  _ctx:null,_muted:false,_beepIv:null,_unlocked:false,
   init(){
     if(!this._ctx){try{this._ctx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){return;}}
     if(this._ctx&&this._ctx.state==='suspended'){try{this._ctx.resume();}catch(e){}}
+    // iOS unlock: play a 1-sample silent buffer inside the user gesture so Web Audio actually starts
+    if(!this._unlocked&&this._ctx){try{const b=this._ctx.createBuffer(1,1,22050);const s=this._ctx.createBufferSource();s.buffer=b;s.connect(this._ctx.destination);s.start(0);this._unlocked=true;}catch(e){}}
   },
   loadMuted(){try{this._muted=localStorage.getItem('n30muted')==='1';}catch(e){}this._updateBtn();},
   toggle(){this._muted=!this._muted;try{localStorage.setItem('n30muted',this._muted?'1':'0');}catch(e){}this._updateBtn();},
@@ -4003,6 +4005,8 @@ try{
   const resumeAudio=()=>{SFX.init();};
   document.addEventListener('click',resumeAudio);
   document.addEventListener('touchstart',resumeAudio);
+  document.addEventListener('touchend',resumeAudio);
+  document.addEventListener('pointerdown',resumeAudio);
 }catch(e){}
 try{window.addEventListener('resize',()=>{const sc=document.getElementById('scene-canvas');const wrap=document.getElementById('scene-wrap');if(sc&&wrap&&wrap.offsetWidth){sc.width=wrap.offsetWidth;sc.height=wrap.offsetHeight;renderTZ();}});}catch(e){}
 </script>
