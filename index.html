@@ -503,6 +503,7 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
       <div class="cal-stat"><div class="cal-stat-val" style="color:var(--amber)" id="cal-xp">0</div><div class="cal-stat-lbl">XP</div></div>
     </div>
   </div>
+  <div id="cal-resume" style="display:none;"></div>
   <div class="cal-levels" id="cal-level-tabs"></div>
   <div class="cal-body" id="cal-body"></div>
   <div class="cal-legend">
@@ -2568,7 +2569,7 @@ function checkActions(){
   if(scroll){scroll.innerHTML='';avail.filter(a=>!a.done()&&a.pri<=2).slice(0,3).forEach(a=>{const btn=document.createElement('button');btn.className='actbtn'+(a.pri===1?' p1':'');btn.textContent=a.getL();btn.onclick=()=>doAction(a.key);scroll.appendChild(btn);});if(avail.length>0){const all=document.createElement('button');all.className='actbtn';all.textContent='All options...';all.onclick=openPP;scroll.appendChild(all);}}
   document.getElementById('act-bar').style.display=avail.length>0?'':'none';
   if(valid.length>=4&&!G.priorityShown){G.priorityShown=true;setTimeout(openPP,400);}
-  updateActionBadge();
+  updateActionBadge();saveActive();
 }
 function openActionSheet(){closeDrawer();openPP();}
 
@@ -2699,6 +2700,7 @@ function startHandoff(){
 function clearDayTimers(){if(G._dayTimers){G._dayTimers.forEach(t=>clearTimeout(t));}G._dayTimers=[];}
 function gotoInvestigate(){
   if(DAY().custom==='icu2'){return gotoICU2();}
+  G._shiftActive=true;saveActive();
   const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=DAY().hudDay;if(pe)pe.textContent=DAY().hudPt;
   resetVSForDay(G.currentDay);initVisualState(G.currentDay);
   wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(DAY().sfxLoop==='icu')SFX.startICULoop();else SFX.startMonitorLoop();},700);
@@ -2761,7 +2763,7 @@ function startTimer(resume=false){
     if(G.timerSec===300){SFX.init();SFX.pagerBuzz();}
     if(G.timerSec===180){SFX.init();SFX.deterioration();}
     if(G.timerSec===90){SFX.init();SFX.urgentAlarm();}
-    if(G.timerSec%10===0)tickVisualDeterioration();
+    if(G.timerSec%10===0){tickVisualDeterioration();saveActive();}
     const cb=DAY().codeBlue;if(cb&&G.timerSec===cb.at&&!G.actionsTaken.includes(cb.guard)){G.codeBluePending=true;SFX.init();SFX.deterioration();setTimeout(()=>{SFX.codeBlueAlarm();showCodeBlueWarning();},600);}
     if(G.timerSec<=0){clearInterval(G.timerIv);resetTimerPressure();stopScene();gotoAction();}
   },1000);
@@ -3585,7 +3587,7 @@ function buildEndShift(){
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
   if(good&&G.currentDay>=G.highestDay)G.highestDay=Math.min(30,G.currentDay+1);
   else G.highestDay=Math.max(G.highestDay||1,G.currentDay);
-  SFX.init();SFX.dawnAmbient();saveProgress();setTimeout(()=>playEndScene(G.outcome),400);
+  clearActive();SFX.init();SFX.dawnAmbient();saveProgress();setTimeout(()=>playEndScene(G.outcome),400);
 }
 
 const END_MSGS={
@@ -3628,6 +3630,8 @@ function gotoCalendar(){wipeGo(()=>{showScreen('calendar');renderCalendar();});}
 function renderCalendar(){
   const done=Object.keys(G.dayResults).length;const el=document.getElementById('cal-days-done');if(el)el.textContent=done;const xe=document.getElementById('cal-xp');if(xe)xe.textContent=G.xp;
   const se=document.getElementById('cal-sub');if(se)se.textContent='Day '+G.highestDay+' unlocked -- '+done+' completed';
+  const rb=document.getElementById('cal-resume');
+  if(rb){if(G._resume&&G._resume.day){const dm=DAY_META[G._resume.day];const nm=dm?(dm.dept+' -- Day '+G._resume.day):('Day '+G._resume.day);rb.style.display='block';rb.innerHTML='<div style="margin:0 14px 10px;padding:11px 13px;background:rgba(0,201,160,.1);border:1px solid rgba(0,201,160,.5);border-radius:6px;display:flex;align-items:center;gap:10px;"><div style="flex:1;"><div style="font-family:var(--mono);font-size:8px;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;">Shift in progress</div><div style="font-family:var(--body);font-size:13px;color:var(--text);font-weight:300;margin-top:2px;">'+nm+' -- you left mid-shift</div></div><button onclick="resumeActive()" style="flex-shrink:0;padding:9px 14px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:4px;cursor:pointer;">Resume</button><button onclick="clearActive();renderCalendar();" style="flex-shrink:0;padding:9px 10px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:9px;cursor:pointer;border-radius:4px;">Discard</button></div>';}else{rb.style.display='none';rb.innerHTML='';}}
   const tabs=document.getElementById('cal-level-tabs');if(tabs)tabs.innerHTML=[0,1,2,3,4,5,6].map(l=>'<button class="cal-level-tab '+(l===0?'active':'')+'" onclick="filterCalLevel('+l+')" id="cal-tab-'+l+'">'+(l===0?'All':'L'+l+' '+LEVEL_NAMES[l])+'</button>').join('');
   renderCalGrid(0);
 }
@@ -3668,7 +3672,7 @@ function showDayDetail(day){
 function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
 function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;clearDayTimers();resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
-function exitToCalendar(){stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
+function exitToCalendar(){clearActive();stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
 
 const VACATIONS=[
   {dest:'Bali, Indonesia',emoji:'🌴',temp:'29°C — humid, warm, unhurried',vibe:'Rice terraces. Temple bells at dawn. The ocean has been here longer than your worries.'},
@@ -3967,6 +3971,24 @@ function showHudConfirm(title,msg,confirmLabel,onConfirm){const old=document.get
 // === SAVE / LOAD ===
 function saveProgress(){try{localStorage.setItem('n30v3',JSON.stringify({stats:G.stats,xp:G.xp,level:G.level,badges:G.badges,highestDay:G.highestDay,dayResults:G.dayResults,savedAt:Date.now()}));}catch(e){}}
 function loadProgress(){try{const raw=localStorage.getItem('n30v3');if(!raw)return;const s=JSON.parse(raw);if(s.stats)Object.assign(G.stats,s.stats);if(s.xp)G.xp=s.xp;if(s.level)G.level=s.level;if(s.badges)G.badges=s.badges;if(s.highestDay)G.highestDay=s.highestDay;else G.highestDay=1;if(s.dayResults)G.dayResults=s.dayResults;}catch(e){}SFX.loadMuted();}
+// === MID-SHIFT RESUME (autosave the in-progress day so closing the app does not lose it) ===
+function saveActive(){try{if(!G._shiftActive||DAY().custom)return;localStorage.setItem('n30active',JSON.stringify({day:G.currentDay,clues:G.clues,actionsTaken:G.actionsTaken,touchesLeft:G.touchesLeft,timerSec:G.timerSec,priorityShown:G.priorityShown,interruptFired:G.interruptFired,interrupt2Fired:G.interrupt2Fired,o2Device:G.o2Device,savedAt:Date.now()}));}catch(e){}}
+function clearActive(){G._shiftActive=false;try{localStorage.removeItem('n30active');}catch(e){}}
+function loadActive(){try{const ra=localStorage.getItem('n30active');if(!ra)return;const a=JSON.parse(ra);if(a&&a.day&&!(G.dayResults&&G.dayResults[a.day])){G._resume=a;}else{localStorage.removeItem('n30active');}}catch(e){}}
+function resumeActive(){
+  const a=G._resume;if(!a)return;
+  G.currentDay=a.day;
+  G.clues=Array.isArray(a.clues)?a.clues:[];
+  G.actionsTaken=Array.isArray(a.actionsTaken)?a.actionsTaken:[];
+  G.touchesLeft=(a.touchesLeft!=null)?a.touchesLeft:getTouchLimit();
+  G.timerSec=(a.timerSec!=null&&a.timerSec>0)?a.timerSec:600;
+  G.priorityShown=!!a.priorityShown;G.interruptFired=!!a.interruptFired;G.interrupt2Fired=!!a.interrupt2Fired;
+  G.o2Device=a.o2Device||null;G.outcome=null;G.handoffSel=[];
+  G._resume=null;G._shiftActive=true;
+  const de=document.getElementById('hud-day');const pe=document.getElementById('hud-pt');if(de)de.textContent=DAY().hudDay;if(pe)pe.textContent=DAY().hudPt;
+  resetVSForDay(G.currentDay);initVisualState(G.currentDay);
+  wipeGo(()=>{showScreen('investigate');setTimeout(()=>{if(!G.animFrame)startSceneLoop();renderPips();updateVitals();checkActions();if(G.timerSec>0)startTimer(true);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(DAY().sfxLoop==='icu')SFX.startICULoop();else SFX.startMonitorLoop();},700);},120);});
+}
 
 // === SFX ===
 const SFX={
@@ -4013,6 +4035,12 @@ const SFX={
 
 // === INIT ===
 try{loadProgress();}catch(e){}
+try{loadActive();}catch(e){}
+try{
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')saveActive();});
+  window.addEventListener('pagehide',saveActive);
+  window.addEventListener('beforeunload',saveActive);
+}catch(e){}
 try{drawTitleChar();}catch(e){}
 try{
   const resumeAudio=()=>{SFX.init();};
