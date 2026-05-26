@@ -1798,6 +1798,22 @@ const ACTS_D3=[
    getL:()=>G.actionsTaken.includes('reassure_d3')?'Patient updated':'Explain to Tyler -- honest, calm',
    desc:'"I am concerned about some changes in your assessment and I have called your surgeon. He is coming right away." No false reassurance.',
    done:()=>G.actionsTaken.includes('reassure_d3'),unlock:2,need:null},
+  {key:'warm_d3',pri:2,sec:'Urgent -- Lethal triad',
+   getL:()=>G.actionsTaken.includes('warm_d3')?'Patient + fluids warmed':'Warm Tyler -- blankets + warmed fluids',
+   desc:'Pale, clammy, internal bleeding = early hypothermia coming. Warm blanket, forced-air warmer if available, warm IV fluids. Hypothermia worsens coagulopathy + acidosis -- the trauma lethal triad. Temp is a clotting issue here.',
+   done:()=>G.actionsTaken.includes('warm_d3'),unlock:2,need:null},
+  {key:'second_iv_d3',pri:2,sec:'Urgent -- Access',
+   getL:()=>G.actionsTaken.includes('second_iv_d3')?'2nd large-bore IV in -- transfusion-ready':'Place 2nd large-bore IV -- anticipate transfusion',
+   desc:'A post-op haemorrhage can become a transfusion case fast. Site one large-bore (14-16G) in the antecubital fossa, draw type & crossmatch off the stick. Be ready for blood before you are asked for it.',
+   done:()=>G.actionsTaken.includes('second_iv_d3'),unlock:2,need:null},
+  {key:'pain_assess_d3',pri:3,sec:'Comfort + Assessment',
+   getL:()=>G.actionsTaken.includes('pain_assess_d3')?'Pain assessed -- pattern documented':'Pain assessment + non-pharm comfort',
+   desc:'Morphine is held but pain still matters. Numeric scale, position of comfort, presence. The pain pattern itself is a diagnostic clue -- new referred shoulder-tip pain or worsening guarding is signal, not noise. Document the pattern, not just the number.',
+   done:()=>G.actionsTaken.includes('pain_assess_d3'),unlock:2,need:null},
+  {key:'family_d3',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('family_d3')?'Family notified -- honest, brief':'Notify family -- honest update',
+   desc:'"I am concerned about some changes and I have called the surgeon. He is on his way. I will update you as soon as we know more." No diagnosis, no prognosis -- truth without panic.',
+   done:()=>G.actionsTaken.includes('family_d3'),unlock:3,need:null},
   {key:'chart_d3',pri:3,sec:'Documentation',
    getL:()=>G.actionsTaken.includes('chart_d3')?'Nursing note written':'Document assessment and actions',
    desc:'Time-stamp everything: when you assessed, what you found, who you called, what you held, what you started.',
@@ -1837,6 +1853,14 @@ const ACTS_D7=[
    getL:()=>G.actionsTaken.includes('incident_d7')?'Near-miss incident report filed':'File ISMP Canada near-miss report',
    desc:'A near-miss reached the point of administration and was caught by the nurse. This must be reported. ISMP Canada: near-miss reporting is voluntary, confidential, and essential for system learning. Filing this report prevents the next one.',
    done:()=>G.actionsTaken.includes('incident_d7'),unlock:3,need:null},
+  {key:'pt_education_d7',pri:3,sec:'Patient Education',
+   getL:()=>G.actionsTaken.includes('pt_education_d7')?'Allergy education delivered':'Educate Mr. Kowalski about his allergy',
+   desc:'Sit at his level. Explain what was caught, what was held, and what he must say to EVERY future provider: "I am allergic to penicillin -- anaphylaxis." Reinforce the wristband, MedicAlert if not already, and that he should review every new antibiotic with the prescriber by class. Education is the long-term safety net.',
+   done:()=>G.actionsTaken.includes('pt_education_d7'),unlock:3,need:null},
+  {key:'post_dose_monitor_d7',pri:3,sec:'Monitoring',
+   getL:()=>G.actionsTaken.includes('post_dose_monitor_d7')?'Observed x 30 min -- no reaction':'Observe x 30 min after first alternative dose',
+   desc:'Even with the corrected antibiotic (clindamycin), observe him for 30 minutes after the first dose: urticaria, throat tightness, wheeze, BP change. His immune system has shown it can react -- vigilance does not stop because the right drug was chosen.',
+   done:()=>G.actionsTaken.includes('post_dose_monitor_d7'),unlock:3,need:null},
   {key:'chart_d7',pri:3,sec:'Documentation',
    getL:()=>G.actionsTaken.includes('chart_d7')?'Nursing note written':'Document safety event and resolution',
    desc:'Time-stamp: when you identified the concern, what you verified, when you held the medication, when you notified the physician, what the corrected order is, when the correct medication was given.',
@@ -1884,6 +1908,18 @@ const ACTS_D6=[
    getL:()=>G.actionsTaken.includes('npo_d6')?'NPO -- possible return to theatre':'NPO -- possible theatre',
    desc:'Surgical site infection Day 3 post-op. The surgeon will likely need to examine the wound. There is a real possibility of return to theatre. NPO now avoids unsafe anaesthetic induction.',
    done:()=>G.actionsTaken.includes('npo_d6'),unlock:3,need:'chart'},
+  {key:'warm_d6',pri:2,sec:'Urgent -- Sepsis temp management',
+   getL:()=>G.actionsTaken.includes('warm_d6')?'Warmed -- normothermia targeted':'Warm patient -- target normothermia',
+   desc:'She is 38.2 now but septic patients can drop into hypothermia fast, and hypothermia in sepsis predicts WORSE outcomes than the fever. Blanket on, warm IV fluids, recheck temp q1h. Stable mid-range, not hot and not cold.',
+   done:()=>G.actionsTaken.includes('warm_d6'),unlock:2,need:null},
+  {key:'iv_patent_d6',pri:2,sec:'Urgent -- Access',
+   getL:()=>G.actionsTaken.includes('iv_patent_d6')?'2nd IV in -- multi-line ready':'Check IV patency + place 2nd line',
+   desc:'Sepsis often needs fluids + antibiotics + repeat cultures running simultaneously. One line is not enough -- check the existing IV, place a second 18G in the other arm. Be ready before you need it.',
+   done:()=>G.actionsTaken.includes('iv_patent_d6'),unlock:2,need:null},
+  {key:'comfort_d6',pri:3,sec:'Comfort + Pressure care',
+   getL:()=>G.actionsTaken.includes('comfort_d6')?'Repositioned + skin checked':'Reposition + check pressure areas',
+   desc:'Post-op Day 3, increasingly oliguric, sick. High pressure-injury risk on heels and sacrum. Reposition q2h, padded heels, mouth care, lip balm. Comfort care does not stop because she is septic -- it matters more.',
+   done:()=>G.actionsTaken.includes('comfort_d6'),unlock:2,need:null},
   {key:'chart_d6',pri:3,sec:'Documentation',
    getL:()=>G.actionsTaken.includes('chart_d6')?'Nursing note written':'Document assessment and escalation',
    desc:'Time-stamp: when you arrived, what you found, when you called the surgeon, what interventions you started. Include the V/S trend and UO trend. This is medicolegally important.',
@@ -1931,6 +1967,18 @@ const ACTS_D5=[
    getL:()=>G.actionsTaken.includes('family_d5')?'Family notified':'Notify family -- explain missed meal',
    desc:'"Mr. Park had a low blood sugar because his insulin was given but he did not eat dinner. We treated it. He is improving. Please always ensure he eats when insulin is given."',
    done:()=>G.actionsTaken.includes('family_d5'),unlock:2,need:null},
+  {key:'iv_patent_d5',pri:1,sec:'Immediate -- Access',
+   getL:()=>G.actionsTaken.includes('iv_patent_d5')?'IV patent + flushed -- safe for D50W':'Confirm IV patency + saline flush',
+   desc:'D50W (50% dextrose) is hypertonic -- if it extravasates it causes tissue necrosis. Before any push: flush the line with saline, check for blanching, swelling, or resistance. The line must be obviously patent. Use the largest, most proximal IV.',
+   done:()=>G.actionsTaken.includes('iv_patent_d5'),unlock:1,need:null},
+  {key:'warm_d5',pri:2,sec:'Urgent -- Comfort',
+   getL:()=>G.actionsTaken.includes('warm_d5')?'Warm blanket on -- shivering eased':'Warm blanket -- diaphoretic and cool',
+   desc:'Severe hypoglycemia leaves him diaphoretic, pale, and cool. A warm blanket is comfort AND prevents shivering, which raises glucose demand and counter-regulates. Small intervention, real effect.',
+   done:()=>G.actionsTaken.includes('warm_d5'),unlock:2,need:null},
+  {key:'cardiac_mon_d5',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('cardiac_mon_d5')?'Continuous cardiac + SpO2 monitoring':'Apply continuous cardiac + SpO2 monitor',
+   desc:'Severe hypoglycemia can trigger arrhythmias, especially during rapid correction. Continuous ECG, SpO2, BP q5min until BGL stable and GCS recovering. Watch for QT prolongation patterns.',
+   done:()=>G.actionsTaken.includes('cardiac_mon_d5'),unlock:2,need:null},
   {key:'chart_d5',pri:3,sec:'Documentation',
    getL:()=>G.actionsTaken.includes('chart_d5')?'Nursing note written':'Document hypoglycemia episode and treatment',
    desc:'Time-stamp: when found, BGL result, interventions, response, physician notified, insulin held. This is a medication-related adverse event -- full documentation required.',
@@ -3374,6 +3422,82 @@ function doAction(type){
     document.getElementById('cd-title').textContent='Write nursing note -- Acute delirium';
     document.getElementById('cd-body').innerHTML='<div style="padding:6px 14px 10px;"><textarea class="charttxt" rows="6">[TIME] Mr. Tremblay 89M 4 West Bed 12. Admitted UTI + dehydration. Baseline A&O x3 per daughter, no dementia.\nAcute change overnight: fluctuating confusion, inattention, climbing OOB, pulling IV. CAM positive.\nTemp 38.5 (was 37.9), HR 104, BP 108/62, RR 20, SpO2 96%. BGL 6.1 (normal). Cloudy concentrated urine UO 18 mL/hr. Dry mucous membranes.\nInterventions: bed lowered + exit alarm, CNA 1:1 at bedside, reoriented, IV fluids restarted, repeat UA + culture sent. NO restraints, NO sedation.\nDr. Singh notified [TIME] -- ?worsening urosepsis. Orders: fluids, repeat cultures, escalate antibiotics. Daughter updated.</textarea><button class="chartbtn" onclick="submitChart()">Submit note</button></div>';
     document.getElementById('clue-drawer').classList.add('open');document.getElementById('act-bar').style.display='none';
+  // === Day 3 extras (warm / 2nd IV / pain / family) ===
+  }else if(type==='warm_d3'){
+    if(!G.actionsTaken.includes('warm_d3'))G.actionsTaken.push('warm_d3');SFX.init();SFX.confirm();
+    openDrawer('Patient warmed -- triad blocked',[
+      {p:'o',t:'Forced-air blanket on, room warmed, all IV fluids running through a warmer.'},
+      {p:'w',t:'Hypothermia + acidosis + coagulopathy is the trauma "lethal triad" -- each feeds the others. A cold patient cannot clot well.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='second_iv_d3'){
+    if(!G.actionsTaken.includes('second_iv_d3'))G.actionsTaken.push('second_iv_d3');SFX.init();SFX.tapFind();
+    openDrawer('Second large-bore IV in',[
+      {p:'o',t:'A second 14G IV in the right antecubital fossa. Type & crossmatch drawn off the stick and sent to the blood bank.'},
+      {p:'c',t:'Anticipate transfusion -- do not wait until the BP is in the 70s to place access. Two lines + crossmatch ready beats one line and a crisis.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='pain_assess_d3'){
+    if(!G.actionsTaken.includes('pain_assess_d3'))G.actionsTaken.push('pain_assess_d3');SFX.init();SFX.tapFind();
+    openDrawer('Pain assessment + comfort',[
+      {p:'o',t:'Pain 7/10, sharp, central abdomen, NEW referred right shoulder-tip pain. Position of comfort (left lateral). Quiet, dim lighting, presence.'},
+      {p:'w',t:'Referred shoulder-tip pain in a post-cholecystectomy patient = diaphragmatic irritation = blood under the diaphragm until proven otherwise. The pain pattern IS the diagnostic clue.'},
+    ],'Document the pattern, not just the number. New referred pain is a sentinel finding.');setTimeout(checkActions,200);
+  }else if(type==='family_d3'){
+    if(!G.actionsTaken.includes('family_d3'))G.actionsTaken.push('family_d3');SFX.init();SFX.chime();
+    openDrawer('Family updated -- honest, brief',[
+      {p:'o',t:'"I am concerned about some changes in Tyler\'s condition and I have called the surgeon. He is on his way. I will update you as soon as he has reviewed Tyler."'},
+      {p:'c',t:'No diagnosis. No prognosis. Truth without panic. Brief now is trust later.'},
+    ],null);setTimeout(checkActions,200);
+  // === Day 5 extras (IV patency / warm / cardiac monitor) ===
+  }else if(type==='iv_patent_d5'){
+    if(!G.actionsTaken.includes('iv_patent_d5'))G.actionsTaken.push('iv_patent_d5');SFX.init();SFX.confirm();
+    openDrawer('IV patency confirmed',[
+      {p:'o',t:'Saline flush -- 10 mL pushes easily, no resistance, no blanching, no patient discomfort. Line is in the antecubital fossa, 18G. Safe for D50W push.'},
+      {p:'w',t:'D50W (50% dextrose) is hypertonic -- extravasation causes tissue necrosis. ALWAYS confirm patency before pushing.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='warm_d5'){
+    if(!G.actionsTaken.includes('warm_d5'))G.actionsTaken.push('warm_d5');SFX.init();SFX.confirm();
+    openDrawer('Warm blanket on',[
+      {p:'o',t:'Warm blanket draped. The shivering eases within a minute. He looks less distressed.'},
+      {p:'w',t:'Shivering raises glucose demand and adrenergic counter-regulation. Comfort here is also clinically helpful.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='cardiac_mon_d5'){
+    if(!G.actionsTaken.includes('cardiac_mon_d5'))G.actionsTaken.push('cardiac_mon_d5');SFX.init();SFX.tapFind();
+    openDrawer('Continuous cardiac + SpO2 monitor',[
+      {p:'o',t:'5-lead ECG on. Continuous SpO2. BP cycling q5min. Rhythm sinus tachycardia, no ectopy currently.'},
+      {p:'c',t:'Severe hypoglycemia can trigger arrhythmias and QT prolongation, especially during rapid glucose correction. Watch the strip while pushing D50W.'},
+    ],null);setTimeout(checkActions,200);
+  // === Day 6 extras (warm / 2nd IV / comfort) ===
+  }else if(type==='warm_d6'){
+    if(!G.actionsTaken.includes('warm_d6'))G.actionsTaken.push('warm_d6');SFX.init();SFX.confirm();
+    openDrawer('Warmed -- targeting normothermia',[
+      {p:'o',t:'Warm blanket on, IV fluids running warm. Continuous temperature monitor. Target 36.5-37.5C.'},
+      {p:'w',t:'Hypothermia in sepsis predicts WORSE outcomes than fever. Septic patients can crash into hypothermia silently. Stable mid-range is the target.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='iv_patent_d6'){
+    if(!G.actionsTaken.includes('iv_patent_d6'))G.actionsTaken.push('iv_patent_d6');SFX.init();SFX.tapFind();
+    openDrawer('Second IV in -- multi-line ready',[
+      {p:'o',t:'Existing IV checked: 20G left forearm, patent. Second 18G placed in right antecubital fossa for the fluid challenge.'},
+      {p:'c',t:'Septic resuscitation often needs fluids + IV antibiotics + repeat cultures simultaneously. One line is not enough.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='comfort_d6'){
+    if(!G.actionsTaken.includes('comfort_d6'))G.actionsTaken.push('comfort_d6');SFX.init();SFX.chime();
+    openDrawer('Repositioned + pressure care',[
+      {p:'o',t:'Repositioned to left lateral. Heels padded, sacrum checked (skin intact). Mouth care, lip balm. Pillow under the leg.'},
+      {p:'w',t:'Post-op Day 3, increasingly oliguric, sick. Pressure injuries develop in hours in this state. Q2h reposition is not optional.'},
+    ],null);setTimeout(checkActions,200);
+  // === Day 7 extras (patient education / post-dose monitor) ===
+  }else if(type==='pt_education_d7'){
+    if(!G.actionsTaken.includes('pt_education_d7'))G.actionsTaken.push('pt_education_d7');SFX.init();SFX.chime();
+    openDrawer('Allergy education -- the long-term safety net',[
+      {p:'o',t:'You sit at his level: "Mr. Kowalski, an antibiotic was ordered that is in the penicillin family. We caught it before you got it. Every future provider needs to hear this from you: \'I am allergic to penicillin -- I had anaphylaxis.\' Wristband on, MedicAlert recommended."'},
+      {p:'c',t:'He nods, very serious: "I will. Thank you for telling me." Patient education converts a single catch into a lifetime of safety.'},
+    ],'The chart can be wrong. The wristband can fall off. The patient is the most reliable safeguard if they know what to say.');setTimeout(checkActions,200);
+  }else if(type==='post_dose_monitor_d7'){
+    if(!G.actionsTaken.includes('post_dose_monitor_d7'))G.actionsTaken.push('post_dose_monitor_d7');SFX.init();SFX.tapFind();
+    openDrawer('Post-dose observation x 30 min',[
+      {p:'o',t:'Clindamycin first dose given. Continuous SpO2, BP q5min, watching for urticaria, throat tightness, wheeze. Epi + airway trolley within reach (cellulitis pt, history of anaphylaxis).'},
+      {p:'w',t:'Even with the right antibiotic, his immune system has shown it can react. Vigilance does not stop because the drug was correct.'},
+    ],null);setTimeout(checkActions,200);
   }else if(type==='pressure_d10'){
     if(!G.actionsTaken.includes('pressure_d10'))G.actionsTaken.push('pressure_d10');SFX.init();SFX.confirm();
     openDrawer('Direct pressure -- right thigh',[
