@@ -3626,7 +3626,7 @@ function playEndScene(outcome){
 }
 
 // === CALENDAR ===
-function gotoCalendar(){if(SFX.stopMonitorLoop)SFX.stopMonitorLoop();if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}if(G.timerIv){clearInterval(G.timerIv);G.timerIv=null;}stopScene();wipeGo(()=>{showScreen('calendar');renderCalendar();});}
+function gotoCalendar(){if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}if(G.timerIv){clearInterval(G.timerIv);G.timerIv=null;}clearDayTimers();stopScene();if(SFX.suspend)SFX.suspend();wipeGo(()=>{showScreen('calendar');renderCalendar();});}
 function renderCalendar(){
   const done=Object.keys(G.dayResults).length;const el=document.getElementById('cal-days-done');if(el)el.textContent=done;const xe=document.getElementById('cal-xp');if(xe)xe.textContent=G.xp;
   const se=document.getElementById('cal-sub');if(se)se.textContent='Day '+G.highestDay+' unlocked -- '+done+' completed';
@@ -3672,7 +3672,7 @@ function showDayDetail(day){
 function toggleHudMenu(){const menu=document.getElementById('hud-menu');if(!menu)return;const isOpen=menu.style.display!=='none';menu.style.display=isOpen?'none':'block';if(!isOpen)setTimeout(()=>{document.addEventListener('click',closeHudMenuOutside,{once:true});},50);}
 function closeHudMenuOutside(e){const menu=document.getElementById('hud-menu');if(menu&&!menu.contains(e.target))menu.style.display='none';}
 function hudMenuAction(action){const menu=document.getElementById('hud-menu');if(menu)menu.style.display='none';if(action==='calendar'){const mid=G.clues.length>0||G.actionsTaken.length>0;if(mid)showHudConfirm('Leave this shift?','Your progress on Day '+G.currentDay+' will not be saved.','Leave',()=>exitToCalendar());else exitToCalendar();}else if(action==='restart'){showHudConfirm('Restart Day '+G.currentDay+'?','You will go back to the beginning.','Restart',()=>{G.clues=[];G.touchesLeft=getTouchLimit();G.timerSec=600;G.outcome=null;G.o2Device=null;G.actionsTaken=[];G.priorityShown=false;G.handoffSel=[];G.fluidRunning=false;G.fluidMl=0;G.fluidRate='KVO';G.abxRunning=false;G.abxProgress=0;G.labsDrawn=false;G.codeBluePending=false;G._sbarPlaced={s:null,b:null,a:null,r:null};G.interruptFired=false;G.interrupt2Fired=false;G.interruptChoice=null;G.interrupt2Choice=null;clearDayTimers();resetVSForDay(G.currentDay);initVisualState(G.currentDay);stopScene();if(G.timerIv)clearInterval(G.timerIv);wipeGo(()=>{showScreen('handoff');startHandoff();});});}}
-function exitToCalendar(){clearActive();stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
+function exitToCalendar(){clearActive();stopScene();if(G.timerIv)clearInterval(G.timerIv);if(G._phoneRing){clearInterval(G._phoneRing);G._phoneRing=null;}clearDayTimers();if(SFX.suspend)SFX.suspend();else SFX.stopMonitorLoop();wipeGo(gotoCalendar);}
 
 const VACATIONS=[
   {dest:'Bali, Indonesia',emoji:'🌴',temp:'29°C — humid, warm, unhurried',vibe:'Rice terraces. Temple bells at dawn. The ocean has been here longer than your worries.'},
@@ -4018,6 +4018,7 @@ const SFX={
     this._beepIv=setInterval(()=>{if(!this._muted&&this._ctx){const t=this._ctx.currentTime;this._t(1200,'sine',.05,.08,t);this._t(1200,'sine',.04,.07,t+.1);}},interval);
   },
   stopMonitorLoop(){if(this._beepIv){clearInterval(this._beepIv);this._beepIv=null;}},
+  suspend(){this.stopMonitorLoop();if(this._ctx&&this._ctx.state==='running'){try{this._ctx.suspend();}catch(e){}}},
   tapFind(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(880,'sine',.12,.08,t);this._t(1320,'sine',.08,.06,t+.1);},
   tapWrong(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(220,'square',.15,.12,t);this._n(.1,.06,t,200);},
   urgentAlarm(){if(!this._ctx)return;const t=this._ctx.currentTime;[0,.15,.3,.45].forEach(o=>this._t(1760,'square',.12,.12,t+o));},
