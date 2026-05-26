@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>NURSE 30 — Sound Lab</title>
+<style>
+:root{--ink:#0a0e16;--ink2:#141a26;--wire:#1f2735;--wire2:#2a3447;--text:#d8dde8;--muted:#6b7488;--muted2:#9aa3b6;--teal:#00c9a0;--amber:#e8a84a;--alarm:#d94040;--mono:'SF Mono',Menlo,monospace;}
+*{box-sizing:border-box;}
+body{margin:0;background:var(--ink);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:300;padding:14px 12px 48px;font-size:14px;}
+h1{font-family:Georgia,serif;font-size:22px;font-weight:700;margin:0 0 4px;color:#fff;}
+.sub{font-family:var(--mono);font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.intro{background:rgba(0,201,160,.08);border:1px solid rgba(0,201,160,.35);border-radius:6px;padding:11px 13px;margin-bottom:18px;font-size:12.5px;line-height:1.6;color:var(--muted2);}
+.intro b{color:var(--teal);}
+.row{margin-bottom:14px;padding:10px 12px;background:var(--ink2);border:1px solid var(--wire2);border-radius:6px;}
+.row-name{font-family:var(--mono);font-size:11px;color:#fff;letter-spacing:.05em;margin-bottom:2px;}
+.row-desc{font-family:-apple-system,sans-serif;font-size:11px;color:var(--muted2);font-weight:300;margin-bottom:9px;line-height:1.4;}
+.opts{display:flex;gap:7px;}
+.opt{flex:1;padding:11px 6px 9px;border:1px solid var(--wire2);border-radius:5px;background:transparent;color:var(--text);font-family:var(--mono);font-size:10px;text-align:center;cursor:pointer;transition:all .15s;line-height:1.3;}
+.opt:active{transform:scale(.96);}
+.opt.a{border-color:rgba(217,64,64,.4);}.opt.a:hover{background:rgba(217,64,64,.08);}
+.opt.b{border-color:rgba(0,201,160,.5);background:rgba(0,201,160,.06);}.opt.b:hover{background:rgba(0,201,160,.12);}
+.opt.c{border-color:rgba(232,168,74,.4);}.opt.c:hover{background:rgba(232,168,74,.08);}
+.opt .lbl{display:block;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.opt .play{font-size:12px;font-weight:700;}
+.opt.a .play{color:#ff8b8b;}.opt.b .play{color:var(--teal);}.opt.c .play{color:var(--amber);}
+.legend{font-family:var(--mono);font-size:9px;color:var(--muted);text-align:center;padding:10px 0;border-top:1px solid var(--wire2);margin-top:8px;line-height:1.7;}
+.legend b{color:var(--text);font-weight:600;}
+.unlock{position:fixed;inset:0;background:rgba(10,14,22,.96);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100;padding:20px;text-align:center;}
+.unlock h2{font-family:Georgia,serif;font-size:24px;margin:0 0 8px;color:#fff;}
+.unlock p{color:var(--muted2);margin:0 0 22px;font-size:13px;line-height:1.6;max-width:320px;}
+.unlock button{padding:14px 28px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.15em;border:none;border-radius:4px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<div id="unlock" class="unlock">
+  <h2>🎧 Sound Lab</h2>
+  <p>각 사운드를 <b>A · B · C</b> 세 가지 버전으로 들어보고, 마음에 드는 것을 알려주세요.<br><br>⚠️ 아이폰이면 <b>옆면 무음 스위치 꺼주세요</b> (주황색 안 보이게).</p>
+  <button onclick="unlock()">시작</button>
+</div>
+
+<h1>NURSE 30 — Sound Lab</h1>
+<div class="sub">탐정 누아르 사운드 비교</div>
+<div class="intro">탭하면 사운드가 재생됩니다. 각 행마다 <b>A · B · C</b>를 비교해 들어보세요. 다 들어본 뒤 어떤 조합이 마음에 드는지 알려주시면 게임에 그대로 적용할게요.</div>
+
+<div id="rows"></div>
+
+<div class="legend">
+  <b style="color:#ff8b8b">A · Sharp</b> &mdash; 원래 (square wave, 날카로움)<br>
+  <b style="color:var(--teal)">B · Detective</b> &mdash; 현재 (warm triangle, 따뜻함)<br>
+  <b style="color:var(--amber)">C · Ambient</b> &mdash; 더 부드럽고 명상적
+</div>
+
+<script>
+let CTX=null,_muted=false;
+function unlock(){
+  try{CTX=new (window.AudioContext||window.webkitAudioContext)();const b=CTX.createBuffer(1,1,22050);const s=CTX.createBufferSource();s.buffer=b;s.connect(CTX.destination);s.start(0);if(CTX.state==='suspended')CTX.resume();}catch(e){}
+  document.getElementById('unlock').style.display='none';
+}
+function T(freq,type,gain,dur,start){if(!CTX)return;const o=CTX.createOscillator();const g=CTX.createGain();o.connect(g);g.connect(CTX.destination);o.type=type;o.frequency.value=freq;g.gain.setValueAtTime(gain,start);g.gain.exponentialRampToValueAtTime(0.001,start+dur);o.start(start);o.stop(start+dur);}
+function N(dur,gain,start,cutoff){if(!CTX)return;const b=CTX.createBuffer(1,CTX.sampleRate*dur,CTX.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;const s=CTX.createBufferSource();const f=CTX.createBiquadFilter();f.type='lowpass';f.frequency.value=cutoff;const g=CTX.createGain();s.buffer=b;s.connect(f);f.connect(g);g.connect(CTX.destination);g.gain.setValueAtTime(gain,start);g.gain.exponentialRampToValueAtTime(0.001,start+dur);s.start(start);s.stop(start+dur);}
+const NOW=()=>CTX?CTX.currentTime:0;
+
+// ===== SOUND BANK =====
+// Each entry: {name, desc, a:[A_function], b:[B_function], c:[C_function]}
+const SOUNDS=[
+  {name:'Clue Found (tap correct)', desc:'단서 발견 — 단서 탭이 맞을 때',
+   a:()=>{const t=NOW();T(880,'sine',.12,.08,t);T(1320,'sine',.08,.06,t+.1);},
+   b:()=>{const t=NOW();T(880,'triangle',.07,.08,t);T(1318,'sine',.04,.06,t+.06);N(.025,.012,t,1800);},
+   c:()=>{const t=NOW();T(659,'sine',.06,.18,t);T(988,'sine',.04,.14,t+.08);},
+  },
+  {name:'Wrong Tap', desc:'잘못된 곳 탭',
+   a:()=>{const t=NOW();T(220,'square',.15,.12,t);N(.1,.06,t,200);},
+   b:()=>{const t=NOW();T(196,'triangle',.08,.18,t);N(.06,.025,t,500);},
+   c:()=>{const t=NOW();T(165,'sine',.07,.25,t);N(.05,.015,t,300);},
+  },
+  {name:'Monitor Beep (entry)', desc:'환자 방 입장 시 모니터 신호음',
+   a:()=>{const t=NOW();T(1046,'sine',.08,.1,t);T(1318,'sine',.06,.08,t+.12);},
+   b:()=>{const t=NOW();T(740,'triangle',.06,.12,t);T(1109,'sine',.035,.09,t+.05);},
+   c:()=>{const t=NOW();T(523,'sine',.05,.22,t);T(784,'sine',.035,.16,t+.08);},
+  },
+  {name:'Monitor Heart Loop (~1s sample)', desc:'심장박동 모니터 루프 한 박',
+   a:()=>{const t=NOW();T(1046,'sine',.05,.1,t);T(1046,'sine',.05,.1,t+.55);},
+   b:()=>{const t=NOW();T(740,'sine',.03,.08,t);T(740,'sine',.03,.08,t+.55);},
+   c:()=>{const t=NOW();T(523,'sine',.025,.1,t);T(523,'sine',.025,.1,t+.6);},
+  },
+  {name:'Urgent Alarm', desc:'긴급 알람 (vitals 악화 등)',
+   a:()=>{const t=NOW();[0,.15,.3,.45].forEach(o=>T(1760,'square',.12,.12,t+o));},
+   b:()=>{const t=NOW();[0,.18,.36].forEach(o=>{T(659,'triangle',.07,.14,t+o);T(880,'sine',.035,.1,t+o+.02);});},
+   c:()=>{const t=NOW();[0,.22,.44].forEach(o=>{T(523,'sine',.06,.18,t+o);T(659,'sine',.04,.14,t+o+.04);});},
+  },
+  {name:'Code Blue Alarm', desc:'Code Blue 위급 알람 (Day 2)',
+   a:()=>{const t=NOW();for(let i=0;i<6;i++)T(1760,'square',.12,.18,t+i*.15);},
+   b:()=>{const t=NOW();for(let i=0;i<5;i++){T(659,'triangle',.08,.16,t+i*.2);T(831,'sine',.045,.12,t+i*.2+.05);}},
+   c:()=>{const t=NOW();for(let i=0;i<4;i++){T(523,'sine',.07,.22,t+i*.25);T(784,'sine',.045,.18,t+i*.25+.08);}},
+  },
+  {name:'Flatline', desc:'심정지음 (Day 5 잘못된 액션 등)',
+   a:()=>{const t=NOW();T(440,'square',.15,.18,t);},
+   b:()=>{const t=NOW();T(330,'sine',.08,.55,t);T(247,'sine',.045,.5,t+.04);},
+   c:()=>{const t=NOW();T(262,'sine',.07,.8,t);T(196,'sine',.04,.75,t+.06);},
+  },
+  {name:'Pager / Call', desc:'호출음 (SBAR 전화 울림 — 4초마다 반복됨)',
+   a:()=>{const t=NOW();[0,.08,.16].forEach(o=>N(.06,.08,t+o,400));},
+   b:()=>{const t=NOW();T(740,'sine',.05,.1,t);T(587,'sine',.04,.09,t+.13);T(740,'sine',.045,.09,t+.26);},
+   c:()=>{const t=NOW();T(523,'sine',.05,.18,t);T(659,'sine',.04,.16,t+.18);},
+  },
+  {name:'Fluid Drip', desc:'IV 수액 드립',
+   a:()=>{const t=NOW();N(.06,.04,t,600);},
+   b:()=>{const t=NOW();T(1760,'sine',.03,.04,t);N(.03,.012,t,900);},
+   c:()=>{const t=NOW();T(1568,'sine',.025,.05,t);N(.025,.008,t,700);},
+  },
+  {name:'Deterioration', desc:'환자 악화 (느와르 럼블)',
+   a:()=>{const t=NOW();N(.4,.08,t,300);},
+   b:()=>{const t=NOW();N(.5,.045,t,180);T(110,'triangle',.05,.5,t);},
+   c:()=>{const t=NOW();N(.6,.03,t,140);T(82,'sine',.06,.6,t);},
+  },
+  {name:'Oxygen Flow', desc:'산소 적용',
+   a:()=>{const t=NOW();N(.3,.04,t,2000);},
+   b:()=>{const t=NOW();N(.35,.028,t,1400);},
+   c:()=>{const t=NOW();N(.4,.02,t,1100);},
+  },
+  {name:'Resolve / Success', desc:'성공 / 정답 (상승 화음)',
+   a:()=>{const t=NOW();[0,.15,.3].forEach((o,i)=>T([523,659,784][i],'sine',.08,.15,t+o));},
+   b:()=>{const t=NOW();[0,.15,.3].forEach((o,i)=>{T([523,659,784][i],'sine',.07,.16,t+o);T([523,659,784][i]*2,'triangle',.02,.1,t+o);});},
+   c:()=>{const t=NOW();[0,.2,.4].forEach((o,i)=>{T([392,494,587][i],'sine',.06,.32,t+o);T([392,494,587][i]*2,'sine',.025,.22,t+o+.02);});},
+  },
+  {name:'Chime', desc:'알림 (인터럽트 등)',
+   a:()=>{const t=NOW();T(1047,'sine',.12,.3,t);T(1319,'sine',.08,.25,t+.08);T(1568,'sine',.06,.2,t+.16);},
+   b:()=>{const t=NOW();T(988,'sine',.09,.32,t);T(1318,'sine',.06,.25,t+.08);T(1568,'sine',.04,.2,t+.16);},
+   c:()=>{const t=NOW();T(784,'sine',.07,.45,t);T(1175,'sine',.05,.35,t+.12);T(1568,'sine',.035,.28,t+.24);},
+  },
+  {name:'Confirm', desc:'확인 / 차트 제출',
+   a:()=>{const t=NOW();T(659,'sine',.1,.15,t);T(784,'sine',.08,.12,t+.12);},
+   b:()=>{const t=NOW();T(587,'sine',.08,.15,t);T(740,'sine',.06,.12,t+.1);},
+   c:()=>{const t=NOW();T(523,'sine',.06,.22,t);T(659,'sine',.045,.18,t+.14);},
+  },
+  {name:'Dawn Ambient (end of shift)', desc:'근무 종료 화음',
+   a:()=>{const t=NOW();[0,.3,.6,.9].forEach((o,i)=>T([523,587,659,784][i],'sine',.04,.4,t+o));},
+   b:()=>{const t=NOW();[0,.35,.7,1.05].forEach((o,i)=>T([392,494,587,740][i],'sine',.035,.55,t+o));},
+   c:()=>{const t=NOW();[0,.5,1.0].forEach((o,i)=>{T([330,392,494][i],'sine',.04,.9,t+o);T([330,392,494][i]*2,'sine',.018,.6,t+o+.1);});},
+  },
+];
+
+function render(){
+  const rows=document.getElementById('rows');
+  rows.innerHTML=SOUNDS.map((s,i)=>'<div class="row"><div class="row-name">'+(i+1)+'. '+s.name+'</div><div class="row-desc">'+s.desc+'</div><div class="opts"><button class="opt a" onclick="play('+i+',\'a\')"><span class="lbl">A · Sharp</span><span class="play">▶ 듣기</span></button><button class="opt b" onclick="play('+i+',\'b\')"><span class="lbl">B · Detective</span><span class="play">▶ 듣기</span></button><button class="opt c" onclick="play('+i+',\'c\')"><span class="lbl">C · Ambient</span><span class="play">▶ 듣기</span></button></div></div>').join('');
+}
+function play(i,v){
+  if(!CTX){unlock();}
+  if(CTX&&CTX.state==='suspended')CTX.resume();
+  try{SOUNDS[i][v]();}catch(e){console.warn(e);}
+}
+render();
+</script>
+</body>
+</html>
