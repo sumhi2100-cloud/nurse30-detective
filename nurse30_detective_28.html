@@ -2144,6 +2144,26 @@ const ACTS_D10=[
    getL:()=>G.actionsTaken.includes('family_d10')?'Family + social work notified':'Notify family / social work',
    desc:'A young trauma patient -- next of kin will arrive scared. Page social work, give the family a private space, get a designated contact. Truthful brief updates, no prognosis.',
    done:()=>G.actionsTaken.includes('family_d10'),unlock:3,need:null},
+  {key:'tourniquet_d10',pri:1,sec:'Immediate -- Control bleeding',
+   getL:()=>G.actionsTaken.includes('tourniquet_d10')?'Tourniquet applied -- bleeding stopped':'Apply tourniquet -- proximal to thigh wound',
+   desc:'If direct pressure + pressure dressing do not stop the arterial bleed, escalate to a tourniquet 2-3 inches proximal to the wound (NOT over a joint). Note the time -- ALL the time. Tourniquets save lives in extremity exsanguination; modern trauma evidence supports them strongly.',
+   done:()=>G.actionsTaken.includes('tourniquet_d10'),unlock:1,need:'thigh'},
+  {key:'pelvic_binder_d10',pri:1,sec:'Immediate -- Stabilise',
+   getL:()=>G.actionsTaken.includes('pelvic_binder_d10')?'Pelvic binder applied at the greater trochanters':'Apply pelvic binder -- suspected pelvic fracture',
+   desc:'Seatbelt sign + distended abdomen + FAST positive after high-speed MVC = pelvic fracture suspicion until imaging proves otherwise. Apply a pelvic binder centred on the greater trochanters (NOT the iliac crests). Stabilising the pelvis reduces venous bleeding and limb-shortening force on disrupted vessels.',
+   done:()=>G.actionsTaken.includes('pelvic_binder_d10'),unlock:2,need:'abdomen'},
+  {key:'cardiac_d10',pri:2,sec:'Urgent -- Monitoring',
+   getL:()=>G.actionsTaken.includes('cardiac_d10')?'Continuous cardiac monitor + 12-lead obtained':'Apply continuous cardiac monitor + 12-lead',
+   desc:'Trauma + shock = arrhythmia risk (hypovolemia, electrolyte shifts, possible cardiac contusion from steering-wheel impact). Apply 5-lead continuous, run a baseline 12-lead, watch for ectopy and ST changes. Cardiac contusion can hide behind hemorrhagic shock signs.',
+   done:()=>G.actionsTaken.includes('cardiac_d10'),unlock:1,need:null},
+  {key:'neuro_d10',pri:2,sec:'Urgent -- Assessment',
+   getL:()=>G.actionsTaken.includes('neuro_d10')?'Q5min GCS + pupils -- trending':'Frequent neuro checks -- GCS + pupils q5min',
+   desc:'High-speed MVC -- head injury cannot be excluded until imaging. Trend GCS q5min, check pupil size + reactivity, watch for vomiting, posturing, lateralising weakness. A young patient can drop GCS suddenly from rising ICP. Document each check with time.',
+   done:()=>G.actionsTaken.includes('neuro_d10'),unlock:2,need:'patient'},
+  {key:'calcium_d10',pri:2,sec:'Urgent -- After multiple units',
+   getL:()=>G.actionsTaken.includes('calcium_d10')?'Calcium gluconate given':'Anticipate calcium -- after multiple units of blood',
+   desc:'Each unit of stored blood contains citrate, which binds calcium. After ~4 units of products, ionised calcium falls -- worsening coagulopathy and cardiac contractility. Anticipate IV calcium gluconate per MHP protocol. Check ionised Ca; do not wait for symptoms.',
+   done:()=>G.actionsTaken.includes('calcium_d10'),unlock:2,need:null},
   {key:'crystalloid_d10',pri:3,sec:'Caution -- Avoid',
    getL:()=>G.actionsTaken.includes('crystalloid_d10')?'Crystalloid flooded -- coagulopathy worse':'Run 2L crystalloid wide open',
    desc:'WARNING: flooding saline in active hemorrhage dilutes clotting factors, dislodges clot, and worsens hypothermia. Minimise crystalloid -- give blood.',
@@ -3589,6 +3609,36 @@ function doAction(type){
       {p:'c',t:'Crystalloid in active hemorrhage worsens the lethal triad: dilutional coagulopathy, more bleeding, and colder blood. Damage-control resuscitation minimises crystalloid and gives blood.'},
       {p:'o',t:'Switch now: activate the Massive Hemorrhage Protocol for balanced products, give TXA, keep him warm. (ATLS / Trauma Association of Canada MHP)'},
     ],'In hemorrhage, saline buys a number for a minute and costs you the clot. Give blood, not litres of fluid.');setTimeout(checkActions,200);
+  }else if(type==='tourniquet_d10'){
+    if(!G.actionsTaken.includes('tourniquet_d10'))G.actionsTaken.push('tourniquet_d10');SFX.init();SFX.confirm();
+    openDrawer('Tourniquet -- proximal thigh',[
+      {p:'o',t:'Tourniquet placed ~3 inches proximal to the laceration, NOT over the knee joint, tightened until the distal pulse stops. Time noted on the strap and in the chart.'},
+      {p:'c',t:'Modern trauma evidence supports tourniquets strongly for extremity exsanguination -- they save lives. Always document the application time so the surgical team knows ischemia duration.'},
+    ],'Tourniquet is escalation when direct pressure cannot hold. Note the time, every time.');setTimeout(checkActions,200);
+  }else if(type==='pelvic_binder_d10'){
+    if(!G.actionsTaken.includes('pelvic_binder_d10'))G.actionsTaken.push('pelvic_binder_d10');SFX.init();SFX.confirm();
+    openDrawer('Pelvic binder applied',[
+      {p:'o',t:'Binder centred at the greater trochanters (NOT the iliac crests -- a common mistake that does nothing for hemorrhage), tightened firmly. Patient legs internally rotated and bound at the knees.'},
+      {p:'w',t:'Seatbelt sign + FAST positive + high-speed MVC is a classic pelvic-injury picture. The binder closes the pelvic ring, tamponades venous bleeding, and reduces shortening on disrupted arteries -- bridging the patient to angio or OR.'},
+    ],'A binder is a 30-second intervention that buys minutes. Always at the trochanters, never at the iliac crests.');setTimeout(checkActions,200);
+  }else if(type==='cardiac_d10'){
+    if(!G.actionsTaken.includes('cardiac_d10'))G.actionsTaken.push('cardiac_d10');SFX.init();SFX.tapFind();
+    openDrawer('Cardiac monitor + 12-lead',[
+      {p:'o',t:'5-lead continuous monitor on, baseline 12-lead obtained. Rhythm: sinus tachycardia, rate 132, no ectopy, no ST elevation.'},
+      {p:'w',t:'Steering-wheel impact + chest contact = blunt cardiac injury is on the differential. Trend ECG; watch for new ectopy, ST changes, or rhythm instability that hemorrhage alone would not explain.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='neuro_d10'){
+    if(!G.actionsTaken.includes('neuro_d10'))G.actionsTaken.push('neuro_d10');SFX.init();SFX.tapFind();
+    openDrawer('Neuro checks -- baseline + q5min',[
+      {p:'o',t:'GCS 14 (E4 V4 M6) -- mild confusion fits hypoperfusion. Pupils 3 mm, equal, reactive. No focal weakness, no posturing, no vomiting. Will recheck q5min and document each.'},
+      {p:'w',t:'High-speed MVC = head injury is in play until imaging proves otherwise. A dropping GCS could be rising ICP OR worsening shock; either way you need to know fast.'},
+    ],'Trend the GCS. A single reassuring number is meaningless without the next one.');setTimeout(checkActions,200);
+  }else if(type==='calcium_d10'){
+    if(!G.actionsTaken.includes('calcium_d10'))G.actionsTaken.push('calcium_d10');SFX.init();SFX.tapFind();
+    openDrawer('Anticipate calcium replacement',[
+      {p:'o',t:'Citrate in stored blood binds ionised calcium. After ~4 units of product, hypocalcaemia worsens coagulopathy and cardiac contractility. IV calcium gluconate ready per MHP protocol; ionised calcium drawn with the next blood gas.'},
+      {p:'c',t:'In massive transfusion, do not wait for the symptomatic patient. Anticipate, draw, replace. (Canadian Blood Services / Trauma Association of Canada MHP)'},
+    ],null);setTimeout(checkActions,200);
   }else if(type==='chart_d10'){
     if(!G.actionsTaken.includes('chart_d10'))G.actionsTaken.push('chart_d10');
     document.getElementById('cd-title').textContent='Write trauma documentation -- Hemorrhagic shock';
