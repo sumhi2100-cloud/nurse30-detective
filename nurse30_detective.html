@@ -2076,6 +2076,26 @@ const ACTS_D10=[
    getL:()=>G.actionsTaken.includes('vfreq_d10')?'Continuous monitoring q5min':'Continuous monitoring -- q5min vitals',
    desc:'Continuous HR, BP, SpO2; q5min cycle. Watch for the sudden decompensation a young patient hides until the end. Track response to products.',
    done:()=>G.actionsTaken.includes('vfreq_d10'),unlock:2,need:null},
+  {key:'spine_d10',pri:1,sec:'Immediate -- Safety',
+   getL:()=>G.actionsTaken.includes('spine_d10')?'C-spine precautions maintained':'Maintain C-spine precautions',
+   desc:'MVC with prolonged extrication -- the cervical spine is NOT cleared until imaging confirms. Keep the cervical collar on, log-roll only, head-of-bed flat. Never assume the spine is clear in trauma.',
+   done:()=>G.actionsTaken.includes('spine_d10'),unlock:1,need:null},
+  {key:'reassure_d10',pri:2,sec:'Urgent -- Communication',
+   getL:()=>G.actionsTaken.includes('reassure_d10')?'Patient reassured -- honest presence':'Reassure Dylan -- honest, calm presence',
+   desc:'He keeps asking "am I going to be okay?" Eye contact, low voice, name yourself: "I am your nurse. We are giving you blood and the surgeon is coming. Stay with me." Honest, calm, present -- never false reassurance.',
+   done:()=>G.actionsTaken.includes('reassure_d10'),unlock:2,need:'patient'},
+  {key:'charge_d10',pri:2,sec:'Urgent -- Coordination',
+   getL:()=>G.actionsTaken.includes('charge_d10')?'Charge + team alerted':'Notify charge nurse + activate trauma team',
+   desc:'Page the trauma team, alert charge for an extra ICU RN, notify OR/anaesthesia. Coordinate the bay -- you cannot run a major trauma alone, and the OR needs to be ready when the surgeon decides to go.',
+   done:()=>G.actionsTaken.includes('charge_d10'),unlock:2,need:null},
+  {key:'npo_d10',pri:3,sec:'Safety -- Pre-OR',
+   getL:()=>G.actionsTaken.includes('npo_d10')?'NPO -- anticipating OR':'NPO -- nothing by mouth',
+   desc:'Anticipating the operating theatre: make him NPO now (sign at the bed, family aware). Anaesthesia needs an empty stomach to avoid aspiration on induction. Anticipatory care, not waiting to be asked.',
+   done:()=>G.actionsTaken.includes('npo_d10'),unlock:2,need:null},
+  {key:'family_d10',pri:3,sec:'Communication',
+   getL:()=>G.actionsTaken.includes('family_d10')?'Family + social work notified':'Notify family / social work',
+   desc:'A young trauma patient -- next of kin will arrive scared. Page social work, give the family a private space, get a designated contact. Truthful brief updates, no prognosis.',
+   done:()=>G.actionsTaken.includes('family_d10'),unlock:3,need:null},
   {key:'crystalloid_d10',pri:3,sec:'Caution -- Avoid',
    getL:()=>G.actionsTaken.includes('crystalloid_d10')?'Crystalloid flooded -- coagulopathy worse':'Run 2L crystalloid wide open',
    desc:'WARNING: flooding saline in active hemorrhage dilutes clotting factors, dislodges clot, and worsens hypothermia. Minimise crystalloid -- give blood.',
@@ -3405,6 +3425,37 @@ function doAction(type){
     openDrawer('Continuous monitoring -- q5min',[
       {p:'o',t:'Continuous HR, BP, SpO2; q5min cycle; track response to each unit of product and the temperature.'},
       {p:'w',t:'A fit 24-year-old compensates until he suddenly does not. Watch the trend, not a single reassuring number.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='spine_d10'){
+    if(!G.actionsTaken.includes('spine_d10'))G.actionsTaken.push('spine_d10');SFX.init();SFX.confirm();
+    openDrawer('C-spine precautions maintained',[
+      {p:'o',t:'Cervical collar confirmed in place. Log-roll protocol communicated to the team. Head-of-bed flat. Spine NOT cleared until imaging.'},
+      {p:'c',t:'MVC with prolonged extrication is a high-risk mechanism. Many cervical injuries are missed when teams assume the spine is fine because the patient is talking.'},
+    ],'Spine precautions are pure nursing safety -- the simplest intervention that prevents the worst secondary injury.');setTimeout(checkActions,200);
+  }else if(type==='reassure_d10'){
+    if(!G.actionsTaken.includes('reassure_d10'))G.actionsTaken.push('reassure_d10');SFX.init();SFX.chime();
+    openDrawer('Honest presence',[
+      {p:'o',t:'You lean in close enough that he sees you: "Dylan, I am your nurse. You were in a crash and you are bleeding inside. We are giving you blood right now and the surgeon is on the way. I am staying with you."'},
+      {p:'w',t:'He squeezes your hand. He stops trying to sit up. The shaking eases a little.'},
+      {p:'c',t:'Calm, honest, present. No false reassurance ("you\'ll be fine"), no jargon, no distance. Therapeutic communication in trauma is a clinical intervention, not a soft skill.'},
+    ],'In hemorrhage, every heartbeat the patient is calmer is a little less catecholamine, a little less oxygen demand. Presence is treatment.');setTimeout(checkActions,200);
+  }else if(type==='charge_d10'){
+    if(!G.actionsTaken.includes('charge_d10'))G.actionsTaken.push('charge_d10');SFX.init();SFX.pagerBuzz();
+    openDrawer('Charge nurse + trauma team',[
+      {p:'o',t:'Charge nurse paged: "Trauma Bay 1, hemorrhagic shock, MHP active, going to OR." Extra ICU RN diverted to the bay. Anaesthesia and OR-2 alerted to expect him.'},
+      {p:'c',t:'A major trauma is a team event. The nurse who coordinates support early controls the room; the nurse who tries to do it solo loses control of the room.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='npo_d10'){
+    if(!G.actionsTaken.includes('npo_d10'))G.actionsTaken.push('npo_d10');SFX.init();SFX.confirm();
+    openDrawer('NPO -- anticipating theatre',[
+      {p:'o',t:'NPO sign at the bedside. Family informed: nothing by mouth. Documented time and reason.'},
+      {p:'w',t:'Anaesthesia needs an empty stomach to avoid aspiration on induction. Anticipatory NPO is small, easy, and prevents a serious complication 30 minutes from now.'},
+    ],null);setTimeout(checkActions,200);
+  }else if(type==='family_d10'){
+    if(!G.actionsTaken.includes('family_d10'))G.actionsTaken.push('family_d10');SFX.init();SFX.chime();
+    openDrawer('Family / social work',[
+      {p:'o',t:'Social work paged. The family is being walked to a private room. Designated contact identified.'},
+      {p:'c',t:'Brief, truthful updates only: "He was in a crash. He is bleeding and the surgeon is going to operate. We will update you as soon as we know more." No prognosis. No promises. Honest now is trust later.'},
     ],null);setTimeout(checkActions,200);
   }else if(type==='crystalloid_d10'){
     if(!G.actionsTaken.includes('crystalloid_d10'))G.actionsTaken.push('crystalloid_d10');SFX.init();SFX.urgentAlarm();
