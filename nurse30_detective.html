@@ -4194,7 +4194,7 @@ const SFX={
     this._beepIv=setInterval(()=>{if(!this._muted&&this._ctx){const t=this._ctx.currentTime;this._t(523,'sine',.025,.1,t);this._t(392,'sine',.02,.08,t+.08);}},interval);
   },
   stopMonitorLoop(){if(this._beepIv){clearInterval(this._beepIv);this._beepIv=null;}},
-  suspend(){this.stopMonitorLoop();if(this._ctx&&this._ctx.state==='running'){try{this._ctx.suspend();}catch(e){}}},
+  suspend(){this.stopMonitorLoop();if(this._ctx){try{this._ctx.close();}catch(e){}this._ctx=null;this._unlocked=false;}},
   // 1. Clue found -- A Sharp (crisp typewriter ping)
   tapFind(){if(!this._ctx)return;const t=this._ctx.currentTime;this._t(880,'sine',.12,.08,t);this._t(1320,'sine',.08,.06,t+.1);},
   // 2. Wrong tap -- C Ambient (low sine + soft filtered noise)
