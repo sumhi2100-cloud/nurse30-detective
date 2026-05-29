@@ -387,6 +387,16 @@ html,body{height:100%;background:var(--ink);color:var(--text);font-family:var(--
 .esfooter{padding:10px 16px 24px;flex-shrink:0;}
 .btnnext{width:100%;padding:13px;background:var(--teal);color:var(--ink);font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;}
 .btnretry{width:100%;padding:11px;background:transparent;border:1px solid var(--wire2);color:var(--muted2);font-family:var(--mono);font-size:10px;cursor:pointer;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;}
+/* Day 1 onboarding tutorial -- first-time only */
+.tut-target{position:relative;}
+.tut-target::after{content:'';position:absolute;inset:-5px;border:2px solid var(--amber);border-radius:8px;pointer-events:none;animation:tutTarget 1.2s ease-in-out infinite;z-index:55;box-shadow:0 0 16px rgba(232,168,74,.5);}
+@keyframes tutTarget{0%,100%{opacity:.95;transform:scale(1);}50%{opacity:.4;transform:scale(1.08);}}
+#tut-bubble{position:fixed;z-index:400;background:var(--amber);color:var(--ink);padding:9px 11px 9px 13px;border-radius:6px;font-family:var(--mono);font-size:10.5px;font-weight:700;letter-spacing:.02em;max-width:240px;box-shadow:0 6px 24px rgba(0,0,0,.55);line-height:1.45;animation:tutBubble .9s ease-in-out infinite alternate;}
+@keyframes tutBubble{0%{transform:translateY(0);}100%{transform:translateY(-4px);}}
+#tut-bubble::after{content:'';position:absolute;width:0;height:0;border:8px solid transparent;}
+#tut-bubble.below::after{top:-16px;left:50%;margin-left:-8px;border-bottom-color:var(--amber);border-top:none;}
+#tut-bubble.above::after{bottom:-16px;left:50%;margin-left:-8px;border-top-color:var(--amber);border-bottom:none;}
+.tut-skip{margin-left:8px;background:rgba(0,0,0,.18);border:none;color:var(--ink);font-family:var(--mono);font-size:8.5px;padding:3px 7px;border-radius:3px;cursor:pointer;font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
 /* === DAY 8 ICU2 (two-patient delegation) === */
 #scr-icu2{background:var(--ink);flex-direction:column;overflow:hidden;}
 .icu2-top{flex-shrink:0;padding:8px 12px 6px;border-bottom:1px solid var(--wire2);background:rgba(8,11,18,.96);}
@@ -2490,6 +2500,7 @@ function handleTap(tap){
   G.touchesLeft--;G.clues.push(tap.id);renderPips();SFX.init();SFX.tapFind();
   const ht=document.getElementById('hud-touches');if(ht)ht.textContent=G.touchesLeft+' of '+getTouchLimit()+' touches left';
   openDrawer(tap.lbl||'Finding',tap.finds.slice(0,3),tap.insight);checkActions();
+  tutAdvance('clue_found');
   // Day 5: BGL tap → immediately show result in labs panel
   if(G.currentDay===5&&tap.id==='glucose'){addLabResult('BGL','2.1 mmol/L','crit',true);SFX.init();SFX.urgentAlarm();}
   // Day 6 interrupt: daughter speaks mid-assessment after 2nd valid clue
@@ -2662,7 +2673,7 @@ function checkActions(){
 function openActionSheet(){closeDrawer();openPP();}
 
 function openPP(){
-  closeDrawer();
+  closeDrawer();tutAdvance('actions_opened');
   const valid=G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong);
   const ALL=getACTS();
 
@@ -2794,6 +2805,7 @@ function gotoInvestigate(){
   wipeGo(()=>{showScreen('investigate');setTimeout(()=>{startSceneLoop();renderPips();updateVitals();startTimer(false);SFX.init();SFX.monitorBeep();setTimeout(()=>{if(DAY().sfxLoop==='icu')SFX.startICULoop();else SFX.startMonitorLoop();},700);
     clearDayTimers();const tmrs=DAY().timers;
     if(tmrs)tmrs.forEach(tm=>{G._dayTimers.push(setTimeout(()=>{if(!tm.guard||!G.actionsTaken.includes(tm.guard)){updateVitals(tm.vitals);SFX.init();SFX.urgentAlarm();}},tm.at));});
+    tutStart();
   },100);});
 }
 
@@ -3653,7 +3665,7 @@ function gotoSBAR(){
   clearDayTimers();
   if(G.timerIv)clearInterval(G.timerIv);resetTimerPressure();SFX.init();SFX.pagerBuzz();G.actionsTaken.push('call_md');
   G._sbarPlaced={s:null,b:null,a:null,r:null};G._sbarDone=false;
-  wipeGo(()=>{showScreen('sbar');renderSBAR();});
+  wipeGo(()=>{showScreen('sbar');renderSBAR();setTimeout(()=>tutAdvance('sbar_started'),200);});
 }
 function renderSBAR(){
   const sd=getSBAR();
@@ -3677,6 +3689,7 @@ function selectCard(cardId){
   if(G._selectedCard===cardId){el.classList.remove('selected');G._selectedCard=null;armSbarZones(false);return;}
   if(G._selectedCard){const prev=document.getElementById('card-'+G._selectedCard);if(prev)prev.classList.remove('selected');}
   G._selectedCard=cardId;el.classList.add('selected');armSbarZones(true);SFX.init();SFX.tapFind();
+  tutAdvance('card_selected');
 }
 function zoneTap(zone){if(!G._selectedCard)return;placeCard(G._selectedCard,zone);}
 function armSbarZones(on){['s','b','a','r'].forEach(k=>{const z=document.getElementById('zone-'+k);if(z)z.classList.toggle('armed',!!on&&!G._sbarPlaced[k]);});}
@@ -3696,7 +3709,7 @@ function placeCard(cardId,zone){
     G._sbarPlaced[zone]=cardId;
     if(zEl){zEl.classList.remove('wrong');zEl.classList.add('correct');}if(hEl)hEl.style.display='none';if(cEl){cEl.style.display='block';cEl.textContent=card.text;}if(lEl)lEl.classList.add('filled');
     const cardEl=document.getElementById('card-'+cardId);if(cardEl){cardEl.classList.add('placed');cardEl.classList.remove('selected');cardEl.draggable=false;}
-    G._selectedCard=null;armSbarZones(false);
+    G._selectedCard=null;armSbarZones(false);tutAdvance('card_placed');
     SFX.init();SFX.tapFind();updateSBARPips();
     if(sd.cards.every(cd=>G._sbarPlaced[cd.zone]===cd.id)){const btn=document.getElementById('btn-sbar-deliver');if(btn){btn.disabled=false;btn.style.opacity='1';btn.style.fontSize='';btn.textContent='Deliver SBAR';}SFX.init();SFX.chime();}
   }else{
@@ -3812,7 +3825,7 @@ function buildEndShift(){
   G.dayResults[G.currentDay]={outcome:G.outcome,cluesFound:G.clues.filter(id=>!getSC().taps.find(t=>t.id===id)?.wrong).length,completedAt:Date.now()};
   if(good&&G.currentDay>=G.highestDay)G.highestDay=Math.min(30,G.currentDay+1);
   else G.highestDay=Math.max(G.highestDay||1,G.currentDay);
-  clearActive();SFX.init();SFX.dawnAmbient();saveProgress();setTimeout(()=>playEndScene(G.outcome),400);
+  clearActive();if(G.currentDay===1)tutAdvance('shift_complete');SFX.init();SFX.dawnAmbient();saveProgress();setTimeout(()=>playEndScene(G.outcome),400);
 }
 
 const END_MSGS={
@@ -4200,6 +4213,66 @@ function loadProgress(){try{const raw=localStorage.getItem('n30v3');if(!raw)retu
 function saveActive(){try{if(!G._shiftActive||DAY().custom)return;localStorage.setItem('n30active',JSON.stringify({day:G.currentDay,clues:G.clues,actionsTaken:G.actionsTaken,touchesLeft:G.touchesLeft,timerSec:G.timerSec,priorityShown:G.priorityShown,interruptFired:G.interruptFired,interrupt2Fired:G.interrupt2Fired,o2Device:G.o2Device,savedAt:Date.now()}));}catch(e){}}
 function clearActive(){G._shiftActive=false;try{localStorage.removeItem('n30active');}catch(e){}}
 function loadActive(){try{const ra=localStorage.getItem('n30active');if(!ra)return;const a=JSON.parse(ra);if(a&&a.day&&!(G.dayResults&&G.dayResults[a.day])){G._resume=a;}else{localStorage.removeItem('n30active');}}catch(e){}}
+// === DAY 1 ONBOARDING TUTORIAL (first-time only) ===
+const TUT={active:false,stage:0,seenSBAR:false};
+function tutAllowed(){try{return localStorage.getItem('n30tut')!=='done';}catch(e){return true;}}
+function tutHide(){const b=document.getElementById('tut-bubble');if(b)b.remove();document.querySelectorAll('.tut-target').forEach(e=>e.classList.remove('tut-target'));}
+function tutDone(){TUT.active=false;TUT.stage=0;tutHide();try{localStorage.setItem('n30tut','done');}catch(e){}}
+function tutSkip(){tutDone();}
+function tutShowAt(target,text,position){
+  tutHide();
+  if(typeof target==='string')target=document.querySelector(target);
+  if(!target)return;
+  target.classList.add('tut-target');
+  const r=target.getBoundingClientRect();
+  const b=document.createElement('div');b.id='tut-bubble';b.className=(position||'below');
+  b.innerHTML=text+' <button class="tut-skip" onclick="tutSkip()">skip</button>';
+  document.body.appendChild(b);
+  const bw=b.offsetWidth||220;
+  const left=Math.max(10,Math.min(window.innerWidth-bw-10,r.left+r.width/2-bw/2));
+  b.style.left=left+'px';
+  if(position==='above'){b.style.top=Math.max(10,r.top-b.offsetHeight-18)+'px';}
+  else{b.style.top=(r.bottom+16)+'px';}
+}
+function tutStart(){
+  if(!tutAllowed()||G.currentDay!==1)return;
+  TUT.active=true;TUT.stage=1;TUT.seenSBAR=false;
+  setTimeout(()=>{
+    if(!TUT.active||TUT.stage!==1)return;
+    const z=document.querySelector('#tap-zones .tz');
+    if(z)tutShowAt(z,'환자 위의 빛나는 zone을 탭해서 단서를 찾으세요','below');
+  },1400);
+}
+function tutAdvance(cp){
+  if(!TUT.active)return;
+  if(cp==='clue_found'&&TUT.stage===1){
+    TUT.stage=2;
+    setTimeout(()=>{
+      if(!TUT.active||TUT.stage!==2)return;
+      tutShowAt('#hud-actions-btn','상단 Actions 버튼을 누르면 모든 처치 옵션이 보여요','below');
+    },1000);
+  } else if(cp==='actions_opened'&&TUT.stage===2){
+    TUT.stage=3;tutHide();
+  } else if(cp==='sbar_started'&&!TUT.seenSBAR){
+    TUT.seenSBAR=true;TUT.stage=4;
+    setTimeout(()=>{
+      if(!TUT.active||TUT.stage!==4)return;
+      const c=document.querySelector('#sbar-card-pool .sbar-card');
+      if(c)tutShowAt(c,'카드를 탭해서 선택하세요','above');
+    },900);
+  } else if(cp==='card_selected'&&TUT.stage===4){
+    TUT.stage=5;
+    setTimeout(()=>{
+      if(!TUT.active||TUT.stage!==5)return;
+      const z=document.querySelector('.sbar-zone');
+      if(z)tutShowAt(z,'카드와 어울리는 칸(S/B/A/R)을 탭해서 붙이세요','above');
+    },350);
+  } else if(cp==='card_placed'&&TUT.stage===5){
+    TUT.stage=6;tutHide();
+  } else if(cp==='shift_complete'){
+    tutDone();
+  }
+}
 function resumeActive(){
   const a=G._resume;if(!a)return;
   G.currentDay=a.day;
