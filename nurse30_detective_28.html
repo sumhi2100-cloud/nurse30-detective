@@ -4240,7 +4240,7 @@ function tutStart(){
   setTimeout(()=>{
     if(!TUT.active||TUT.stage!==1)return;
     const z=document.querySelector('#tap-zones .tz');
-    if(z)tutShowAt(z,'환자 위의 빛나는 zone을 탭해서 단서를 찾으세요','below');
+    if(z)tutShowAt(z,'Tap the glowing zones to find clues','below');
   },1400);
 }
 function tutAdvance(cp){
@@ -4249,7 +4249,7 @@ function tutAdvance(cp){
     TUT.stage=2;
     setTimeout(()=>{
       if(!TUT.active||TUT.stage!==2)return;
-      tutShowAt('#hud-actions-btn','상단 Actions 버튼을 누르면 모든 처치 옵션이 보여요','below');
+      tutShowAt('#hud-actions-btn','Tap Actions to see all nursing options','below');
     },1000);
   } else if(cp==='actions_opened'&&TUT.stage===2){
     TUT.stage=3;tutHide();
@@ -4258,14 +4258,14 @@ function tutAdvance(cp){
     setTimeout(()=>{
       if(!TUT.active||TUT.stage!==4)return;
       const c=document.querySelector('#sbar-card-pool .sbar-card');
-      if(c)tutShowAt(c,'카드를 탭해서 선택하세요','above');
+      if(c)tutShowAt(c,'Tap a card to select it','above');
     },900);
   } else if(cp==='card_selected'&&TUT.stage===4){
     TUT.stage=5;
     setTimeout(()=>{
       if(!TUT.active||TUT.stage!==5)return;
       const z=document.querySelector('.sbar-zone');
-      if(z)tutShowAt(z,'카드와 어울리는 칸(S/B/A/R)을 탭해서 붙이세요','above');
+      if(z)tutShowAt(z,'Now tap the matching section (S / B / A / R)','above');
     },350);
   } else if(cp==='card_placed'&&TUT.stage===5){
     TUT.stage=6;tutHide();
